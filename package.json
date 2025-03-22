@@ -11,9 +11,11 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.0.15",
     "aws-amplify": "^6.13.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.15"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.14.3",
@@ -21,6 +23,7 @@
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.11",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",
