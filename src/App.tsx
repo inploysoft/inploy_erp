@@ -1,11 +1,10 @@
-import { Button } from './components/ui/button';
-
 import './App.css';
+import { Dashboard } from './modules/user/dashboard';
 
 function App() {
   return (
     <>
-      <Button>Click Me</Button>
+      <Dashboard />
     </>
   );
 }
