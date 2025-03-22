@@ -1,11 +1,13 @@
-import './App.css';
+import { RouterProvider } from 'react-router';
 
-import { Dashboard } from './modules/user/Dashboard';
+import { router } from './router/routes';
+
+import './App.css';
 
 function App() {
   return (
     <>
-      <Dashboard />
+      <RouterProvider router={router} />
     </>
   );
 }
