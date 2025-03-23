@@ -17,13 +17,13 @@ export const tableMock: Payment[] = [
     id: '489e1d42',
     amount: 125,
     status: 'processing',
-    email: 'example1@gmail.com',
+    email: 'minhasohn@gmail.com',
   },
   {
     id: 'asdasdsad',
     amount: 125,
     status: 'processing',
-    email: 'example2@gmail.com',
+    email: 'tonty@gmail.com',
   },
   {
     id: 'fdhdfsgh',
