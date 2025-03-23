@@ -2,11 +2,8 @@ import { Outlet } from 'react-router';
 
 import { AppSidebar } from '@/components/common/AppSidebar';
 import { Separator } from '@/components/ui/separator';
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/contexts/SidebarProvider';
 
 export function SidebarLayout() {
   return (
