@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router';
 
+import { SidebarLayout } from '@/components/common/SidebarLayout';
 import { Main } from '@/modules/Main';
 import { UserDashboard } from '@/modules/user/UserDashboard';
 
@@ -18,11 +19,16 @@ const routes: RouteObject[] = [
   },
   {
     path: 'user',
-    element: (
-      <Suspense fallback={loading}>
-        <UserDashboard />
-      </Suspense>
-    ),
+    element: <SidebarLayout />,
+    children: [
+      {
+        element: (
+          <Suspense fallback={loading}>
+            <UserDashboard />
+          </Suspense>
+        ),
+      },
+    ],
   },
 ];
 
