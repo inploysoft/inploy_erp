@@ -1,5 +1,6 @@
 'use client';
 
+import { DataTableColumnHeader } from '@/components/common/table/DataTableColumnHeader';
 import { ColumnDef } from '@tanstack/react-table';
 
 // This type is used to define the shape of our data.
@@ -18,7 +19,9 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: 'email',
-    header: 'Email',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email"  />
+    ),
   },
   {
     accessorKey: 'amount',
