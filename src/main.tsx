@@ -1,9 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { Authenticator } from '@aws-amplify/ui-react';
-
 import App from './App.tsx';
+import { InployAuthenticator } from './modules/auth/InployAuthenticator.tsx';
 
 import '@aws-amplify/ui-react/styles.css';
 
@@ -11,8 +10,8 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Authenticator>
+    <InployAuthenticator>
       <App />
-    </Authenticator>
+    </InployAuthenticator>
   </StrictMode>,
 );
