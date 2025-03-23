@@ -22,6 +22,7 @@ const routes: RouteObject[] = [
     element: <SidebarLayout />,
     children: [
       {
+        index: true,
         element: (
           <Suspense fallback={loading}>
             <UserDashboard />
