@@ -1,4 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
+import { postConfirmation } from './post-confirmation/resource';
 
 // https://docs.amplify.aws/react/build-a-backend/auth/concepts/user-attributes/
 export const auth = defineAuth({
@@ -9,6 +10,12 @@ export const auth = defineAuth({
   },
 
   groups: ['ADMINS', 'USERS'],
+
+  triggers: {
+    postConfirmation: postConfirmation,
+  },
+
+  access: (allow) => [allow.resource(postConfirmation).to(['addUserToGroup'])],
 
   userAttributes: {
     email: {

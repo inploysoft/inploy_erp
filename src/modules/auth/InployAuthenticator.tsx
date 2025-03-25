@@ -41,9 +41,9 @@ function CustomFormFields() {
       <CheckboxField
         errorMessage={validationErrors.isAdmin as string}
         hasError={!!validationErrors.isAdmin}
-        name="custom:is_admin"
-        value="yes"
         label="관리자인가요?"
+        name="custom:is_admin"
+        value="true"
       />
 
       <Authenticator.SignUp.FormFields />
