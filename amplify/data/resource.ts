@@ -1,17 +1,27 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
 const schema = a.schema({
-  Todo: a
+  User: a
     .model({
-      content: a.string(),
+      userId: a.id().required(),
+      modules: a.hasMany('Module', 'userId'),
+      company: a.string().required(),
+      email: a.email().required(),
+      isAdmin: a.boolean(),
+      // isAdmin: a.enum(['ADMIN', 'USER']),
     })
-    .authorization((allow) => [allow.guest()]),
+    .identifier(['userId'])
+    .authorization((allow) => [allow.authenticated()]),
+
+  Module: a
+    .model({
+      moduleId: a.id().required(),
+      name: a.enum(['MEMBERSHIP', 'SALES']),
+      userId: a.id(),
+      user: a.belongsTo('User', 'userId'),
+    })
+    .identifier(['moduleId'])
+    .authorization((allow) => [allow.group('ADMINS')]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
