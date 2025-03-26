@@ -1,6 +1,8 @@
 import { Amplify } from 'aws-amplify';
 
 import { env } from '$amplify/env/post-confirmation';
+
+import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';
 import {
   AdminAddUserToGroupCommand,
   CognitoIdentityProviderClient,
@@ -8,10 +10,13 @@ import {
 import { generateClient } from 'aws-amplify/data';
 import type { PostConfirmationTriggerHandler } from 'aws-lambda';
 
-import outputs from '../../../amplify_outputs.json';
 import { type Schema } from '../../data/resource';
 
-Amplify.configure(outputs);
+// https://docs.amplify.aws/react/build-a-backend/data/customize-authz/grant-lambda-function-access-to-api/
+const { resourceConfig, libraryOptions } =
+  await getAmplifyDataClientConfig(env);
+
+Amplify.configure(resourceConfig, libraryOptions);
 
 const authClient = new CognitoIdentityProviderClient();
 
