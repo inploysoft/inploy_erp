@@ -1,28 +1,34 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { postConfirmation } from '../auth/post-confirmation/resource';
 
-const schema = a.schema({
-  User: a
-    .model({
-      userId: a.id().required(),
-      modules: a.hasMany('Module', 'userId'),
-      company: a.string().required(),
-      email: a.email().required(),
-      isAdmin: a.boolean(),
-      // isAdmin: a.enum(['ADMIN', 'USER']),
-    })
-    .identifier(['userId'])
-    .authorization((allow) => [allow.authenticated()]),
+const schema = a
+  .schema({
+    Client: a
+      .model({
+        name: a.string().required(),
+        modules: a.hasMany('Module', 'clientId'),
+        users: a.hasMany('User', 'clientId'),
+      })
+      .authorization((allow) => [allow.authenticated()]),
 
-  Module: a
-    .model({
-      moduleId: a.id().required(),
-      name: a.enum(['MEMBERSHIP', 'SALES']),
-      userId: a.id(),
-      user: a.belongsTo('User', 'userId'),
-    })
-    .identifier(['moduleId'])
-    .authorization((allow) => [allow.group('ADMINS')]),
-});
+    User: a
+      .model({
+        email: a.email().required(),
+        isAdmin: a.boolean(),
+        clientId: a.id(),
+        client: a.belongsTo('Client', 'clientId'),
+      })
+      .authorization((allow) => [allow.authenticated()]),
+
+    Module: a
+      .model({
+        name: a.enum(['MEMBERSHIP', 'SALES']),
+        clientId: a.id(),
+        client: a.belongsTo('Client', 'clientId'),
+      })
+      .authorization((allow) => [allow.group('ADMINS')]),
+  })
+  .authorization((allow) => allow.resource(postConfirmation));
 
 export type Schema = ClientSchema<typeof schema>;
 
