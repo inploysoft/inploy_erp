@@ -31,7 +31,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
 
     // TODO: 20250326 client 추가 필요
     const createUser = await dataClient.models.User.create({
-      clientId: '5f3c9f2e-8b49-4f1a-9d35-c14f5d8bcb6e',
+      clientId: 'c0352be9-e3bd-4c71-82d5-50e354c6faf4',
       email: event.request.userAttributes['email'],
       isAdmin: isAdmin === 'true',
     });
