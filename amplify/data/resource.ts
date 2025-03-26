@@ -1,26 +1,29 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
+  Client: a
+    .model({
+      name: a.string().required(),
+      modules: a.hasMany('Module', 'clientId'),
+      users: a.hasMany('User', 'clientId'),
+    })
+    .authorization((allow) => [allow.authenticated()]),
+
   User: a
     .model({
-      userId: a.id().required(),
-      modules: a.hasMany('Module', 'userId'),
-      company: a.string().required(),
       email: a.email().required(),
       isAdmin: a.boolean(),
-      // isAdmin: a.enum(['ADMIN', 'USER']),
+      clientId: a.id(),
+      client: a.belongsTo('Client', 'clientId'),
     })
-    .identifier(['userId'])
     .authorization((allow) => [allow.authenticated()]),
 
   Module: a
     .model({
-      moduleId: a.id().required(),
       name: a.enum(['MEMBERSHIP', 'SALES']),
-      userId: a.id(),
-      user: a.belongsTo('User', 'userId'),
+      clientId: a.id(),
+      client: a.belongsTo('Client', 'clientId'),
     })
-    .identifier(['moduleId'])
     .authorization((allow) => [allow.group('ADMINS')]),
 });
 

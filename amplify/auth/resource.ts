@@ -9,7 +9,7 @@ export const auth = defineAuth({
     phone: true,
   },
 
-  groups: ['ADMINS', 'USERS'],
+  groups: ['ADMINS', 'EMPLOYEES'],
 
   triggers: {
     postConfirmation: postConfirmation,
