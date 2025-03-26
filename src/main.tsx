@@ -11,6 +11,7 @@ import '@aws-amplify/ui-react/styles.css';
 
 import './index.css';
 
+// https://docs.amplify.aws/react/build-a-backend/data/connect-to-API/#configure-the-amplify-library
 Amplify.configure(outputs);
 
 createRoot(document.getElementById('root')!).render(
