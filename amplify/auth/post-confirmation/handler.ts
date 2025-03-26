@@ -1,3 +1,5 @@
+import { Amplify } from 'aws-amplify';
+
 import { env } from '$amplify/env/post-confirmation';
 import {
   AdminAddUserToGroupCommand,
@@ -6,7 +8,10 @@ import {
 import { generateClient } from 'aws-amplify/data';
 import type { PostConfirmationTriggerHandler } from 'aws-lambda';
 
+import outputs from '../../../amplify_outputs.json';
 import { type Schema } from '../../data/resource';
+
+Amplify.configure(outputs);
 
 const authClient = new CognitoIdentityProviderClient();
 
