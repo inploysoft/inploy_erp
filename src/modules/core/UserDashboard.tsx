@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { H1, H2, H3 } from '@/theme/Typography';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
-export function Main() {
+export function UserDashboard() {
   const { signOut } = useAuthenticator();
 
   return (
