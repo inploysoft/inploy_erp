@@ -1,7 +1,6 @@
-import * as React from 'react';
+import { ComponentProps } from 'react';
 
 import { SearchForm } from '@/components/common/SearchForm';
-import { VersionSwitcher } from '@/components/common/VersionSwitcher';
 import {
   Sidebar,
   SidebarContent,
@@ -15,56 +14,32 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 
-interface NavItem {
-  title: string;
-  url: string;
-  isActive?: boolean;
-}
+import { sideBarMenus } from '@/constants/sidebar';
+import { SidebarLayoutProps } from '@/types/global';
 
-interface NavMain {
-  title: string;
-  url: string;
-  items: NavItem[];
-}
+type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-interface SideBarData {
-  versions: string[];
-  navMain: NavMain[];
-}
+export function AppSidebar({ module, ...props }: AppSidebarProps) {
+  const menus = sideBarMenus[module];
 
-// This is sample data.
-const data: SideBarData = {
-  versions: ['1.0.0', '1.1.0-alpha', '2.0.0-beta1'],
-  navMain: [
-    {
-      title: 'Getting Started',
-      url: '#',
-      items: [
-        {
-          title: '회원 관리',
-          url: 'user',
-          isActive: true,
-        },
-      ],
-    },
-  ],
-};
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
+      <a href="/">
+        <header className="flex h-16 items-center gap-2 border-b px-6">
+          {/* 20250328 회사 로고 추가 */}
+          <h1>Inploy</h1>
+        </header>
+      </a>
+
       <SidebarHeader>
-        <VersionSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
-        />
         <SearchForm />
       </SidebarHeader>
+
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
+        {menus.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+
             <SidebarGroupContent>
               <SidebarMenu>
                 {item.items.map((item) => (
@@ -79,6 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   );
