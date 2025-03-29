@@ -1,0 +1,21 @@
+# Ignore artifacts:
+build
+coverage
+
+# Ignore all HTML files:
+**/*.html
+
+# Default ignore files:
+**/.git
+**/.github
+**/.svn
+**/.hg
+**/node_modules
+
+#
+**/.amplify
+amplify_outputs*
+amplifyconfiguration*
+
+**/.husky
+**/dist
