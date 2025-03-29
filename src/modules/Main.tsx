@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+import { H1, H2, H3 } from '@/theme/Typography';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
 export function Main() {
@@ -5,9 +7,13 @@ export function Main() {
 
   return (
     <>
-      <h1>Main</h1>
+      <H1>Main</H1>
 
-      <button onClick={signOut}>Sign out</button>
+      <H2>메인</H2>
+
+      <H3>Main</H3>
+
+      <Button onClick={signOut}>Sign out</Button>
     </>
   );
 }

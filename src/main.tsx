@@ -9,7 +9,7 @@ import { InployAuthenticator } from './modules/auth/InployAuthenticator';
 
 import '@aws-amplify/ui-react/styles.css';
 
-import './index.css';
+import './theme/index.css';
 
 // https://docs.amplify.aws/react/build-a-backend/data/connect-to-API/#configure-the-amplify-library
 Amplify.configure(outputs);
