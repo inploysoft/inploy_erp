@@ -40,8 +40,8 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     console.log('processed', response.$metadata.requestId);
 
     // TODO: 20250326 client 추가 필요
-    const createUser = await dataClient.models.User.create({
-      clientId: 'c0352be9-e3bd-4c71-82d5-50e354c6faf4',
+    const createUser = await dataClient.models.CompanyUser.create({
+      companyId: 'c0352be9-e3bd-4c71-82d5-50e354c6faf4',
       email: event.request.userAttributes['email'],
       isAdmin: isAdmin === 'true',
     });
