@@ -1,5 +1,3 @@
-import { Outlet } from 'react-router';
-
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
 import { AppSidebar } from '@/components/common/AppSidebar';
@@ -7,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
 import { SidebarLayoutProps } from '@/types/global';
+import { Outlet } from 'react-router';
 
 export function SidebarLayout({ module }: SidebarLayoutProps) {
   const { signOut } = useAuthenticator();
@@ -20,7 +19,7 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
 
           <Separator orientation="vertical" className="mr-2 h-4" />
 
-          <div className="flex items-center justify-between w-full">
+          <div className="flex w-full items-center justify-between">
             <h1>User Dashboard</h1>
 
             <button onClick={signOut}>Sign out</button>
