@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { H1, H2, H3 } from '@/theme/Typography';
-import { useAuthenticator } from '@aws-amplify/ui-react';
+import { H1, H2 } from '@/theme/Typography';
 
 export function UserDashboard() {
   return (
@@ -9,9 +7,7 @@ export function UserDashboard() {
 
       <H2>메인</H2>
 
-      <H3>Main</H3>
-
-      <Button onClick={signOut}>Sign out</Button>
+      {/* <H3>Main</H3> */}
     </>
   );
 }
