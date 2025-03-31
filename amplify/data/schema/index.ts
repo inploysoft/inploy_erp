@@ -6,6 +6,7 @@ import { CompanyUserModel } from './companyUser';
 import { MemberModel } from './entities';
 import { EntityFieldSchemaModel } from './entityFieldSchema';
 import { ModuleModel } from './module';
+import { ModuleInstanceModel } from './moduleInstance';
 import { PurchasedModuleModel } from './purchasedModule';
 
 export const schema = a
@@ -23,7 +24,11 @@ export const schema = a
     Module: ModuleModel.authorization((allow) => [allow.group('ADMINS')]),
 
     PurchasedModule: PurchasedModuleModel.authorization((allow) => [
-      allow.group('ADMINS'), // 관리자만 가능
+      allow.group('ADMINS'),
+    ]),
+
+    ModuleInstance: ModuleInstanceModel.authorization((allow) => [
+      allow.group('ADMINS'),
     ]),
 
     EntityFieldSchema: EntityFieldSchemaModel.authorization((allow) => [
@@ -31,6 +36,9 @@ export const schema = a
     ]),
 
     // Entity tables
-    Member: MemberModel.authorization((allow) => [allow.authenticated()]),
+    Member: MemberModel.authorization((allow) => [
+      allow.authenticated().to(['read', 'create', 'update']),
+      allow.group('ADMINS').to(['delete']),
+    ]),
   })
   .authorization((allow) => allow.resource(postConfirmation));
