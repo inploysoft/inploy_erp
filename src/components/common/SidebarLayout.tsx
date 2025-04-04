@@ -2,7 +2,10 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 
 import { AppSidebar } from '@/components/common/AppSidebar';
 import { Separator } from '@/components/ui/separator';
-import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import {
+  SidebarInset,
+  SidebarTrigger,
+} from '@/components/ui/inploy/SimpleSidebar';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
 import { SidebarLayoutProps } from '@/types/global';
 import { Outlet } from 'react-router';
