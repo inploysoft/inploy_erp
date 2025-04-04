@@ -1,13 +1,14 @@
 import { a } from '@aws-amplify/backend';
 
-import { postConfirmation } from '../../auth/post-confirmation/resource';
-import { CompanyModel } from './company';
-import { CompanyUserModel } from './companyUser';
-import { MemberModel } from './entities';
-import { EntityFieldSchemaModel } from './entityFieldSchema';
-import { ModuleModel } from './module';
-import { ModuleInstanceModel } from './moduleInstance';
-import { PurchasedModuleModel } from './purchasedModule';
+import { postConfirmation } from '../auth/post-confirmation/resource';
+import { fetchPurchasedModules } from '../functions/fetchPurchasedModules/resource';
+import { CompanyModel } from './schema/company';
+import { CompanyUserModel } from './schema/companyUser';
+import { MemberModel } from './schema/entities';
+import { EntityFieldSchemaModel } from './schema/entityFieldSchema';
+import { ModuleModel } from './schema/module';
+import { ModuleInstanceModel } from './schema/moduleInstance';
+import { PurchasedModuleModel } from './schema/purchasedModule';
 
 export const schema = a
   .schema({
@@ -40,5 +41,15 @@ export const schema = a
       allow.authenticated().to(['read', 'create', 'update']),
       allow.group('ADMINS').to(['delete']),
     ]),
+
+    // Custom functions
+    fetchPurchasedModules: a
+      .query()
+      .arguments({
+        sub: a.string(),
+      })
+      .returns(a.json().array())
+      .authorization((allow) => [allow.group('ADMINS')])
+      .handler(a.handler.function(fetchPurchasedModules)),
   })
   .authorization((allow) => allow.resource(postConfirmation));
