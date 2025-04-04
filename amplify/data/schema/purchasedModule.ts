@@ -10,7 +10,7 @@ export const PurchasedModuleModel = a.model({
   //
   company: a.belongsTo('Company', 'companyId'),
   module: a.belongsTo('Module', 'moduleId'),
-  moduleInstanceIds: a.hasOne('ModuleInstance', 'purchasedModuleId'),
+  moduleInstanceId: a.hasOne('ModuleInstance', 'purchasedModuleId'),
 });
 
 /* status
