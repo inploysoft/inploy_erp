@@ -1,4 +1,4 @@
-import { Module } from '@/types/global';
+import { NavBreadCrumb, NavMenu } from '@/types/global';
 
 export const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 
@@ -13,187 +13,51 @@ export const SIDEBAR_WIDTH_ICON = '3rem';
 export const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
 //
-interface NavItem {
-  title: string;
-  url: string;
-  isActive?: boolean;
-}
 
-export interface SideBarData {
-  title?: string;
-  url?: string;
-  items: NavItem[];
-}
+export const navBreadCrumb: NavBreadCrumb = {
+  menu: '기본 모듈',
+  menuItem: '대시 보드',
+};
 
-export const coreSideBarData: SideBarData[] = [
-  // {
-  //   title: '',
-  //   url: '#',
-  //   items: [
-  //     {
-  //       title: '대시보드',
-  //       url: '/',
-  //     },
-  //   ],
-  // },
+export const coreSideBarData: NavMenu[] = [
   {
-    title: '설정',
-    url: '#',
+    title: '기본 모듈',
+    url: '/',
     items: [
       {
+        title: '대시보드',
+        url: '/',
+      },
+      {
         title: '모듈 설정',
-        url: 'module',
-        // isActive: true,
+        url: '/module',
+      },
+      {
+        title: '회사 정보',
+        url: '/company',
+      },
+      {
+        title: '직원 관리',
+        url: '/employee',
       },
     ],
   },
 ];
 
-//
-type SideBarMenus = Record<Module, SideBarData[]>;
-
-export const sideBarMenus: SideBarMenus = {
-  auth: [],
-  core: coreSideBarData,
-  membership: [],
-};
-
-export const navData = {
-  navMain: [
-    {
-      title: 'Getting Started',
-      url: '#',
-      items: [
-        {
-          title: 'Installation',
-          url: '#',
-        },
-        {
-          title: 'Project Structure',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Building Your Application',
-      url: '#',
-      items: [
-        {
-          title: 'Routing',
-          url: '#',
-        },
-        {
-          title: 'Data Fetching',
-          url: '#',
-          isActive: true,
-        },
-        {
-          title: 'Rendering',
-          url: '#',
-        },
-        {
-          title: 'Caching',
-          url: '#',
-        },
-        {
-          title: 'Styling',
-          url: '#',
-        },
-        {
-          title: 'Optimizing',
-          url: '#',
-        },
-        {
-          title: 'Configuring',
-          url: '#',
-        },
-        {
-          title: 'Testing',
-          url: '#',
-        },
-        {
-          title: 'Authentication',
-          url: '#',
-        },
-        {
-          title: 'Deploying',
-          url: '#',
-        },
-        {
-          title: 'Upgrading',
-          url: '#',
-        },
-        {
-          title: 'Examples',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'API Reference',
-      url: '#',
-      items: [
-        {
-          title: 'Components',
-          url: '#',
-        },
-        {
-          title: 'File Conventions',
-          url: '#',
-        },
-        {
-          title: 'Functions',
-          url: '#',
-        },
-        {
-          title: 'next.config.js Options',
-          url: '#',
-        },
-        {
-          title: 'CLI',
-          url: '#',
-        },
-        {
-          title: 'Edge Runtime',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Architecture',
-      url: '#',
-      items: [
-        {
-          title: 'Accessibility',
-          url: '#',
-        },
-        {
-          title: 'Fast Refresh',
-          url: '#',
-        },
-        {
-          title: 'Next.js Compiler',
-          url: '#',
-        },
-        {
-          title: 'Supported Browsers',
-          url: '#',
-        },
-        {
-          title: 'Turbopack',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Community',
-      url: '#',
-      items: [
-        {
-          title: 'Contribution Guide',
-          url: '#',
-        },
-      ],
-    },
-  ],
-};
+export const memberManagementSideBarData: NavMenu[] = [
+  {
+    title: '회원 모듈',
+    url: 'member',
+    items: [
+      {
+        title: '회원 관리',
+        url: '/member',
+        isActive: true,
+      },
+      {
+        title: '이용권 관리',
+        url: '/member/session',
+      },
+    ],
+  },
+];

@@ -1,9 +1,9 @@
 import { H2 } from '@/theme/Typography';
 
-export function UserDashboard() {
+export function Session() {
   return (
     <>
-      <H2>대시보드</H2>
+      <H2>이용권 관리</H2>
     </>
   );
 }

@@ -1,7 +1,9 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { Outlet } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../amplify/data/resource';
 
 import { AppSidebar } from '@/components/common/AppSidebar';
 import {
@@ -14,11 +16,83 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { navBreadCrumb } from '@/constants/sidebar';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
-import { SidebarLayoutProps } from '@/types/global';
+import { NavBreadCrumb } from '@/types/global';
+import { FetchPurchasedModule, selectionSet } from '@/types/responseTypes';
 
-export function SidebarLayout({ module }: SidebarLayoutProps) {
-  const { signOut } = useAuthenticator();
+const client = generateClient<Schema>();
+
+export function SidebarLayout() {
+  const { user, signOut } = useAuthenticator();
+
+  //
+  const [purchasedModules, setPurchasedModules] = useState<
+    FetchPurchasedModule[]
+  >([]);
+
+  const [navMenus, setNavMenus] = useState<NavBreadCrumb>(navBreadCrumb);
+
+  useEffect(() => {
+    const handler = async () => {
+      const { data: companyUser, errors: companyUserErrors } =
+        await client.models.CompanyUser.list({
+          authMode: 'userPool',
+          filter: {
+            sub: { eq: user.userId },
+          },
+        });
+
+      if (companyUserErrors || !companyUser[0].companyId) {
+        console.log('FetchCompanyUserError: ', companyUserErrors);
+
+        return;
+      }
+
+      const { data: company, errors: companyErrors } =
+        await client.models.Company.get(
+          {
+            id: companyUser[0].companyId,
+          },
+          {
+            authMode: 'userPool',
+          },
+        );
+
+      if (companyErrors || !company?.purchasedModuleId) {
+        console.log('FetchCompanyError: ', companyErrors);
+        return;
+      }
+
+      const { data: purchasedModules, errors: purchasedModuleErrors } =
+        await client.models.PurchasedModule.list({
+          authMode: 'userPool',
+          filter: {
+            companyId: { eq: companyUser[0].companyId! },
+          },
+          selectionSet: selectionSet,
+        });
+
+      if (purchasedModuleErrors) {
+        console.log('FetchPurchaseError: ', purchasedModuleErrors);
+
+        return;
+      }
+
+      console.log(purchasedModules);
+
+      setPurchasedModules(purchasedModules);
+    };
+
+    void handler();
+  }, [user]);
+
+  const handleNavMenu = useCallback((menu: string, menuItem: string) => {
+    setNavMenus({
+      menu: menu,
+      menuItem: menuItem,
+    });
+  }, []);
 
   return (
     <SidebarProvider
@@ -28,7 +102,10 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
         } as CSSProperties
       }
     >
-      <AppSidebar module={module} />
+      <AppSidebar
+        purchasedModules={purchasedModules}
+        onSendNavMenus={handleNavMenu}
+      />
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
@@ -40,15 +117,13 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">{navMenus.menu}</BreadcrumbLink>
                 </BreadcrumbItem>
 
                 <BreadcrumbSeparator className="hidden md:block" />
 
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>{navMenus.menuItem}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

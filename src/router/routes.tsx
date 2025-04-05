@@ -1,11 +1,11 @@
-import { Suspense } from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router';
 
 import { SidebarLayout } from '@/components/common/SidebarLayout';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
-import { MemberDashboard } from '@/modules/membership/MemberDashboard';
-import { Module } from '@/types/global';
+import { Member } from '@/modules/member-management/Member';
+import { Session } from '@/modules/member-management/Session';
+import { Suspense } from 'react';
 
 // TODO: 20250322 Create loading component
 const loading = <div>Loading...</div>;
@@ -13,7 +13,7 @@ const loading = <div>Loading...</div>;
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <SidebarLayout module={Module.Core} />,
+    element: <SidebarLayout />,
     children: [
       {
         index: true,
@@ -35,13 +35,21 @@ const routes: RouteObject[] = [
   },
   {
     path: 'member',
-    element: <SidebarLayout module={Module.Membership} />,
+    element: <SidebarLayout />,
     children: [
       {
         index: true,
         element: (
           <Suspense fallback={loading}>
-            <MemberDashboard />
+            <Member />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'session',
+        element: (
+          <Suspense fallback={loading}>
+            <Session />
           </Suspense>
         ),
       },
