@@ -20,7 +20,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-import { navData, sideBarMenus } from '@/constants/sidebar';
+import { sideBarMenus } from '@/constants/sidebar';
 import { SidebarLayoutProps } from '@/types/global';
 import { ChevronRight } from 'lucide-react';
 
@@ -43,7 +43,7 @@ export function AppSidebar({ module, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        {navData.navMain.map((item) => (
+        {menus.map((item) => (
           <Collapsible
             key={item.title}
             title={item.title}
