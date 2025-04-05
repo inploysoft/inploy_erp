@@ -3,7 +3,7 @@ import { tableMock } from '@/constants/mock';
 
 import { columns } from './columns';
 
-export function UserDashboard() {
+export function MemberDashboard() {
   return (
     <>
       <DataTable columns={columns} data={tableMock} />

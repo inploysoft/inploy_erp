@@ -1,4 +1,4 @@
-import React from 'react';
+import { createContext } from 'react';
 
 export type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
@@ -10,6 +10,4 @@ export type SidebarContextProps = {
   toggleSidebar: () => void;
 };
 
-export const SidebarContext = React.createContext<SidebarContextProps | null>(
-  null,
-);
+export const SidebarContext = createContext<SidebarContextProps | null>(null);

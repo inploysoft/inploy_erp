@@ -39,9 +39,10 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     console.log(`User ${event.userName} added to ${groupName} group`);
     console.log('processed', response.$metadata.requestId);
 
-    // TODO: 20250326 client 추가 필요
-    const createUser = await dataClient.models.User.create({
-      clientId: 'c0352be9-e3bd-4c71-82d5-50e354c6faf4',
+    // TODO: 20250326 하드코딩 수정 필요
+    const createUser = await dataClient.models.CompanyUser.create({
+      sub: event.request.userAttributes['sub'],
+      companyId: 'd9244152-3bbd-4a02-938f-86e561ec9d8b',
       email: event.request.userAttributes['email'],
       isAdmin: isAdmin === 'true',
     });

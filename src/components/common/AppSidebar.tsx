@@ -1,7 +1,6 @@
-import * as React from 'react';
+import { ComponentProps } from 'react';
 
 import { SearchForm } from '@/components/common/SearchForm';
-import { VersionSwitcher } from '@/components/common/VersionSwitcher';
 import {
   Sidebar,
   SidebarContent,
@@ -15,70 +14,74 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 
-interface NavItem {
-  title: string;
-  url: string;
-  isActive?: boolean;
-}
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
-interface NavMain {
-  title: string;
-  url: string;
-  items: NavItem[];
-}
+import { sideBarMenus } from '@/constants/sidebar';
+import { SidebarLayoutProps } from '@/types/global';
+import { ChevronRight } from 'lucide-react';
 
-interface SideBarData {
-  versions: string[];
-  navMain: NavMain[];
-}
+type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-// This is sample data.
-const data: SideBarData = {
-  versions: ['1.0.0', '1.1.0-alpha', '2.0.0-beta1'],
-  navMain: [
-    {
-      title: 'Getting Started',
-      url: '#',
-      items: [
-        {
-          title: '회원 관리',
-          url: 'user',
-          isActive: true,
-        },
-      ],
-    },
-  ],
-};
+export function AppSidebar({ module, ...props }: AppSidebarProps) {
+  const menus = sideBarMenus[module];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar {...props}>
-      <SidebarHeader>
-        <VersionSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
-        />
+    <Sidebar variant="floating" {...props}>
+      <a href="/">
+        <header className="flex h-16 items-center gap-2 border-b px-6">
+          {/* 20250328 회사 로고 추가 */}
+          <h1>Inploy</h1>
+        </header>
+      </a>
+
+      <SidebarHeader {...props}>
         <SearchForm />
       </SidebarHeader>
+
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild={true} isActive={item.isActive}>
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+        {menus.map((item) => (
+          <Collapsible
+            key={item.title}
+            title={item.title}
+            defaultOpen
+            className="group/collapsible"
+          >
+            <SidebarGroup key={item.title}>
+              <SidebarGroupLabel
+                asChild
+                className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
+              >
+                <CollapsibleTrigger>
+                  {item.title}{' '}
+                  <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                </CollapsibleTrigger>
+              </SidebarGroupLabel>
+
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {item.items.map((item) => (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild={true}
+                          isActive={item.isActive}
+                        >
+                          <a href={item.url}>{item.title}</a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
         ))}
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   );
