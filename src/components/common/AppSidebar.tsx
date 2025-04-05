@@ -1,6 +1,14 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
+import { Link } from 'react-router';
+
+import { ChevronRight } from 'lucide-react';
 
 import { SearchForm } from '@/components/common/SearchForm';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
@@ -13,21 +21,20 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-
-import { sideBarMenus } from '@/constants/sidebar';
+import { NavMenu } from '@/constants/sidebar';
+import { createNavMenus } from '@/lib/utils';
 import { SidebarLayoutProps } from '@/types/global';
-import { ChevronRight } from 'lucide-react';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-export function AppSidebar({ module, ...props }: AppSidebarProps) {
-  const menus = sideBarMenus[module];
+export function AppSidebar({ purchasedModules, ...props }: AppSidebarProps) {
+  const [navMenus, setNavMenus] = useState<NavMenu[]>([]);
+
+  useEffect(() => {
+    const result = createNavMenus(purchasedModules);
+
+    setNavMenus(result);
+  }, [purchasedModules]);
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -43,7 +50,7 @@ export function AppSidebar({ module, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        {menus.map((item) => (
+        {navMenus.map((item) => (
           <Collapsible
             key={item.title}
             title={item.title}
@@ -70,7 +77,7 @@ export function AppSidebar({ module, ...props }: AppSidebarProps) {
                           asChild={true}
                           isActive={item.isActive}
                         >
-                          <a href={item.url}>{item.title}</a>
+                          <Link to={item.url}>{item.title}</Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}

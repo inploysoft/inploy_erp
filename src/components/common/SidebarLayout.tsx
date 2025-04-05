@@ -1,7 +1,9 @@
-import { CSSProperties, useEffect } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { Outlet } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../amplify/data/resource';
 
 import { AppSidebar } from '@/components/common/AppSidebar';
 import {
@@ -15,16 +17,15 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
-import { SidebarLayoutProps } from '@/types/global';
-
 import { FetchPurchasedModule, selectionSet } from '@/types/responseTypes';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../amplify/data/resource';
 
 const client = generateClient<Schema>();
 
-export function SidebarLayout({ module }: SidebarLayoutProps) {
+export function SidebarLayout() {
   const { user, signOut } = useAuthenticator();
+  const [purchasedModules, setPurchasedModules] = useState<
+    FetchPurchasedModule[]
+  >([]);
 
   useEffect(() => {
     const handler = async () => {
@@ -38,7 +39,8 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
 
       if (companyUserErrors || !companyUser[0].companyId) {
         console.log('FetchCompanyUserError: ', companyUserErrors);
-        return null;
+
+        return;
       }
 
       const { data: company, errors: companyErrors } =
@@ -53,10 +55,10 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
 
       if (companyErrors || !company?.purchasedModuleId) {
         console.log('FetchCompanyError: ', companyErrors);
-        return null;
+        return;
       }
 
-      const { data: purchasedModule, errors: purchasedModuleErrors } =
+      const { data: purchasedModules, errors: purchasedModuleErrors } =
         await client.models.PurchasedModule.list({
           authMode: 'userPool',
           filter: {
@@ -67,10 +69,13 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
 
       if (purchasedModuleErrors) {
         console.log('FetchPurchaseError: ', purchasedModuleErrors);
-        return null;
+
+        return;
       }
 
-      return purchasedModule as FetchPurchasedModule[];
+      console.log(purchasedModules);
+
+      setPurchasedModules(purchasedModules);
     };
 
     void handler();
@@ -84,7 +89,7 @@ export function SidebarLayout({ module }: SidebarLayoutProps) {
         } as CSSProperties
       }
     >
-      <AppSidebar module={module} />
+      <AppSidebar purchasedModules={purchasedModules} />
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
