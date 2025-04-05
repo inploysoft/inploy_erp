@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useEffect } from 'react';
 import { Outlet } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -17,8 +17,64 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
 import { SidebarLayoutProps } from '@/types/global';
 
+import { FetchPurchasedModule, selectionSet } from '@/types/responseTypes';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../amplify/data/resource';
+
+const client = generateClient<Schema>();
+
 export function SidebarLayout({ module }: SidebarLayoutProps) {
-  const { signOut } = useAuthenticator();
+  const { user, signOut } = useAuthenticator();
+
+  useEffect(() => {
+    const handler = async () => {
+      const { data: companyUser, errors: companyUserErrors } =
+        await client.models.CompanyUser.list({
+          authMode: 'userPool',
+          filter: {
+            sub: { eq: user.userId },
+          },
+        });
+
+      if (companyUserErrors || !companyUser[0].companyId) {
+        console.log('FetchCompanyUserError: ', companyUserErrors);
+        return null;
+      }
+
+      const { data: company, errors: companyErrors } =
+        await client.models.Company.get(
+          {
+            id: companyUser[0].companyId,
+          },
+          {
+            authMode: 'userPool',
+          },
+        );
+
+      if (companyErrors || !company?.purchasedModuleId) {
+        console.log('FetchCompanyError: ', companyErrors);
+        return null;
+      }
+
+      const { data: purchasedModule, errors: purchasedModuleErrors } =
+        await client.models.PurchasedModule.list({
+          authMode: 'userPool',
+          filter: {
+            companyId: { eq: companyUser[0].companyId! },
+          },
+          selectionSet: selectionSet,
+        });
+
+      if (purchasedModuleErrors) {
+        console.log('FetchPurchaseError: ', purchasedModuleErrors);
+        return null;
+      }
+
+      return purchasedModule as FetchPurchasedModule[];
+    };
+
+    void handler();
+  }, [user]);
 
   return (
     <SidebarProvider
