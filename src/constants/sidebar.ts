@@ -18,20 +18,23 @@ interface NavItem {
 }
 
 export interface NavMenu {
-  title?: string;
+  title: string;
   url?: string;
   items: NavItem[];
 }
 
 export const coreSideBarData: NavMenu[] = [
   {
-    title: '설정',
+    title: '기본 모듈',
     url: '/',
     items: [
       {
+        title: '대시보드',
+        url: '/',
+      },
+      {
         title: '모듈 설정',
-        url: 'module',
-        // isActive: true,
+        url: '/module',
       },
       {
         title: '회사 정보',

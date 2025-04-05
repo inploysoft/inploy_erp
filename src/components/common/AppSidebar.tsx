@@ -1,5 +1,5 @@
-import { ComponentProps, useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { ComponentProps, useCallback, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router';
 
 import { ChevronRight } from 'lucide-react';
 
@@ -21,21 +21,34 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { NavMenu } from '@/constants/sidebar';
 import { createNavMenus } from '@/lib/utils';
 import { SidebarLayoutProps } from '@/types/global';
-import { Skeleton } from '../ui/skeleton';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-export function AppSidebar({ purchasedModules, ...props }: AppSidebarProps) {
+export function AppSidebar({
+  purchasedModules,
+  onSendNavMenus,
+  ...props
+}: AppSidebarProps) {
+  const location = useLocation();
+
   const [navMenus, setNavMenus] = useState<NavMenu[]>([]);
 
   useEffect(() => {
     const result = createNavMenus(purchasedModules);
 
     setNavMenus(result);
-  }, [navMenus.length, purchasedModules]);
+  }, [onSendNavMenus, purchasedModules]);
+
+  const handleClickMenu = useCallback(
+    (menu: string, menuItem: string) => () => {
+      onSendNavMenus(menu, menuItem);
+    },
+    [onSendNavMenus],
+  );
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -54,20 +67,20 @@ export function AppSidebar({ purchasedModules, ...props }: AppSidebarProps) {
         {navMenus.length === 1 ? (
           <Skeleton />
         ) : (
-          navMenus.map((item) => (
+          navMenus.map((menu) => (
             <Collapsible
-              key={item.title}
-              title={item.title}
+              key={menu.title}
+              title={menu.title}
               defaultOpen
               className="group/collapsible"
             >
-              <SidebarGroup key={item.title}>
+              <SidebarGroup key={menu.title}>
                 <SidebarGroupLabel
                   asChild
                   className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
                 >
                   <CollapsibleTrigger>
-                    {item.title}{' '}
+                    {menu.title}{' '}
                     <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                   </CollapsibleTrigger>
                 </SidebarGroupLabel>
@@ -75,11 +88,14 @@ export function AppSidebar({ purchasedModules, ...props }: AppSidebarProps) {
                 <CollapsibleContent>
                   <SidebarGroupContent>
                     <SidebarMenu>
-                      {item.items.map((item) => (
-                        <SidebarMenuItem key={item.title}>
+                      {menu.items.map((item) => (
+                        <SidebarMenuItem
+                          key={item.title}
+                          onClick={handleClickMenu(menu.title, item.title)}
+                        >
                           <SidebarMenuButton
                             asChild={true}
-                            isActive={item.isActive}
+                            isActive={location.pathname === item.url}
                           >
                             <Link to={item.url}>{item.title}</Link>
                           </SidebarMenuButton>

@@ -10,4 +10,5 @@ export enum InployModules {
 
 export interface SidebarLayoutProps {
   purchasedModules: FetchPurchasedModule[];
+  onSendNavMenus: (menu: string, MenuItem: string) => void;
 }

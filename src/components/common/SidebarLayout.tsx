@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from 'react';
+import { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { Outlet } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -23,9 +23,16 @@ const client = generateClient<Schema>();
 
 export function SidebarLayout() {
   const { user, signOut } = useAuthenticator();
+
+  //
   const [purchasedModules, setPurchasedModules] = useState<
     FetchPurchasedModule[]
   >([]);
+
+  const [navMenus, setNavMenus] = useState({
+    menu: '기본 모듈',
+    menuItem: '대시 보드',
+  });
 
   useEffect(() => {
     const handler = async () => {
@@ -81,6 +88,13 @@ export function SidebarLayout() {
     void handler();
   }, [user]);
 
+  const handleNavMenu = useCallback((menu: string, menuItem: string) => {
+    setNavMenus({
+      menu: menu,
+      menuItem: menuItem,
+    });
+  }, []);
+
   return (
     <SidebarProvider
       style={
@@ -89,7 +103,10 @@ export function SidebarLayout() {
         } as CSSProperties
       }
     >
-      <AppSidebar purchasedModules={purchasedModules} />
+      <AppSidebar
+        purchasedModules={purchasedModules}
+        onSendNavMenus={handleNavMenu}
+      />
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
@@ -101,15 +118,13 @@ export function SidebarLayout() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">{navMenus.menu}</BreadcrumbLink>
                 </BreadcrumbItem>
 
                 <BreadcrumbSeparator className="hidden md:block" />
 
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>{navMenus.menuItem}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
