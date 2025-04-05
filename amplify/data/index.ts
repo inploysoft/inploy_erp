@@ -2,6 +2,7 @@ import { a } from '@aws-amplify/backend';
 
 import { postConfirmation } from '../auth/post-confirmation/resource';
 import { fetchPurchasedModules } from '../functions/fetchPurchasedModules/resource';
+import { sayHello } from '../functions/say-hello/resource';
 import { CompanyModel } from './schema/company';
 import { CompanyUserModel } from './schema/companyUser';
 import { MemberModel } from './schema/entities';
@@ -51,5 +52,14 @@ export const schema = a
       .returns(a.json().array())
       .authorization((allow) => [allow.group('ADMINS')])
       .handler(a.handler.function(fetchPurchasedModules)),
+
+    sayHello: a
+      .query()
+      .arguments({
+        name: a.string(),
+      })
+      .returns(a.string())
+      .authorization((allow) => [allow.authenticated()])
+      .handler(a.handler.function(sayHello)),
   })
   .authorization((allow) => allow.resource(postConfirmation));
