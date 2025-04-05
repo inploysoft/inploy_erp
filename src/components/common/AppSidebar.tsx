@@ -1,6 +1,14 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useCallback, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router';
+
+import { ChevronRight } from 'lucide-react';
 
 import { SearchForm } from '@/components/common/SearchForm';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
@@ -13,21 +21,33 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-
-import { sideBarMenus } from '@/constants/sidebar';
-import { SidebarLayoutProps } from '@/types/global';
-import { ChevronRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { createNavMenus } from '@/lib/utils';
+import { NavMenu, SidebarLayoutProps } from '@/types/global';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-export function AppSidebar({ module, ...props }: AppSidebarProps) {
-  const menus = sideBarMenus[module];
+export function AppSidebar({
+  purchasedModules,
+  onSendNavMenus,
+  ...props
+}: AppSidebarProps) {
+  const location = useLocation();
+
+  const [navMenus, setNavMenus] = useState<NavMenu[]>([]);
+
+  useEffect(() => {
+    const result = createNavMenus(purchasedModules);
+
+    setNavMenus(result);
+  }, [onSendNavMenus, purchasedModules]);
+
+  const handleClickMenu = useCallback(
+    (menu: string, menuItem: string) => () => {
+      onSendNavMenus(menu, menuItem);
+    },
+    [onSendNavMenus],
+  );
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -43,43 +63,50 @@ export function AppSidebar({ module, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        {menus.map((item) => (
-          <Collapsible
-            key={item.title}
-            title={item.title}
-            defaultOpen
-            className="group/collapsible"
-          >
-            <SidebarGroup key={item.title}>
-              <SidebarGroupLabel
-                asChild
-                className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
-              >
-                <CollapsibleTrigger>
-                  {item.title}{' '}
-                  <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                </CollapsibleTrigger>
-              </SidebarGroupLabel>
+        {navMenus.length === 1 ? (
+          <Skeleton />
+        ) : (
+          navMenus.map((menu) => (
+            <Collapsible
+              key={menu.title}
+              title={menu.title}
+              defaultOpen
+              className="group/collapsible"
+            >
+              <SidebarGroup key={menu.title}>
+                <SidebarGroupLabel
+                  asChild
+                  className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
+                >
+                  <CollapsibleTrigger>
+                    {menu.title}{' '}
+                    <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
 
-              <CollapsibleContent>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {item.items.map((item) => (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild={true}
-                          isActive={item.isActive}
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {menu.items.map((item) => (
+                        <SidebarMenuItem
+                          key={item.title}
+                          onClick={handleClickMenu(menu.title, item.title)}
                         >
-                          <a href={item.url}>{item.title}</a>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </CollapsibleContent>
-            </SidebarGroup>
-          </Collapsible>
-        ))}
+                          <SidebarMenuButton
+                            asChild={true}
+                            isActive={location.pathname === item.url}
+                          >
+                            <Link to={item.url}>{item.title}</Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+          ))
+        )}
       </SidebarContent>
 
       <SidebarRail />
