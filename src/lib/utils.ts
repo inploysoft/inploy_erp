@@ -4,9 +4,8 @@ import { twMerge } from 'tailwind-merge';
 import {
   coreSideBarData,
   memberManagementSideBarData,
-  NavMenu,
 } from '@/constants/sidebar';
-import { InployModules } from '@/types/global';
+import { InployModules, NavMenu } from '@/types/global';
 import { FetchPurchasedModule } from '@/types/responseTypes';
 
 export function cn(...inputs: ClassValue[]) {

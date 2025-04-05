@@ -22,9 +22,8 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { NavMenu } from '@/constants/sidebar';
 import { createNavMenus } from '@/lib/utils';
-import { SidebarLayoutProps } from '@/types/global';
+import { NavMenu, SidebarLayoutProps } from '@/types/global';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 

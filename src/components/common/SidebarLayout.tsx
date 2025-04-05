@@ -16,7 +16,9 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { navBreadCrumb } from '@/constants/sidebar';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
+import { NavBreadCrumb } from '@/types/global';
 import { FetchPurchasedModule, selectionSet } from '@/types/responseTypes';
 
 const client = generateClient<Schema>();
@@ -29,10 +31,7 @@ export function SidebarLayout() {
     FetchPurchasedModule[]
   >([]);
 
-  const [navMenus, setNavMenus] = useState({
-    menu: '기본 모듈',
-    menuItem: '대시 보드',
-  });
+  const [navMenus, setNavMenus] = useState<NavBreadCrumb>(navBreadCrumb);
 
   useEffect(() => {
     const handler = async () => {
