@@ -10,7 +10,7 @@ export const selectionSet = [
   'moduleInstanceId.status',
   'moduleInstanceId.entityFieldSchemaIds.*',
   'moduleInstanceId.memberIds.*',
-  'moduleInstanceId.membershipIds.*',
+  'moduleInstanceId.memberIds.membershipIds.*',
 ] as const;
 
 export type FetchPurchasedModule = SelectionSet<
