@@ -10,7 +10,7 @@ export const ModuleInstanceModel = a.model({
   purchasedModule: a.belongsTo('PurchasedModule', 'purchasedModuleId'),
   entityFieldSchemaIds: a.hasMany('EntityFieldSchema', 'moduleInstanceId'),
   memberId: a.hasOne('Member', 'moduleInstanceId'),
-  sessionId: a.hasOne('Session', 'moduleInstanceId'),
+  membershipId: a.hasOne('Membership', 'moduleInstanceId'),
 });
 
 /* status
