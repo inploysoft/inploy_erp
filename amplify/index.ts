@@ -3,7 +3,7 @@ import { a } from '@aws-amplify/backend';
 import { postConfirmation } from './auth/post-confirmation/resource';
 import { CompanyModel } from './data/schema/company';
 import { CompanyUserModel } from './data/schema/companyUser';
-import { MemberModel, SessionModel } from './data/schema/entities';
+import { MemberModel, MembershipModel } from './data/schema/entities';
 import { EntityFieldSchemaModel } from './data/schema/entityFieldSchema';
 import { ModuleModel } from './data/schema/module';
 import { ModuleInstanceModel } from './data/schema/moduleInstance';
@@ -43,7 +43,7 @@ export const schema = a
       allow.group('ADMINS').to(['delete']),
     ]),
 
-    Session: SessionModel.authorization((allow) => [
+    Membership: MembershipModel.authorization((allow) => [
       allow.authenticated().to(['read', 'create', 'update']),
       allow.group('ADMINS').to(['delete']),
     ]),
