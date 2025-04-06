@@ -1,15 +1,15 @@
 import { a } from '@aws-amplify/backend';
 
-import { postConfirmation } from '../auth/post-confirmation/resource';
-import { fetchPurchasedModules } from '../functions/fetchPurchasedModules/resource';
-import { sayHello } from '../functions/say-hello/resource';
-import { CompanyModel } from './schema/company';
-import { CompanyUserModel } from './schema/companyUser';
-import { MemberModel } from './schema/entities';
-import { EntityFieldSchemaModel } from './schema/entityFieldSchema';
-import { ModuleModel } from './schema/module';
-import { ModuleInstanceModel } from './schema/moduleInstance';
-import { PurchasedModuleModel } from './schema/purchasedModule';
+import { postConfirmation } from './auth/post-confirmation/resource';
+import { CompanyModel } from './data/schema/company';
+import { CompanyUserModel } from './data/schema/companyUser';
+import { MemberModel, SessionModel } from './data/schema/entities';
+import { EntityFieldSchemaModel } from './data/schema/entityFieldSchema';
+import { ModuleModel } from './data/schema/module';
+import { ModuleInstanceModel } from './data/schema/moduleInstance';
+import { PurchasedModuleModel } from './data/schema/purchasedModule';
+import { fetchPurchasedModules } from './functions/fetchPurchasedModules/resource';
+import { sayHello } from './functions/say-hello/resource';
 
 export const schema = a
   .schema({
@@ -39,6 +39,11 @@ export const schema = a
 
     // Entity tables
     Member: MemberModel.authorization((allow) => [
+      allow.authenticated().to(['read', 'create', 'update']),
+      allow.group('ADMINS').to(['delete']),
+    ]),
+
+    Session: SessionModel.authorization((allow) => [
       allow.authenticated().to(['read', 'create', 'update']),
       allow.group('ADMINS').to(['delete']),
     ]),
