@@ -5,7 +5,8 @@ import { a } from '@aws-amplify/backend';
 // 회원 정보
 export const MemberModel = a.model({
   moduleInstanceId: a.id(),
-  name: a.string(),
+  name: a.string().required(),
+  phone: a.phone().required(),
   gender: a.string(),
   birthDate: a.date(),
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
@@ -18,14 +19,15 @@ export const MemberModel = a.model({
 export const MembershipModel = a.model({
   moduleInstanceId: a.id(),
   memberId: a.id(),
-  membershipType: a.string(),
-  name: a.string(),
+  membershipType: a.string().required(),
+  name: a.string().required(),
   months: a.integer(),
   counts: a.integer(),
-  registerType: a.enum(['count', 'months']),
+  registerType: a.enum(['count', 'monthly']),
   price: a.integer(),
   status: a.enum(['valid', 'expired']),
   customFields: a.json().array(),
+  registeredAt: a.datetime().required(),
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
   member: a.belongsTo('Member', 'memberId'),

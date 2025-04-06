@@ -45,6 +45,8 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
       companyId: 'd9244152-3bbd-4a02-938f-86e561ec9d8b',
       email: event.request.userAttributes['email'],
       isAdmin: isAdmin === 'true',
+      name: '',
+      phone: '',
     });
 
     console.log('createUser', createUser);
