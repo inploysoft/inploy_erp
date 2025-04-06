@@ -41,6 +41,12 @@ export const MembershipModel = a.model({
 export const MembershipRegistrationModel = a.model({
   moduleInstanceId: a.id(),
   memberId: a.id(),
+  membershipType: a.string(),
+  name: a.string(),
+  months: a.integer(),
+  counts: a.integer(),
+  registerType: a.enum(['count', 'months']),
+  price: a.integer(),
   membershipId: a.id(),
   trainerId: a.id(),
   status: a.enum(['valid', 'expired']),
