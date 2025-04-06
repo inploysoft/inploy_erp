@@ -9,12 +9,8 @@ export function Member() {
   return (
     <>
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          <SectionCards></SectionCards>
-          {/* <div className="bg-amber-200">총 등록 회원 수</div>
-        <div className="bg-amber-200">만료 예정 회원 수</div>
-        <div className="bg-amber-200">최근 만료 회원 수</div>
-        <div className="bg-amber-200">최근 등록한 회원 수</div> */}
+        <div className="flex flex-col gap-4 py-1 md:gap-6 md:py-2">
+          <SectionCards />
         </div>
       </div>
 
