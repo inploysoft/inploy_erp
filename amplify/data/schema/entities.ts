@@ -11,18 +11,22 @@ export const MemberModel = a.model({
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
+  sessionIds: a.hasMany('Session', 'memberId'),
 });
 
 // 이용권 정보
 export const SessionModel = a.model({
   moduleInstanceId: a.id(),
+  memberId: a.id(),
   sessionType: a.string(),
   name: a.string(),
   months: a.integer(),
+  counts: a.integer(),
   registerType: a.enum(['count', 'months']),
   price: a.integer(),
   status: a.enum(['valid', 'expired']),
   customFields: a.json().array(),
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
+  member: a.belongsTo('Member', 'memberId'),
 });
