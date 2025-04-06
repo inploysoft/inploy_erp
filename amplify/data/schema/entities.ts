@@ -11,14 +11,14 @@ export const MemberModel = a.model({
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
-  sessionIds: a.hasMany('Session', 'memberId'),
+  membershipIds: a.hasMany('Membership', 'memberId'),
 });
 
 // 이용권 정보
-export const SessionModel = a.model({
+export const MembershipModel = a.model({
   moduleInstanceId: a.id(),
   memberId: a.id(),
-  sessionType: a.string(),
+  membershipType: a.string(),
   name: a.string(),
   months: a.integer(),
   counts: a.integer(),
