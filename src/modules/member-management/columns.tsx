@@ -1,51 +1,45 @@
-import { DataTableColumnHeader } from '@/components/common/table/DataTableColumnHeader';
-import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
-};
+import { MemberTableData } from '@/types/member-management/views';
 
-export const columns: ColumnDef<Payment>[] = [
+// 컬럼 밑에 방식으로 새로 만들기, 이슈 새로 만들기
+export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    accessorKey: 'id',
+    header: () => <span>id</span>,
+    cell: (info) => info.getValue(),
+    enableHiding: true,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
+    accessorKey: 'name',
+    header: () => <span>이름</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
-    ),
+    accessorKey: 'birthDate',
+    header: () => <span>생일</span>,
+    cell: (info) => info.getValue(),
   },
   {
-    accessorKey: 'amount',
-    header: 'Amount',
+    accessorKey: 'gender',
+    header: () => <span>성별</span>,
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: 'membership',
+    header: () => <span>이용권</span>,
+    cell: (info) => {
+      const memberships = info.getValue() as string[];
+      return (
+        <div>
+          {memberships.map((value, index) => (
+            <div key={index}>{value}</div>
+          ))}
+        </div>
+      );
+    },
   },
 ];
+
+

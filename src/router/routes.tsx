@@ -1,8 +1,7 @@
 import { Suspense } from 'react';
-import { createBrowserRouter, Outlet, RouteObject } from 'react-router';
+import { createBrowserRouter, RouteObject } from 'react-router';
 
 import { SidebarLayout } from '@/components/common/SidebarLayout';
-import { MemberModuleProvider } from '@/contexts/MemberModuleProvider';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
 import { Member } from '@/modules/member-management/Member';
@@ -34,11 +33,6 @@ const routes: RouteObject[] = [
       },
       {
         path: 'member',
-        element: (
-          <MemberModuleProvider>
-            <Outlet />
-          </MemberModuleProvider>
-        ),
         children: [
           {
             index: true,

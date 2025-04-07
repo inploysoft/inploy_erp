@@ -1,41 +1,26 @@
-// User table mock
-type Payment = {
-  id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
-};
+import { MemberTableData } from '@/types/member-management/views';
 
-export const tableMock: Payment[] = [
+// User table mock
+export const memberData: MemberTableData[] = [
   {
-    id: '728ed52f',
-    amount: 100,
-    status: 'pending',
-    email: 'm@example.com',
+    id: 'user-001',
+    name: '홍길동',
+    gender: '남성',
+    birthDate: '1990-01-15',
+    membership: ['헬스 3개월'],
   },
   {
-    id: '489e1d42',
-    amount: 125,
-    status: 'processing',
-    email: 'minhasohn@gmail.com',
+    id: 'user-002',
+    name: '김영희',
+    gender: '여성',
+    birthDate: '1985-07-22',
+    membership: ['요가 1개월'],
   },
   {
-    id: 'asdasdsad',
-    amount: 125,
-    status: 'processing',
-    email: 'tonty@gmail.com',
+    id: 'user-003',
+    name: '이철수',
+    gender: '남성',
+    birthDate: '1993-11-09',
+    membership: ['PT 10회'],
   },
-  {
-    id: 'fdhdfsgh',
-    amount: 125,
-    status: 'processing',
-    email: 'example3@gmail.com',
-  },
-  {
-    id: 'dketh42',
-    amount: 125,
-    status: 'processing',
-    email: 'example4@gmail.com',
-  },
-  // ...
 ];
