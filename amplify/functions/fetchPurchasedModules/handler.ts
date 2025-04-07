@@ -63,7 +63,7 @@ export const handler: Schema['fetchPurchasedModules']['functionHandler'] =
           'module.*',
           'moduleInstanceId.status',
           'moduleInstanceId.entityFieldSchemaIds.*',
-          'moduleInstanceId.memberId.*',
+          'moduleInstanceId.memberIds.*',
         ],
       });
 

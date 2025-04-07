@@ -6,7 +6,7 @@ const moduleTypes = ['member_management', 'sales_management'];
 export const ModuleModel = a.model({
   moduleType: a.enum(moduleTypes),
   displayName: a.string().required(),
-  dataLocation: a.string().array(), // ['Member', 'Locker']
+  dataLocation: a.string().array().required(), // ['Member', 'Locker']
   //
   purchasedModuleIds: a.hasMany('PurchasedModule', 'moduleId'),
 });
