@@ -8,7 +8,7 @@ export const CompanyUserModel = a.model({
   name: a.string().required(),
   email: a.email().required(),
   phone: a.phone().required(),
-  isAdmin: a.boolean().default('false'),
+  isAdmin: a.boolean().default(false),
   //
   company: a.belongsTo('Company', 'companyId'),
 });
