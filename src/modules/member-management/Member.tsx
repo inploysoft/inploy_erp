@@ -1,21 +1,55 @@
+import { SectionCards } from '@/components/common/SectionCards';
 import { DataTable } from '@/components/common/table/DataTable';
-import { tableMock } from '@/constants/mock';
-
-import { columns } from './columns';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { memberData } from '@/constants/mock';
+import { useCoreContext } from '@/contexts/CoreContext';
+import { memberColumns } from './columns';
 
 export function Member() {
+  const { memberTableData } = useCoreContext();
+
   return (
     <>
-      <DataTable columns={columns} data={tableMock} />
-
-      <div className="flex flex-1 flex-col gap-4 p-4">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
+      <div className="@container/main flex flex-col gap-2 pb-4">
+        <div className="flex flex-col gap-4 py-1 md:gap-6 md:py-2">
+          <SectionCards />
         </div>
-        <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
       </div>
+
+      <Tabs
+        defaultValue="totalMembers"
+        className="flex w-full flex-col justify-start gap-6"
+      >
+        <TabsList>
+          <TabsTrigger value="totalMembers">전체</TabsTrigger>
+
+          <TabsTrigger value="expiringSoonMembers">만료 예정 회원</TabsTrigger>
+
+          <TabsTrigger value="recentlyExpiredMembers">
+            최근 만료 회원
+          </TabsTrigger>
+
+          <TabsTrigger value="recentlyRegisteredMembers">
+            최근 등록 회원
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="totalMembers">
+          <DataTable columns={memberColumns} data={memberTableData} />
+        </TabsContent>
+
+        <TabsContent value="expiringSoonMembers">
+          <DataTable columns={memberColumns} data={memberData} />
+        </TabsContent>
+
+        <TabsContent value="recentlyExpiredMembers">
+          <DataTable columns={memberColumns} data={memberData} />
+        </TabsContent>
+
+        <TabsContent value="recentlyRegisteredMembers">
+          <DataTable columns={memberColumns} data={memberData} />
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

@@ -7,6 +7,8 @@ export const PurchasedModuleModel = a.model({
   status: a.enum(['pending', 'purchased', 'cancelled', 'expired', 'refunded']),
   purchasedAt: a.datetime(),
   cancelledAt: a.datetime(),
+  expiredAt: a.datetime(),
+  refundedAt: a.datetime(),
   //
   company: a.belongsTo('Company', 'companyId'),
   module: a.belongsTo('Module', 'moduleId'),

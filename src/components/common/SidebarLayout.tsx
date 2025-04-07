@@ -1,5 +1,4 @@
 import { CSSProperties, useCallback, useEffect, useState } from 'react';
-import { Outlet } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
@@ -17,14 +16,18 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { navBreadCrumb } from '@/constants/sidebar';
+import { useCoreContext } from '@/contexts/CoreContext';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
 import { NavBreadCrumb } from '@/types/global';
 import { FetchPurchasedModule, selectionSet } from '@/types/responseTypes';
+import { Outlet } from 'react-router';
 
 const client = generateClient<Schema>();
 
 export function SidebarLayout() {
   const { user, signOut } = useAuthenticator();
+
+  const { getPurchasedModules } = useCoreContext();
 
   //
   const [purchasedModules, setPurchasedModules] = useState<
@@ -82,10 +85,12 @@ export function SidebarLayout() {
       console.log(purchasedModules);
 
       setPurchasedModules(purchasedModules);
+
+      getPurchasedModules(purchasedModules);
     };
 
     void handler();
-  }, [user]);
+  }, [user, getPurchasedModules]);
 
   const handleNavMenu = useCallback((menu: string, menuItem: string) => {
     setNavMenus({

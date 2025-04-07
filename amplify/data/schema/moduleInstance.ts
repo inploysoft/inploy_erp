@@ -9,7 +9,8 @@ export const ModuleInstanceModel = a.model({
   //
   purchasedModule: a.belongsTo('PurchasedModule', 'purchasedModuleId'),
   entityFieldSchemaIds: a.hasMany('EntityFieldSchema', 'moduleInstanceId'),
-  memberId: a.hasOne('Member', 'moduleInstanceId'),
+  memberIds: a.hasMany('Member', 'moduleInstanceId'),
+  membershipIds: a.hasMany('Membership', 'moduleInstanceId'),
 });
 
 /* status

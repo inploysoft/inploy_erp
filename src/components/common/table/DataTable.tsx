@@ -46,8 +46,13 @@ export function DataTable<TData, TValue>({
 
   //
   const table = useReactTable({
-    data,
-    columns,
+    data: data,
+    columns: columns,
+    initialState: {
+      columnVisibility: {
+        id: false,
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
 
     // filter
@@ -79,10 +84,10 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
+          // value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          // onChange={(event) =>
+          //   table.getColumn('email')?.setFilterValue(event.target.value)
+          // }
           className="max-w-sm"
         />
       </div>
