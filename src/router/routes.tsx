@@ -5,7 +5,7 @@ import { SidebarLayout } from '@/components/common/SidebarLayout';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
 import { Member } from '@/modules/member-management/Member';
-import { Session } from '@/modules/member-management/Session';
+import { MembershipPage } from '@/modules/member-management/MembershipPage';
 
 // TODO: 20250322 Create loading component
 const loading = <div>Loading...</div>;
@@ -43,10 +43,10 @@ const routes: RouteObject[] = [
             ),
           },
           {
-            path: 'session',
+            path: 'membership',
             element: (
               <Suspense fallback={loading}>
-                <Session />
+                <MembershipPage />
               </Suspense>
             ),
           },

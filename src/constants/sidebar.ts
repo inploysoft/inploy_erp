@@ -56,7 +56,7 @@ export const memberManagementSideBarData: NavMenu[] = [
       },
       {
         title: '이용권 관리',
-        url: '/member/session',
+        url: '/member/membership',
       },
     ],
   },
