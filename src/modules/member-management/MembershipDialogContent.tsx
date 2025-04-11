@@ -1,3 +1,8 @@
+import { useCallback } from 'react';
+
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../amplify/data/resource';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,6 +29,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CreateMembership } from '@/types/member-management/api';
+
+const client = generateClient<Schema>();
 
 // Duration-based membership schema
 const durationFormSchema = z.object({
@@ -70,15 +78,66 @@ export function MembershipDialogContent() {
     },
   });
 
-  function onSubmitDuration(values: z.infer<typeof durationFormSchema>) {
-    // Do something with the duration form values
-    console.log('Duration form values:', values);
-  }
+  const onSubmitDuration = useCallback(
+    async (values: z.infer<typeof durationFormSchema>) => {
+      console.log('Duration form values:', values);
 
-  function onSubmitCount(values: z.infer<typeof countFormSchema>) {
-    // Do something with the count form values
-    console.log('Count form values:', values);
-  }
+      const membership: CreateMembership = {
+        registerType: 'duration',
+        ...values,
+      };
+
+      const { data, errors } = await client.models.Membership.create(
+        {
+          ...membership,
+        },
+        {
+          authMode: 'userPool',
+        },
+      );
+
+      if (errors) {
+        console.error(errors);
+        return;
+      }
+
+      if (data) {
+        console.log(data);
+      }
+    },
+    [],
+  );
+
+  const onSubmitCount = useCallback(
+    async (values: z.infer<typeof countFormSchema>) => {
+      console.log('Count form values:', values);
+
+      const membership: CreateMembership = {
+        registerType: 'count',
+        ...values,
+      };
+
+      const { data, errors } = await client.models.Membership.create(
+        {
+          ...membership,
+        },
+        {
+          authMode: 'userPool',
+        },
+      );
+
+      if (errors) {
+        console.error(errors);
+
+        return;
+      }
+
+      if (data) {
+        console.log(data);
+      }
+    },
+    [],
+  );
 
   return (
     <DialogContent>
@@ -165,6 +224,7 @@ export function MembershipDialogContent() {
 
                               <SelectContent>
                                 <SelectItem value="month">개월</SelectItem>
+
                                 <SelectItem value="day">일</SelectItem>
                               </SelectContent>
                             </Select>
@@ -181,9 +241,9 @@ export function MembershipDialogContent() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>가격</FormLabel>
+
                           <FormControl>
                             <Input
-                              type="number"
                               min={0}
                               {...field}
                               onChange={(e) =>
@@ -216,6 +276,7 @@ export function MembershipDialogContent() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>이름</FormLabel>
+
                       <FormControl>
                         <Input placeholder="PT" {...field} />
                       </FormControl>
@@ -229,9 +290,9 @@ export function MembershipDialogContent() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>횟수</FormLabel>
+
                       <FormControl>
                         <Input
-                          type="number"
                           min={1}
                           {...field}
                           onChange={(e) =>
@@ -251,7 +312,6 @@ export function MembershipDialogContent() {
                       <FormLabel>가격</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
                           min={0}
                           {...field}
                           onChange={(e) =>
