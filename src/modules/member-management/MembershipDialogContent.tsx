@@ -11,67 +11,264 @@ import {
 } from '@/components/ui/dialog';
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: 'Username must be at least 2 characters.',
+// Duration-based membership schema
+const durationFormSchema = z.object({
+  displayName: z.string(),
+  durationValue: z.number().min(1, {
+    message: 'Duration value must be at least 1.',
+  }),
+  durationUnit: z.enum(['day', 'month']),
+  price: z.number().min(0, {
+    message: 'Price must be at least 0.',
+  }),
+});
+
+// Count-based membership schema
+const countFormSchema = z.object({
+  displayName: z.string(),
+  sessionCount: z.number().min(1, {
+    message: 'Total session counts must be at least 1.',
+  }),
+  price: z.number().min(0, {
+    message: 'Price must be at least 0.',
   }),
 });
 
 export function MembershipDialogContent() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  // Form for duration-based membership
+  const durationForm = useForm<z.infer<typeof durationFormSchema>>({
+    resolver: zodResolver(durationFormSchema),
     defaultValues: {
-      username: '',
+      displayName: '',
+      durationValue: 1,
+      durationUnit: 'month',
+      price: 0,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  // Form for count-based membership
+  const countForm = useForm<z.infer<typeof countFormSchema>>({
+    resolver: zodResolver(countFormSchema),
+    defaultValues: {
+      displayName: '',
+      sessionCount: 1,
+      price: 0,
+    },
+  });
+
+  function onSubmitDuration(values: z.infer<typeof durationFormSchema>) {
+    // Do something with the duration form values
+    console.log('Duration form values:', values);
+  }
+
+  function onSubmitCount(values: z.infer<typeof countFormSchema>) {
+    // Do something with the count form values
+    console.log('Count form values:', values);
   }
 
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Are you absolutely sure?</DialogTitle>
+        <DialogTitle>이용권 등록</DialogTitle>
 
-        <DialogDescription>
-          This action cannot be undone. This will permanently delete your
-          account and remove your data from our servers.
+        <DialogDescription className="py-3">
+          이용권 유형을 선택하고, 이용 기간 또는 사용 횟수를 입력해 주세요.
+          <br />
+          • 기간제 이용권: 설정한 기간 동안 이용 (예: 30일 이용권)
+          <br />• 횟수제 이용권: 설정한 횟수만큼 이용 (예: 10회 이용권)
         </DialogDescription>
       </DialogHeader>
 
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <Tabs defaultValue="duration-base" className="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="duration-base">기간제</TabsTrigger>
 
-          <Button type="submit">Submit</Button>
-        </form>
-      </FormProvider>
+          <TabsTrigger value="count-base">횟수제</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="duration-base">
+          <FormProvider {...durationForm}>
+            <form
+              onSubmit={durationForm.handleSubmit(onSubmitDuration)}
+              className="space-y-8"
+            >
+              <div className="w-full space-y-6 pt-4">
+                <FormField
+                  control={durationForm.control}
+                  name="displayName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>이름</FormLabel>
+
+                      <FormControl>
+                        <Input placeholder="PT" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex w-full">
+                  <div className="w-1/3 pr-[2%]">
+                    <FormField
+                      control={durationForm.control}
+                      name="durationValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>기간</FormLabel>
+
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              placeholder="1"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="w-1/3 pr-[2%]">
+                    <FormField
+                      control={durationForm.control}
+                      name="durationUnit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>단위</FormLabel>
+
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+
+                              <SelectContent>
+                                <SelectItem value="month">개월</SelectItem>
+                                <SelectItem value="day">일</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="w-1/3">
+                    <FormField
+                      control={durationForm.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>가격</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={0}
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Button type="submit">등록</Button>
+            </form>
+          </FormProvider>
+        </TabsContent>
+
+        <TabsContent value="count-base">
+          <FormProvider {...countForm}>
+            <form
+              onSubmit={countForm.handleSubmit(onSubmitCount)}
+              className="space-y-8"
+            >
+              <div className="w-full space-y-6 pt-4">
+                <FormField
+                  control={countForm.control}
+                  name="displayName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>이름</FormLabel>
+                      <FormControl>
+                        <Input placeholder="PT" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={countForm.control}
+                  name="sessionCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>횟수</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={countForm.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>가격</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <Button type="submit">등록</Button>
+            </form>
+          </FormProvider>
+        </TabsContent>
+      </Tabs>
     </DialogContent>
   );
 }
