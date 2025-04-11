@@ -1,20 +1,33 @@
-import { MemberTableData } from '@/types/member-management/views';
+import {
+  MembershipTableData,
+  MemberTableData,
+} from '@/types/member-management/views';
 import { FetchPurchasedModule } from '@/types/responseTypes';
 
 export function getMemberList(
   members: FetchPurchasedModule['moduleInstanceId']['memberIds'],
+  memberships: FetchPurchasedModule['moduleInstanceId']['membershipRegistrationIds'],
 ): MemberTableData[] {
   return members.flatMap((memberInfo) => {
-    const membership = memberInfo.membershipIds.flatMap(
-      (membershipInfo) => membershipInfo.name,
-    );
-
     return {
       id: memberInfo.id,
       name: memberInfo.name,
       birthDate: memberInfo.birthDate ?? '',
       gender: memberInfo.gender ?? '',
-      membership: membership,
+      membership: memberships.map(
+        (membershipInfo) => membershipInfo.membershipId,
+      ),
     } as MemberTableData;
+  });
+}
+
+export function getMembershipList(
+  memberships: FetchPurchasedModule['moduleInstanceId']['membershipIds'],
+): MembershipTableData[] {
+  return memberships.flatMap((membershipInfo) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { moduleInstanceId, ...rest } = membershipInfo;
+
+    return rest;
   });
 }

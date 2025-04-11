@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { useCoreContext } from '@/contexts/CoreContext';
 import { H2 } from '@/theme/Typography';
-import { memberColumns } from './columns';
+import { membershipColumns } from './columns';
 import { MembershipDialogContent } from './MembershipDialogContent';
 
 export function MembershipPage() {
-  const { memberTableData } = useCoreContext();
+  const { membershipTableData } = useCoreContext();
 
   return (
     <>
@@ -25,7 +25,7 @@ export function MembershipPage() {
         </div>
       </div>
 
-      <DataTable columns={memberColumns} data={memberTableData} />
+      <DataTable columns={membershipColumns} data={membershipTableData} />
     </>
   );
 }

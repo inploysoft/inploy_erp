@@ -1,8 +1,14 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getMemberList } from '@/modules/member-management/helpers';
+import {
+  getMemberList,
+  getMembershipList,
+} from '@/modules/member-management/helpers';
 import { InployModules } from '@/types/global';
-import { MemberTableData } from '@/types/member-management/views';
+import {
+  MembershipTableData,
+  MemberTableData,
+} from '@/types/member-management/views';
 import { FetchPurchasedModule } from '@/types/responseTypes';
 import { CoreContext } from './CoreContext';
 
@@ -12,6 +18,9 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
   >([]);
 
   const [memberTableData, setMemberTableData] = useState<MemberTableData[]>([]);
+  const [membershipTableData, setMembershipTableData] = useState<
+    MembershipTableData[]
+  >([]);
 
   const getPurchasedModules = useCallback(
     (purchasedModules: FetchPurchasedModule[]) => {
@@ -24,7 +33,22 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     for (const item of purchasedModules) {
       if (item.module.moduleType === InployModules.MemberManagement) {
-        setMemberTableData(getMemberList(item.moduleInstanceId.memberIds));
+        console.log(
+          getMemberList(
+            item.moduleInstanceId.memberIds,
+            item.moduleInstanceId.membershipRegistrationIds,
+          ),
+        );
+        setMemberTableData(
+          getMemberList(
+            item.moduleInstanceId.memberIds,
+            item.moduleInstanceId.membershipRegistrationIds,
+          ),
+        );
+
+        setMembershipTableData(
+          getMembershipList(item.moduleInstanceId.membershipIds),
+        );
       }
     }
   }, [purchasedModules]);
@@ -35,8 +59,14 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
       getPurchasedModules: getPurchasedModules,
       purchasedModules: purchasedModules,
       memberTableData: memberTableData,
+      membershipTableData: membershipTableData,
     }),
-    [getPurchasedModules, purchasedModules, memberTableData],
+    [
+      getPurchasedModules,
+      purchasedModules,
+      memberTableData,
+      membershipTableData,
+    ],
   );
 
   return (

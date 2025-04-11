@@ -39,7 +39,7 @@ const durationFormSchema = z.object({
   durationValue: z.number().min(1, {
     message: 'Duration value must be at least 1.',
   }),
-  durationUnit: z.enum(['day', 'month']),
+  durationUnit: z.enum(['minute', 'hour', 'day', 'month']),
   price: z.number().min(0, {
     message: 'Price must be at least 0.',
   }),
@@ -223,9 +223,13 @@ export function MembershipDialogContent() {
                               </SelectTrigger>
 
                               <SelectContent>
-                                <SelectItem value="month">개월</SelectItem>
+                                <SelectItem value="minute">분</SelectItem>
+
+                                <SelectItem value="hour">시간</SelectItem>
 
                                 <SelectItem value="day">일</SelectItem>
+
+                                <SelectItem value="month">개월</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>

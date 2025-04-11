@@ -1,6 +1,7 @@
 /* UI 에서 쓰는 조합형 타입 */
 
 import { Member } from '@/models/member';
+import { Membership } from '@/models/membership';
 
 // TODO: 20250406
 // entity required 변경 -> Membership['name'] 변경,
@@ -14,3 +15,5 @@ export type MemberTableData = Pick<
   // remainingDays: number;
   // remainingCount: number;
 };
+
+export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
