@@ -11,10 +11,16 @@ export type MemberTableData = Pick<
   Member,
   'id' | 'name' | 'birthDate' | 'gender' | 'phone'
 > & {
-  memberships: MembershipRegistration[];
+  memberships: RegisteredMembership[];
   // expiredDate: string;
   // remainingDays: number;
   // remainingCount: number;
 };
 
 export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
+
+export type RegisteredMembership = Omit<
+  MembershipRegistration,
+  'moduleInstanceId' | 'memberId' | 'membershipId'
+> &
+  Membership;

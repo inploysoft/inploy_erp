@@ -4,8 +4,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   MembershipTableData,
   MemberTableData,
+  RegisteredMembership,
 } from '@/modules/member-management/types/views';
-import { MembershipRegistration } from '../models/membershipRegistration';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
@@ -63,12 +63,15 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
     accessorKey: 'memberships',
     header: () => <span>이용권</span>,
     cell: (info) => {
-      const memberships = info.getValue() as MembershipRegistration[];
+      const memberships = info.getValue() as RegisteredMembership[];
 
       return (
         <div>
           {memberships.map((value, index) => (
-            <div key={index}>{value.membershipId}</div>
+            <div>
+              <span key={index}>{value.displayName}</span>
+              <span key={index}>{value.usedSessionCount}</span>
+            </div>
           ))}
         </div>
       );
