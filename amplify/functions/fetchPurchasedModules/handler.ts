@@ -22,23 +22,23 @@ export const handler: Schema['fetchPurchasedModules']['functionHandler'] =
       return null;
     }
 
-    const { data: companyUser, errors: companyUserErrors } =
-      await client.models.CompanyUser.list({
+    const { data: companyMember, errors: companyMemberErrors } =
+      await client.models.CompanyMember.list({
         authMode: 'userPool',
         filter: {
           sub: { eq: sub },
         },
       });
 
-    if (companyUserErrors || !companyUser[0].companyId) {
-      console.log('FetchUserError: ', companyUserErrors);
+    if (companyMemberErrors || !companyMember[0].companyId) {
+      console.log('FetchUserError: ', companyMemberErrors);
       return null;
     }
 
     const { data: company, errors: companyErrors } =
       await client.models.Company.get(
         {
-          id: companyUser[0].companyId,
+          id: companyMember[0].companyId,
         },
         {
           authMode: 'userPool',
@@ -54,7 +54,7 @@ export const handler: Schema['fetchPurchasedModules']['functionHandler'] =
       await client.models.PurchasedModule.list({
         authMode: 'userPool',
         filter: {
-          companyId: { eq: companyUser[0].companyId! },
+          companyId: { eq: companyMember[0].companyId! },
         },
         selectionSet: [
           'id',

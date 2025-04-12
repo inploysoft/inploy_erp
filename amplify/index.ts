@@ -2,8 +2,12 @@ import { a } from '@aws-amplify/backend';
 
 import { postConfirmation } from './auth/post-confirmation/resource';
 import { CompanyModel } from './data/schema/company';
-import { CompanyUserModel } from './data/schema/companyUser';
-import { MemberModel, MembershipModel } from './data/schema/entities';
+import { CompanyMemberModel } from './data/schema/companyMember';
+import {
+  MemberModel,
+  MembershipModel,
+  MembershipRegistrationModel,
+} from './data/schema/entities';
 import { EntityFieldSchemaModel } from './data/schema/entityFieldSchema';
 import { ModuleModel } from './data/schema/module';
 import { ModuleInstanceModel } from './data/schema/moduleInstance';
@@ -18,7 +22,7 @@ export const schema = a
       allow.group('ADMINS').to(['create', 'update', 'delete']),
     ]),
 
-    CompanyUser: CompanyUserModel.authorization((allow) => [
+    CompanyMember: CompanyMemberModel.authorization((allow) => [
       allow.authenticated().to(['read']),
       allow.group('ADMINS').to(['create', 'update', 'delete']),
     ]),
@@ -47,6 +51,13 @@ export const schema = a
       allow.authenticated().to(['read', 'create', 'update']),
       allow.group('ADMINS').to(['delete']),
     ]),
+
+    MembershipRegistration: MembershipRegistrationModel.authorization(
+      (allow) => [
+        allow.authenticated().to(['read', 'create', 'update']),
+        allow.group('ADMINS').to(['delete']),
+      ],
+    ),
 
     // Custom functions
     fetchPurchasedModules: a

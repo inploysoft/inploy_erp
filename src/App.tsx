@@ -1,7 +1,7 @@
 import { RouterProvider } from 'react-router';
 
-import CoreProvider from './contexts/CoreProvider';
 import { router } from './router/routes';
+import CoreProvider from './shared/contexts/CoreProvider';
 
 function App() {
   return (
