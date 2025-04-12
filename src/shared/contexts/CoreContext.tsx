@@ -5,6 +5,7 @@ import {
   MembershipTableData,
   MemberTableData,
 } from '@/modules/member-management/types/views';
+
 interface UserContextType {
   getPurchasedModules: (purchasedModules: FetchPurchasedModule[]) => void;
   purchasedModules: FetchPurchasedModule[];

@@ -67,10 +67,10 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
 
       return (
         <div>
-          {memberships.map((value, index) => (
-            <div>
-              <span key={index}>{value.displayName}</span>
-              <span key={index}>{value.usedSessionCount}</span>
+          {memberships.map((value) => (
+            <div key={value.id}>
+              <span>{value.displayName}</span>
+              <span>{value.usedSessionCount}</span>
             </div>
           ))}
         </div>
