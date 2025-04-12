@@ -24,17 +24,22 @@ import {
 import { DataTablePagination } from './DataTablePagination';
 import { DataTableViewOptions } from './DataTableViewOptions';
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData> extends DataTableCustomProps<TData> {
+  columns: ColumnDef<TData>[];
   data: TData[];
-  filterKey?: string;
 }
 
-export function DataTable<TData, TValue>({
+interface DataTableCustomProps<TData> {
+  filterKey?: string;
+  onRowClick?: (row: TData) => void;
+}
+
+export function DataTable<TData>({
   columns,
   data,
   filterKey,
-}: DataTableProps<TData, TValue>) {
+  onRowClick,
+}: DataTableProps<TData>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -87,10 +92,13 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder="Filter emails..."
           value={
-            (table.getColumn(filterKey ?? 'id')?.getFilterValue() as string) ?? ''
+            (table.getColumn(filterKey ?? 'id')?.getFilterValue() as string) ??
+            ''
           }
           onChange={(event) =>
-            table.getColumn(filterKey ?? 'id')?.setFilterValue(event.target.value)
+            table
+              .getColumn(filterKey ?? 'id')
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -122,6 +130,7 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
+                onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
