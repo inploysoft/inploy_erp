@@ -17,6 +17,9 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
     FetchPurchasedModule[]
   >([]);
 
+  const [memberManagementInstanceId, setMemberManagementInstanceId] =
+    useState<FetchPurchasedModule['moduleInstanceId']['id']>('');
+
   const [memberTableData, setMemberTableData] = useState<MemberTableData[]>([]);
   const [membershipTableData, setMembershipTableData] = useState<
     MembershipTableData[]
@@ -33,6 +36,8 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     for (const item of purchasedModules) {
       if (item.module.moduleType === InployModules.MemberManagement) {
+        setMemberManagementInstanceId(item.moduleInstanceId.id);
+
         console.log(
           getMemberList(
             item.moduleInstanceId.memberIds,
@@ -60,12 +65,14 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
       purchasedModules: purchasedModules,
       memberTableData: memberTableData,
       membershipTableData: membershipTableData,
+      memberManagementInstanceId: memberManagementInstanceId,
     }),
     [
       getPurchasedModules,
       purchasedModules,
       memberTableData,
       membershipTableData,
+      memberManagementInstanceId,
     ],
   );
 

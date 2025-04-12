@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCoreContext } from '@/contexts/CoreContext';
 import { CreateMembership } from '@/types/member-management/api';
 
 const client = generateClient<Schema>();
@@ -57,6 +58,8 @@ const countFormSchema = z.object({
 });
 
 export function MembershipDialogContent() {
+  const { memberManagementInstanceId } = useCoreContext();
+
   // Form for duration-based membership
   const durationForm = useForm<z.infer<typeof durationFormSchema>>({
     resolver: zodResolver(durationFormSchema),
@@ -85,6 +88,7 @@ export function MembershipDialogContent() {
       const membership: CreateMembership = {
         registerType: 'duration',
         ...values,
+        moduleInstanceId: memberManagementInstanceId,
       };
 
       const { data, errors } = await client.models.Membership.create(
@@ -105,7 +109,7 @@ export function MembershipDialogContent() {
         console.log(data);
       }
     },
-    [],
+    [memberManagementInstanceId],
   );
 
   const onSubmitCount = useCallback(
@@ -115,6 +119,7 @@ export function MembershipDialogContent() {
       const membership: CreateMembership = {
         registerType: 'count',
         ...values,
+        moduleInstanceId: memberManagementInstanceId,
       };
 
       const { data, errors } = await client.models.Membership.create(
@@ -136,7 +141,7 @@ export function MembershipDialogContent() {
         console.log(data);
       }
     },
-    [],
+    [memberManagementInstanceId],
   );
 
   return (
@@ -174,7 +179,7 @@ export function MembershipDialogContent() {
                       <FormLabel>이름</FormLabel>
 
                       <FormControl>
-                        <Input placeholder="PT" {...field} />
+                        <Input placeholder="PT 이용권" {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -191,7 +196,6 @@ export function MembershipDialogContent() {
 
                           <FormControl>
                             <Input
-                              type="number"
                               min={1}
                               placeholder="1"
                               {...field}

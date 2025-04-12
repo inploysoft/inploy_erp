@@ -25,7 +25,11 @@ export function MembershipPage() {
         </div>
       </div>
 
-      <DataTable columns={membershipColumns} data={membershipTableData} />
+      <DataTable
+        columns={membershipColumns}
+        data={membershipTableData}
+        filterKey="displayName"
+      />
     </>
   );
 }
