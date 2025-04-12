@@ -5,6 +5,7 @@ import {
   MembershipTableData,
   MemberTableData,
 } from '@/modules/member-management/types/views';
+import { MembershipRegistration } from '../models/membershipRegistration';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
@@ -59,14 +60,15 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
     cell: (info) => info.getValue(),
   },
   {
-    accessorKey: 'membership',
+    accessorKey: 'memberships',
     header: () => <span>이용권</span>,
     cell: (info) => {
-      const memberships = info.getValue() as string[];
+      const memberships = info.getValue() as MembershipRegistration[];
+
       return (
         <div>
           {memberships.map((value, index) => (
-            <div key={index}>{value}</div>
+            <div key={index}>{value.membershipId}</div>
           ))}
         </div>
       );

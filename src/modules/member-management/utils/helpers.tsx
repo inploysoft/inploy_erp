@@ -3,20 +3,22 @@ import {
   MembershipTableData,
   MemberTableData,
 } from '@/modules/member-management/types/views';
+import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
 
 export function getMemberList(
   members: FetchPurchasedModule['moduleInstanceId']['memberIds'],
   memberships: FetchPurchasedModule['moduleInstanceId']['membershipRegistrationIds'],
 ): MemberTableData[] {
   return members.flatMap((memberInfo) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { moduleInstanceId, ...rest } = memberInfo;
+
+    const phone = formatInternationalPhoneToKorean(rest.phone);
+
     return {
-      id: memberInfo.id,
-      name: memberInfo.name,
-      birthDate: memberInfo.birthDate ?? '',
-      gender: memberInfo.gender ?? '',
-      membership: memberships.map(
-        (membershipInfo) => membershipInfo.membershipId,
-      ),
+      ...rest,
+      phone: phone,
+      memberships: memberships,
     } as MemberTableData;
   });
 }

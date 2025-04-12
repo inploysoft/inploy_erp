@@ -9,6 +9,7 @@ export const MemberModel = a.model({
   phone: a.phone().required(),
   gender: a.string(),
   birthDate: a.date(),
+  registeredAt: a.datetime(),
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),

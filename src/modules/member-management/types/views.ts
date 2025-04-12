@@ -2,15 +2,16 @@
 
 import { Member } from '@/modules/member-management/models/member';
 import { Membership } from '@/modules/member-management/models/membership';
+import { MembershipRegistration } from '@/modules/member-management/models/membershipRegistration';
 
 // TODO: 20250406
 // entity required 변경 -> Membership['name'] 변경,
 // expiredDate, remainingDays, remainingCount -> membership[] 에 포함
 export type MemberTableData = Pick<
   Member,
-  'id' | 'name' | 'birthDate' | 'gender'
+  'id' | 'name' | 'birthDate' | 'gender' | 'phone'
 > & {
-  membership: string[];
+  memberships: MembershipRegistration[];
   // expiredDate: string;
   // remainingDays: number;
   // remainingCount: number;
