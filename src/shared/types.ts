@@ -7,4 +7,5 @@ export enum InployModules {
   Core = 'core',
   MemberManagement = 'memberManagement',
   SaleManagement = 'salesManagement',
+  Workforce = 'workforce',
 }
