@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router';
 
-import { SidebarLayout } from '@/components/inploy/sidebar/SidebarLayout';
+import { SidebarLayout } from '@/components/ui/sidebar/SidebarLayout';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
-import { Member } from '@/modules/member-management/Member';
+import { MemberPage } from '@/modules/member-management/MemberPage';
 import { MembershipPage } from '@/modules/member-management/MembershipPage';
 
 // TODO: 20250322 Create loading component
@@ -38,7 +38,7 @@ const routes: RouteObject[] = [
             index: true,
             element: (
               <Suspense fallback={loading}>
-                <Member />
+                <MemberPage />
               </Suspense>
             ),
           },

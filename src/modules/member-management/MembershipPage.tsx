@@ -1,10 +1,10 @@
-import { DataTable } from '@/components/inploy/table/DataTable';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { useCoreContext } from '@/contexts/CoreContext';
+import { DataTable } from '@/components/ui/table/DataTable';
+import { useCoreContext } from '@/shared/contexts/CoreContext';
 import { H2 } from '@/theme/Typography';
-import { membershipColumns } from './columns';
 import { MembershipDialogContent } from './MembershipDialogContent';
+import { membershipColumns } from './utils/columns';
 
 export function MembershipPage() {
   const { membershipTableData } = useCoreContext();

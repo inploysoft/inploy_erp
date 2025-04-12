@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import {
   Controller,
   FormProvider,
@@ -8,19 +9,19 @@ import {
 } from 'react-hook-form';
 
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 
-import { DATA_ATTRIBUTES, FORM_STYLES } from './constants';
-import { FormFieldContext, FormItemContext } from './context';
-import { useFormField } from './hooks';
+import { FormFieldContext, FormItemContext } from './context/context';
+import { useFormField } from './hooks/useFormField';
+import { DATA_ATTRIBUTES, FORM_STYLES } from './utils/constants';
 import type {
   FormControlProps,
   FormDescriptionProps,
   FormItemProps,
   FormLabelProps,
   FormMessageProps,
-} from './types';
+} from './utils/types';
 
 export const Form = FormProvider;
 

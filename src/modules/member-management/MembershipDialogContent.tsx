@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/button';
 import {
   DialogContent,
   DialogDescription,
@@ -19,7 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
+} from '@/components/ui/form/Index';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -29,8 +29,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCoreContext } from '@/contexts/CoreContext';
-import { CreateMembership } from '@/types/member-management/api';
+import { CreateMembership } from '@/modules/member-management/types/api';
+import { useCoreContext } from '@/shared/contexts/CoreContext';
 
 const client = generateClient<Schema>();
 
