@@ -8,6 +8,7 @@ import {
 import {
   getMemberList,
   getMembershipList,
+  getRegisteredMembershipList,
 } from '@/modules/member-management/utils/helpers';
 import { InployModules } from '@/shared/types';
 import { CoreContext } from './CoreContext';
@@ -38,21 +39,20 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
       if (item.module.moduleType === InployModules.MemberManagement) {
         setMemberManagementInstanceId(item.moduleInstanceId.id);
 
-        console.log(
-          getMemberList(
-            item.moduleInstanceId.memberIds,
-            item.moduleInstanceId.membershipRegistrationIds,
-          ),
+        setMembershipTableData(
+          getMembershipList(item.moduleInstanceId.membershipIds),
         );
+
+        const membershipRegistrationList = getRegisteredMembershipList(
+          item.moduleInstanceId.membershipIds,
+          item.moduleInstanceId.membershipRegistrationIds,
+        );
+
         setMemberTableData(
           getMemberList(
             item.moduleInstanceId.memberIds,
-            item.moduleInstanceId.membershipRegistrationIds,
+            membershipRegistrationList,
           ),
-        );
-
-        setMembershipTableData(
-          getMembershipList(item.moduleInstanceId.membershipIds),
         );
       }
     }

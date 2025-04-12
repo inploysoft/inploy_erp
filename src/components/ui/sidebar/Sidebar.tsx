@@ -13,7 +13,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet';
+} from '@/components/ui/sheet/sheet';
 import { useSidebar } from '@/components/ui/sidebar/hooks/useSidebar';
 import { SIDEBAR_WIDTH_MOBILE } from '@/components/ui/sidebar/utils/constants';
 import { Skeleton } from '@/components/ui/skeleton';
