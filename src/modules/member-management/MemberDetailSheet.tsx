@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/sheet/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { H4 } from '@/theme/Typography';
+import { LucideCake, LucidePhone, LucideVenusAndMars } from 'lucide-react';
 import {
   EmptyMembershipMessage,
   RenderMembershipCard,
@@ -29,12 +30,29 @@ export function MemberDetailSheet({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent className="w-full max-w-none p-2 sm:w-[50vw]">
-        <SheetHeader>
-          <SheetTitle className="text-2xl font-bold">{member.name}</SheetTitle>
+        <SheetHeader className="mt-5">
+          <Card className="w-full p-5">
+            <SheetTitle className="text-2xl font-bold">
+              {member.name}
+            </SheetTitle>
 
-          <SheetDescription>
-            {member.birthDate} | {member.gender} | {member.phone}
-          </SheetDescription>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <LucideCake className="h-5 w-5" />
+                <span>{member.birthDate}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <LucideVenusAndMars className="h-5 w-5" />
+                <span>{member.gender}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <LucidePhone className="h-5 w-5" />
+                <span>{member.phone}</span>
+              </div>
+            </div>
+          </Card>
 
           <Card className="min-h-[25rem] w-full">
             <CardHeader>
@@ -47,7 +65,9 @@ export function MemberDetailSheet({
               <Tabs defaultValue="all">
                 <TabsList>
                   <TabsTrigger value="all">전체</TabsTrigger>
+
                   <TabsTrigger value="valid">사용 중</TabsTrigger>
+
                   <TabsTrigger value="expired">만료</TabsTrigger>
                 </TabsList>
 
@@ -80,6 +100,8 @@ export function MemberDetailSheet({
             </CardContent>
           </Card>
         </SheetHeader>
+
+        <SheetDescription />
       </SheetContent>
     </Sheet>
   );
