@@ -19,7 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form/Index';
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
