@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router';
 
 import { ChevronRight } from 'lucide-react';
 
-import { SearchForm } from '@/components/common/SearchForm';
+import { NavMenu, SidebarLayoutProps } from '@/components/types';
 import {
   Collapsible,
   CollapsibleContent,
@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNavMenus } from '@/lib/utils';
-import { NavMenu, SidebarLayoutProps } from '@/types/global';
+import { SearchForm } from './SearchForm';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 

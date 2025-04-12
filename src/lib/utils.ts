@@ -1,12 +1,13 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { NavMenu } from '@/components/types';
 import {
   coreSideBarData,
   memberManagementSideBarData,
 } from '@/constants/sidebar';
-import { InployModules, NavMenu } from '@/types/global';
-import { FetchPurchasedModule } from '@/types/responseTypes';
+import { InployModules } from '@/types/global';
+import { FetchPurchasedModule } from '@/types/member-management/api';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

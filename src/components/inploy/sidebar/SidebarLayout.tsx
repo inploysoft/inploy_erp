@@ -2,9 +2,9 @@ import { CSSProperties, useCallback, useEffect, useState } from 'react';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../amplify/data/resource';
+import type { Schema } from '../../../../amplify/data/resource';
 
-import { AppSidebar } from '@/components/common/AppSidebar';
+import { NavBreadCrumb } from '@/components/types';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,9 +18,12 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { navBreadCrumb } from '@/constants/sidebar';
 import { useCoreContext } from '@/contexts/CoreContext';
 import { SidebarProvider } from '@/contexts/SidebarProvider';
-import { NavBreadCrumb } from '@/types/global';
-import { FetchPurchasedModule, selectionSet } from '@/types/responseTypes';
+import {
+  FetchPurchasedModule,
+  selectionSet,
+} from '@/types/member-management/api';
 import { Outlet } from 'react-router';
+import { AppSidebar } from './AppSidebar';
 
 const client = generateClient<Schema>();
 
@@ -38,16 +41,16 @@ export function SidebarLayout() {
 
   useEffect(() => {
     const handler = async () => {
-      const { data: companyUser, errors: companyUserErrors } =
-        await client.models.CompanyUser.list({
+      const { data: companyMember, errors: companyMemberErrors } =
+        await client.models.CompanyMember.list({
           authMode: 'userPool',
           filter: {
             sub: { eq: user.userId },
           },
         });
 
-      if (companyUserErrors || !companyUser[0].companyId) {
-        console.log('FetchCompanyUserError: ', companyUserErrors);
+      if (companyMemberErrors || !companyMember[0].companyId) {
+        console.log('FetchCompanyMemberError: ', companyMemberErrors);
 
         return;
       }
@@ -55,7 +58,7 @@ export function SidebarLayout() {
       const { data: company, errors: companyErrors } =
         await client.models.Company.get(
           {
-            id: companyUser[0].companyId,
+            id: companyMember[0].companyId,
           },
           {
             authMode: 'userPool',
@@ -71,7 +74,7 @@ export function SidebarLayout() {
         await client.models.PurchasedModule.list({
           authMode: 'userPool',
           filter: {
-            companyId: { eq: companyUser[0].companyId! },
+            companyId: { eq: companyMember[0].companyId! },
           },
           selectionSet: selectionSet,
         });

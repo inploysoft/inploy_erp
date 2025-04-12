@@ -1,4 +1,4 @@
-import { NavBreadCrumb, NavMenu } from '@/types/global';
+import { NavBreadCrumb, NavMenu } from '@/components/types';
 
 export const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 

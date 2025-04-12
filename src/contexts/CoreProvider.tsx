@@ -5,11 +5,11 @@ import {
   getMembershipList,
 } from '@/modules/member-management/helpers';
 import { InployModules } from '@/types/global';
+import { FetchPurchasedModule } from '@/types/member-management/api';
 import {
   MembershipTableData,
   MemberTableData,
 } from '@/types/member-management/views';
-import { FetchPurchasedModule } from '@/types/responseTypes';
 import { CoreContext } from './CoreContext';
 
 export default function CoreProvider({ children }: { children: ReactNode }) {

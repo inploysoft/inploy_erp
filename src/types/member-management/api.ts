@@ -1,6 +1,11 @@
-import { MembershipDurationUnit } from '@/models/membership';
+import { SelectionSet } from 'aws-amplify/api';
 
-import { MembershipRegisterType } from '@/models/membership';
+import { type Schema } from '../../../amplify/data/resource';
+
+import {
+  MembershipDurationUnit,
+  MembershipRegisterType,
+} from '@/models/membership';
 
 export interface CreateMembership {
   moduleInstanceId: string;
@@ -11,3 +16,21 @@ export interface CreateMembership {
   sessionCount?: number;
   price: number;
 }
+
+export const selectionSet = [
+  'id',
+  'company.id',
+  'company.name',
+  'status',
+  'module.*',
+  'moduleInstanceId.*',
+  'moduleInstanceId.entityFieldSchemaIds.*',
+  'moduleInstanceId.memberIds.*',
+  'moduleInstanceId.membershipIds.*',
+  'moduleInstanceId.membershipRegistrationIds.*',
+] as const;
+
+export type FetchPurchasedModule = SelectionSet<
+  Schema['PurchasedModule']['type'],
+  typeof selectionSet
+>;

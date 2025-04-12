@@ -1,8 +1,8 @@
+import { FetchPurchasedModule } from '@/types/member-management/api';
 import {
   MembershipTableData,
   MemberTableData,
 } from '@/types/member-management/views';
-import { FetchPurchasedModule } from '@/types/responseTypes';
 
 export function getMemberList(
   members: FetchPurchasedModule['moduleInstanceId']['memberIds'],

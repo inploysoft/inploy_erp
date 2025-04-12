@@ -1,5 +1,5 @@
-import { SectionCards } from '@/components/common/SectionCards';
-import { DataTable } from '@/components/common/table/DataTable';
+import { SectionCards } from '@/components/inploy/sidebar/SectionCards';
+import { DataTable } from '@/components/inploy/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { memberData } from '@/constants/mock';
 import { useCoreContext } from '@/contexts/CoreContext';

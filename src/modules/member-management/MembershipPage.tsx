@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/common/table/DataTable';
+import { DataTable } from '@/components/inploy/table/DataTable';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { useCoreContext } from '@/contexts/CoreContext';

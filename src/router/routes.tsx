@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router';
 
-import { SidebarLayout } from '@/components/common/SidebarLayout';
+import { SidebarLayout } from '@/components/inploy/sidebar/SidebarLayout';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
 import { Member } from '@/modules/member-management/Member';
