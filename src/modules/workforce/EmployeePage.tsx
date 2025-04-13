@@ -3,16 +3,25 @@ import { useEffect, useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { useCoreContext } from '@/shared/contexts/CoreContext';
+
 import { EmployeeTableData } from '../member-management/types/views';
-import { employeeColumns } from '../member-management/utils/columns';
+import { getEmployeeColumns } from '../member-management/utils/columns';
 
 const client = generateClient<Schema>();
 
 export function EmployeePage() {
   const { companyId } = useCoreContext();
 
+  //
   const [employeeTableData, setEmployeeTableData] = useState<
     EmployeeTableData[]
   >([]);
@@ -46,12 +55,42 @@ export function EmployeePage() {
     void handler();
   }, [companyId]);
 
+  //
+  const [rowSelected, setRowSelected] = useState<EmployeeTableData | null>(
+    null,
+  );
+
+  const handleOpenModal = (employee: EmployeeTableData) => {
+    setRowSelected(employee);
+  };
+
+  const handleCloseModal = () => {
+    setRowSelected(null);
+  };
+
+  const columns = getEmployeeColumns(handleOpenModal);
+
   return (
-    <DataTable
-      columns={employeeColumns}
-      data={employeeTableData}
-      //
-      filterKey="name"
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={employeeTableData}
+        //
+        filterKey="name"
+      />
+
+      <Dialog open={!!rowSelected} onOpenChange={handleCloseModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
