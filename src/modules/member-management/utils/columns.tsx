@@ -1,9 +1,13 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { LucidePencil } from 'lucide-react';
 
+import { Button } from '@/components/ui/button/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  EmployeeTableData,
   MembershipTableData,
   MemberTableData,
+  RegisteredMembership,
 } from '@/modules/member-management/types/views';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
@@ -59,14 +63,18 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
     cell: (info) => info.getValue(),
   },
   {
-    accessorKey: 'membership',
+    accessorKey: 'memberships',
     header: () => <span>이용권</span>,
     cell: (info) => {
-      const memberships = info.getValue() as string[];
+      const memberships = info.getValue() as RegisteredMembership[];
+
       return (
         <div>
-          {memberships.map((value, index) => (
-            <div key={index}>{value}</div>
+          {memberships.map((value) => (
+            <div key={value.id}>
+              <span>{value.displayName}</span>
+              <span>{value.usedSessionCount}</span>
+            </div>
           ))}
         </div>
       );
@@ -135,3 +143,61 @@ export const membershipColumns: ColumnDef<MembershipTableData>[] = [
     enableSorting: true,
   },
 ];
+
+export function getEmployeeColumns(
+  handleOpenModal: (employee: EmployeeTableData) => void,
+): ColumnDef<EmployeeTableData>[] {
+  return [
+    {
+      accessorKey: 'id',
+      header: () => <span>id</span>,
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'name',
+      header: () => <span>이름</span>,
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'rank',
+      header: () => <span>직급</span>,
+      cell: (info) => {
+        if (info.row.original.isAdmin) {
+          return <span>관리자</span>;
+        }
+
+        return info.getValue();
+      },
+    },
+    {
+      accessorKey: 'position',
+      header: () => <span>직책</span>,
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'email',
+      header: () => <span>이메일</span>,
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'phone',
+      header: () => <span>전화번호</span>,
+      cell: (info) => info.getValue(),
+    },
+    {
+      id: 'actionIcon',
+      cell: (info) => {
+        return (
+          <Button
+            size="icon"
+            onClick={() => {
+              handleOpenModal(info.row.original);
+            }}
+          >
+            <LucidePencil className="h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+  ];
+}

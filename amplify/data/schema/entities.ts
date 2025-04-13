@@ -9,6 +9,7 @@ export const MemberModel = a.model({
   phone: a.phone().required(),
   gender: a.string(),
   birthDate: a.date(),
+  registeredAt: a.datetime(),
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
@@ -38,6 +39,7 @@ export const MembershipRegistrationModel = a.model({
   moduleInstanceId: a.id(),
   memberId: a.id(),
   membershipId: a.id(),
+  trainerId: a.id(),
   status: a.enum(['valid', 'expired']),
   usedSessionCount: a.integer().default(0),
   registeredAt: a.datetime().required(),
@@ -47,4 +49,16 @@ export const MembershipRegistrationModel = a.model({
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
   member: a.belongsTo('Member', 'memberId'),
   membership: a.belongsTo('Membership', 'membershipId'),
+  trainer: a.belongsTo('Trainer', 'trainerId'),
+});
+
+// 트레이너 정보
+export const TrainerModel = a.model({
+  moduleInstanceId: a.id(),
+  sub: a.id().required(),
+  team: a.string(),
+  customFields: a.json().array(),
+  //
+  moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
+  membershipRegistration: a.hasOne('MembershipRegistration', 'trainerId'),
 });
