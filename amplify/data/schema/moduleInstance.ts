@@ -11,7 +11,11 @@ export const ModuleInstanceModel = a.model({
   entityFieldSchemaIds: a.hasMany('EntityFieldSchema', 'moduleInstanceId'),
   memberIds: a.hasMany('Member', 'moduleInstanceId'),
   membershipIds: a.hasMany('Membership', 'moduleInstanceId'),
-  membershipRegistrationIds: a.hasMany('MembershipRegistration', 'moduleInstanceId'),
+  membershipRegistrationIds: a.hasMany(
+    'MembershipRegistration',
+    'moduleInstanceId',
+  ),
+  trainerIds: a.hasMany('Trainer', 'moduleInstanceId'), 
 });
 
 /* status

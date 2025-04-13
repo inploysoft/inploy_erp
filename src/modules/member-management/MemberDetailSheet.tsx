@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import {
   Sheet,
   SheetContent,
@@ -71,31 +71,29 @@ export function MemberDetailSheet({
                   <TabsTrigger value="expired">만료</TabsTrigger>
                 </TabsList>
 
-                <ScrollArea className="h-[20rem] pt-3">
-                  <TabsContent value="all">
-                    {member.memberships.map(RenderMembershipCard)}
-                  </TabsContent>
+                <TabsContent value="all">
+                  {member.memberships.map(RenderMembershipCard)}
+                </TabsContent>
 
-                  <TabsContent value="valid">
-                    {member.memberships.some((m) => m.status === 'valid') ? (
-                      member.memberships
-                        .filter((m) => m.status === 'valid')
-                        .map(RenderMembershipCard)
-                    ) : (
-                      <EmptyMembershipMessage message="사용 중인 이용권이 없어요" />
-                    )}
-                  </TabsContent>
+                <TabsContent value="valid">
+                  {member.memberships.some((m) => m.status === 'valid') ? (
+                    member.memberships
+                      .filter((m) => m.status === 'valid')
+                      .map(RenderMembershipCard)
+                  ) : (
+                    <EmptyMembershipMessage message="사용 중인 이용권이 없어요" />
+                  )}
+                </TabsContent>
 
-                  <TabsContent value="expired">
-                    {member.memberships.some((m) => m.status === 'expired') ? (
-                      member.memberships
-                        .filter((m) => m.status === 'expired')
-                        .map(RenderMembershipCard)
-                    ) : (
-                      <EmptyMembershipMessage message="만료된 이용권이 없어요" />
-                    )}
-                  </TabsContent>
-                </ScrollArea>
+                <TabsContent value="expired">
+                  {member.memberships.some((m) => m.status === 'expired') ? (
+                    member.memberships
+                      .filter((m) => m.status === 'expired')
+                      .map(RenderMembershipCard)
+                  ) : (
+                    <EmptyMembershipMessage message="만료된 이용권이 없어요" />
+                  )}
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>

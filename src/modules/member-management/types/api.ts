@@ -34,3 +34,7 @@ export type FetchPurchasedModule = SelectionSet<
   Schema['PurchasedModule']['type'],
   typeof selectionSet
 >;
+
+export type UpdateData<TData> = {
+  id: string;
+} & Partial<Omit<TData, 'id'>>;

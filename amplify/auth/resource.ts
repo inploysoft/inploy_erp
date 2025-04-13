@@ -2,6 +2,7 @@ import { defineAuth } from '@aws-amplify/backend';
 import { postConfirmation } from './post-confirmation/resource';
 
 // https://docs.amplify.aws/react/build-a-backend/auth/concepts/user-attributes/
+// TODO: 20250413 phone 로그인 옵션 삭제
 export const auth = defineAuth({
   name: 'inploy-dev-userpool',
   loginWith: {

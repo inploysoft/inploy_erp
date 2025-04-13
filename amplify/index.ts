@@ -7,6 +7,7 @@ import {
   MemberModel,
   MembershipModel,
   MembershipRegistrationModel,
+  TrainerModel,
 } from './data/schema/entities';
 import { EntityFieldSchemaModel } from './data/schema/entityFieldSchema';
 import { ModuleModel } from './data/schema/module';
@@ -58,6 +59,11 @@ export const schema = a
         allow.group('ADMINS').to(['delete']),
       ],
     ),
+
+    Trainer: TrainerModel.authorization((allow) => [
+      allow.authenticated().to(['read']),
+      allow.group('ADMINS').to(['create', 'update', 'delete']),
+    ]),
 
     // Custom functions
     fetchPurchasedModules: a

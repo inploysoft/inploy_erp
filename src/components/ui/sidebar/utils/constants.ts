@@ -36,10 +36,6 @@ export const coreSideBarData: NavMenu[] = [
         title: '회사 정보',
         url: '/company',
       },
-      {
-        title: '직원 관리',
-        url: '/employee',
-      },
     ],
   },
 ];
@@ -57,6 +53,24 @@ export const memberManagementSideBarData: NavMenu[] = [
       {
         title: '이용권 관리',
         url: '/member/membership',
+      },
+    ],
+  },
+];
+
+export const workforceSideBarData: NavMenu[] = [
+  {
+    title: '인사 모듈',
+    url: 'workforce',
+    items: [
+      {
+        title: '직원 관리',
+        url: '/workforce/employee',
+        isActive: true,
+      },
+      {
+        title: '트레이너 관리',
+        url: '/workforce/trainer',
       },
     ],
   },

@@ -12,6 +12,8 @@ interface UserContextType {
   memberTableData: MemberTableData[];
   membershipTableData: MembershipTableData[];
   memberManagementInstanceId: FetchPurchasedModule['moduleInstanceId']['id'];
+  setCompanyId: (companyId: string) => void;
+  companyId: string;
 }
 
 export const CoreContext = createContext<UserContextType | undefined>(
