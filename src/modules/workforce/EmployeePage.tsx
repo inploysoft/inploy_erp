@@ -1,16 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 
 import { DataTable } from '@/components/ui/table/DataTable';
 import { useCoreContext } from '@/shared/contexts/CoreContext';
-import { memberColumns } from '../member-management/utils/columns';
+import { EmployeeTableData } from '../member-management/types/views';
+import { employeeColumns } from '../member-management/utils/columns';
 
 const client = generateClient<Schema>();
 
 export function EmployeePage() {
-  const { memberTableData, companyId } = useCoreContext();
+  const { companyId } = useCoreContext();
+
+  const [employeeTableData, setEmployeeTableData] = useState<
+    EmployeeTableData[]
+  >([]);
 
   useEffect(() => {
     const handler = async () => {
@@ -28,7 +33,14 @@ export function EmployeePage() {
         return;
       }
 
-      console.log(data);
+      const employeeList: EmployeeTableData[] = data.map((item) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { companyId, createdAt, ...rest } = item;
+
+        return rest;
+      });
+
+      setEmployeeTableData(employeeList);
     };
 
     void handler();
@@ -36,8 +48,8 @@ export function EmployeePage() {
 
   return (
     <DataTable
-      columns={memberColumns}
-      data={memberTableData}
+      columns={employeeColumns}
+      data={employeeTableData}
       //
       filterKey="name"
     />

@@ -2,10 +2,12 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  EmployeeTableData,
   MembershipTableData,
   MemberTableData,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
+import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
@@ -138,5 +140,48 @@ export const membershipColumns: ColumnDef<MembershipTableData>[] = [
     header: () => <span>가격</span>,
     cell: (info) => info.getValue(),
     enableSorting: true,
+  },
+];
+
+export const employeeColumns: ColumnDef<EmployeeTableData>[] = [
+  {
+    accessorKey: 'id',
+    header: () => <span>id</span>,
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: 'name',
+    header: () => <span>이름</span>,
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: 'email',
+    header: () => <span>이메일</span>,
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: 'phone',
+    header: () => <span>전화번호</span>,
+    cell: (info) => {
+      const phone = info.getValue() as string;
+
+      return formatInternationalPhoneToKorean(phone);
+    },
+  },
+  {
+    accessorKey: 'rank',
+    header: () => <span>직급</span>,
+    cell: (info) => {
+      if (info.row.original.isAdmin) {
+        return <span>관리자</span>;
+      }
+
+      return info.getValue();
+    },
+  },
+  {
+    accessorKey: 'position',
+    header: () => <span>직책</span>,
+    cell: (info) => info.getValue(),
   },
 ];
