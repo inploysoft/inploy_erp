@@ -32,7 +32,7 @@ const client = generateClient<Schema>();
 export function SidebarLayout() {
   const { user, signOut } = useAuthenticator();
 
-  const { getPurchasedModules } = useCoreContext();
+  const { getPurchasedModules, setCompanyId } = useCoreContext();
 
   //
   const [purchasedModules, setPurchasedModules] = useState<
@@ -92,10 +92,12 @@ export function SidebarLayout() {
       setPurchasedModules(purchasedModules);
 
       getPurchasedModules(purchasedModules);
+
+      setCompanyId(companyMember[0].companyId);
     };
 
     void handler();
-  }, [user, getPurchasedModules]);
+  }, [user, getPurchasedModules, setCompanyId]);
 
   const handleNavMenu = useCallback((menu: string, menuItem: string) => {
     setNavMenus({

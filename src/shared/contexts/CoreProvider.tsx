@@ -33,6 +33,8 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const [companyId, setCompanyId] = useState<string>('');
+
   // TODO: 20250406 상태관리 라이브러리로 변경
   useEffect(() => {
     for (const item of purchasedModules) {
@@ -66,6 +68,8 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
       memberTableData: memberTableData,
       membershipTableData: membershipTableData,
       memberManagementInstanceId: memberManagementInstanceId,
+      setCompanyId: setCompanyId,
+      companyId: companyId,
     }),
     [
       getPurchasedModules,
@@ -73,6 +77,8 @@ export default function CoreProvider({ children }: { children: ReactNode }) {
       memberTableData,
       membershipTableData,
       memberManagementInstanceId,
+      setCompanyId,
+      companyId,
     ],
   );
 
