@@ -1,22 +1,46 @@
 /* 화면 표시용 데이터 가공 함수 모음 */
 
+import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
+
+const phoneUtil = PhoneNumberUtil.getInstance();
+
 /**
- * 국제 전화번호 형식(+82 10-5273-1404)을 한국 전화번호 형식(010-5273-1404)으로 변환합니다.
+ * 국제 전화번호 형식(+82 10-5273-1404)을 한국 전화번호 형식(010-5273-1404)으로 변환
  * @param phone 국제 형식의 전화번호 (예: +82 10-5273-1404)
  * @returns 한국 형식의 전화번호 (예: 010-5273-1404)
  */
 export function formatInternationalPhoneToKorean(phone: string): string {
-  if (!phone) {
-    return '';
-  }
+  try {
+    const number = phoneUtil.parseAndKeepRawInput(phone, 'KR');
 
-  if (!phone.startsWith('+82')) {
+    if (phoneUtil.isValidNumberForRegion(number, 'KR')) {
+      return phoneUtil.format(number, PhoneNumberFormat.NATIONAL);
+    }
+
+    return phone;
+  } catch (e) {
+    console.error('번호 파싱 실패:', e);
+
     return phone;
   }
+}
 
-  const numberWithoutCountryCode = '0' + phone.substring(3);
+/**
+ * 한국 전화번호 형식(010-5273-1404)을 국제 전화번호 형식(+82 10-5273-1404)으로 변환
+ * @param phone 한국 형식의 전화번호 (예: 010-5273-1404)
+ * @returns 국제 형식의 전화번호 (예: +82 10-5273-1404)
+ */
+export function formatKoreanPhoneToInternational(phone: string): string {
+  try {
+    const number = phoneUtil.parseAndKeepRawInput(phone, 'KR');
 
-  const cleaned = numberWithoutCountryCode.replace(/\s+/g, '');
+    if (phoneUtil.isValidNumberForRegion(number, 'KR')) {
+      return phoneUtil.format(number, PhoneNumberFormat.INTERNATIONAL);
+    }
 
-  return cleaned;
+    return phone;
+  } catch (e) {
+    console.error('번호 파싱 실패:', e);
+    return phone;
+  }
 }

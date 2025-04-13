@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button/button';
@@ -20,10 +21,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { EmployeeTableData } from '@/modules/member-management/types/views';
+import { useCoreContext } from '@/shared/contexts/CoreContext';
+import { formatKoreanPhoneToInternational } from '@/shared/lib/format';
+
+import { updateEmployee } from '../utils/api';
 
 interface EmployeeDialogProps {
   employee: EmployeeTableData | null;
-  handleCloseModal: (open: boolean) => void;
+  handleCloseModal: () => void;
 }
 
 const formSchema = z.object({
@@ -48,6 +53,17 @@ export function EmployeeDialog({
   employee,
   handleCloseModal,
 }: EmployeeDialogProps) {
+  const { companyId } = useCoreContext();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: updateEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees', companyId] });
+      handleCloseModal();
+    },
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,10 +89,16 @@ export function EmployeeDialog({
     });
   }, [employee, form]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!employee) {
+      return;
+    }
+
+    mutation.mutate({
+      ...values,
+      id: employee.id,
+      phone: formatKoreanPhoneToInternational(values.phone),
+    });
   }
 
   return (
@@ -105,34 +127,6 @@ export function EmployeeDialog({
 
               <FormField
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>이메일</FormLabel>
-
-                    <FormControl>
-                      <Input placeholder="이메일" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>전화번호</FormLabel>
-
-                    <FormControl>
-                      <Input placeholder="전화번호" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="rank"
                 render={({ field }) => (
                   <FormItem>
@@ -154,6 +148,34 @@ export function EmployeeDialog({
 
                     <FormControl>
                       <Input placeholder="직책" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이메일</FormLabel>
+
+                    <FormControl>
+                      <Input disabled={true} placeholder="이메일" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>전화번호</FormLabel>
+
+                    <FormControl>
+                      <Input placeholder="전화번호" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
