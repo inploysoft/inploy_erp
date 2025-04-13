@@ -12,6 +12,8 @@ import type { PostConfirmationTriggerHandler } from 'aws-lambda';
 
 import { type Schema } from '../../data/resource';
 
+import dayjs from 'dayjs';
+
 // https://docs.amplify.aws/react/build-a-backend/data/customize-authz/grant-lambda-function-access-to-api/
 const { resourceConfig, libraryOptions } =
   await getAmplifyDataClientConfig(env);
@@ -47,6 +49,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
       isAdmin: isAdmin === 'true',
       name: '',
       phone: '',
+      joinedAt: dayjs().format('YYYY-MM-DD'),
     });
 
     console.log('createUser', createUser);
