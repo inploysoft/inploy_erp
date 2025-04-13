@@ -114,10 +114,7 @@ export function SidebarLayout() {
         } as CSSProperties
       }
     >
-      <AppSidebar
-        purchasedModules={purchasedModules}
-        onSendNavMenus={handleNavMenu}
-      />
+      <AppSidebar onSendNavMenus={handleNavMenu} />
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">

@@ -1,6 +1,10 @@
 import { ComponentProps, useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 
+import { useAuthenticator } from '@aws-amplify/ui-react';
+
+import { useQuery } from '@tanstack/react-query';
+
 import { ChevronRight } from 'lucide-react';
 
 import {
@@ -10,6 +14,7 @@ import {
 } from '@/components/ui/collapsible';
 import { createNavMenus } from '@/components/ui/sidebar/utils/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { fetchLoginUser, fetchPurchasedModules } from '@/shared/api';
 import { SearchForm } from './SearchForm';
 import {
   Sidebar,
@@ -27,20 +32,35 @@ import { NavMenu, SidebarLayoutProps } from './utils/types';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-export function AppSidebar({
-  purchasedModules,
-  onSendNavMenus,
-  ...props
-}: AppSidebarProps) {
+export function AppSidebar({ onSendNavMenus, ...props }: AppSidebarProps) {
+  const { user } = useAuthenticator();
   const location = useLocation();
 
   const [navMenus, setNavMenus] = useState<NavMenu[]>([]);
 
+  const { data: loginUser } = useQuery({
+    queryKey: ['fetchLoginUser', user.userId],
+    queryFn: () => fetchLoginUser(user.userId),
+    enabled: !!user,
+  });
+
+  const companyId = loginUser?.companyId;
+
+  const { data: purchasedModules } = useQuery({
+    queryKey: ['fetchPurchasedModules', companyId],
+    queryFn: () => fetchPurchasedModules(companyId),
+    enabled: !!companyId,
+  });
+
   useEffect(() => {
+    if (!purchasedModules) {
+      return;
+    }
+
     const result = createNavMenus(purchasedModules);
 
     setNavMenus(result);
-  }, [onSendNavMenus, purchasedModules]);
+  }, [purchasedModules]);
 
   const handleClickMenu = useCallback(
     (menu: string, menuItem: string) => () => {
