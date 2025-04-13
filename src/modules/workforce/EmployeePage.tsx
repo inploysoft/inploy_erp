@@ -13,7 +13,7 @@ import { fetchEmployees } from './utils/api';
 export function EmployeePage() {
   const { companyId } = useCoreContext();
 
-  const { data = [] } = useQuery({
+  const { data } = useQuery({
     queryKey: ['employees', companyId],
     queryFn: () => fetchEmployees(companyId),
     enabled: !!companyId,
@@ -38,7 +38,7 @@ export function EmployeePage() {
     <>
       <DataTable
         columns={columns}
-        data={data}
+        data={data ?? []}
         //
         filterKey="name"
       />
