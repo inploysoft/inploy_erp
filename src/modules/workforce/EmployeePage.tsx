@@ -3,18 +3,13 @@ import { useEffect, useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../../amplify/data/resource';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { useCoreContext } from '@/shared/contexts/CoreContext';
 
+import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
 import { EmployeeTableData } from '../member-management/types/views';
 import { getEmployeeColumns } from '../member-management/utils/columns';
+import { EmployeeDialog } from './components/EmployeeDialog';
 
 const client = generateClient<Schema>();
 
@@ -44,9 +39,12 @@ export function EmployeePage() {
 
       const employeeList: EmployeeTableData[] = data.map((item) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { companyId, createdAt, ...rest } = item;
+        const { companyId, createdAt, phone, ...rest } = item;
 
-        return rest;
+        return {
+          ...rest,
+          phone: formatInternationalPhoneToKorean(phone),
+        };
       });
 
       setEmployeeTableData(employeeList);
@@ -79,18 +77,10 @@ export function EmployeePage() {
         filterKey="name"
       />
 
-      <Dialog open={!!rowSelected} onOpenChange={handleCloseModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <EmployeeDialog
+        employee={rowSelected}
+        handleCloseModal={handleCloseModal}
+      />
     </>
   );
 }

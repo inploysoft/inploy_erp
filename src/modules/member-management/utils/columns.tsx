@@ -9,7 +9,6 @@ import {
   MemberTableData,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
-import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
@@ -183,11 +182,7 @@ export function getEmployeeColumns(
     {
       accessorKey: 'phone',
       header: () => <span>전화번호</span>,
-      cell: (info) => {
-        const phone = info.getValue() as string;
-
-        return formatInternationalPhoneToKorean(phone);
-      },
+      cell: (info) => info.getValue(),
     },
     {
       id: 'actionIcon',
