@@ -1,4 +1,4 @@
-import { ComponentProps, useCallback, useEffect, useState } from 'react';
+import { ComponentProps, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -14,7 +14,11 @@ import {
 } from '@/components/ui/collapsible';
 import { createNavMenus } from '@/components/ui/sidebar/utils/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchLoginUser, fetchPurchasedModules } from '@/shared/api';
+import {
+  fetchLoginUser,
+  fetchModules,
+  fetchPurchasedModules,
+} from '@/shared/api';
 import { SearchForm } from './SearchForm';
 import {
   Sidebar,
@@ -28,40 +32,39 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from './Sidebar';
-import { NavMenu, SidebarLayoutProps } from './utils/types';
+import { SidebarLayoutProps } from './utils/types';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
 export function AppSidebar({ onSendNavMenus, ...props }: AppSidebarProps) {
   const { user } = useAuthenticator();
+
   const location = useLocation();
 
-  const [navMenus, setNavMenus] = useState<NavMenu[]>([]);
-
+  //
   const { data: loginUser } = useQuery({
     queryKey: ['fetchLoginUser', user.userId],
     queryFn: () => fetchLoginUser(user.userId),
     enabled: !!user,
   });
 
-  const companyId = loginUser?.companyId;
-
   const { data: purchasedModules } = useQuery({
-    queryKey: ['fetchPurchasedModules', companyId],
-    queryFn: () => fetchPurchasedModules(companyId),
-    enabled: !!companyId,
+    queryKey: ['fetchPurchasedModules', loginUser?.companyId],
+    queryFn: () => fetchPurchasedModules(loginUser?.companyId),
+    enabled: !!loginUser?.companyId,
   });
 
-  useEffect(() => {
-    if (!purchasedModules) {
-      return;
-    }
+  const { data: navMenus } = useQuery({
+    queryKey: ['fetchModules', purchasedModules],
+    queryFn: async () => {
+      const modules = await fetchModules(purchasedModules);
 
-    const result = createNavMenus(purchasedModules);
+      return createNavMenus(modules);
+    },
+    enabled: !!purchasedModules,
+  });
 
-    setNavMenus(result);
-  }, [purchasedModules]);
-
+  //
   const handleClickMenu = useCallback(
     (menu: string, menuItem: string) => () => {
       onSendNavMenus(menu, menuItem);
@@ -83,10 +86,10 @@ export function AppSidebar({ onSendNavMenus, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        {navMenus.length === 1 ? (
+        {navMenus?.length === 1 ? (
           <Skeleton />
         ) : (
-          navMenus.map((menu) => (
+          navMenus?.map((menu) => (
             <Collapsible
               key={menu.title}
               title={menu.title}

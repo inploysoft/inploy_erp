@@ -37,7 +37,6 @@ export async function fetchLoginUser(
 
     return data[0];
   } catch (error) {
-    // 4. 네트워크/예외 오류 처리
     logger.error('Exceptional errors: ', error);
     throw new Error('fetchLoginUser: ' + error);
   }
@@ -89,7 +88,7 @@ export const fetchPurchasedModuleSelectionSet = [
 ] as const;
 
 /**
- * 구매한 모듈 조회
+ * 유저가 구매한 모듈 조회
  * @param companyId
  * @returns 구매한 모듈 정보
  */
@@ -121,5 +120,41 @@ export async function fetchPurchasedModules(
   } catch (error) {
     logger.error('Exceptional errors: ', error);
     throw new Error('fetchPurchasedModules: ' + error);
+  }
+}
+
+/**
+ * 실제 모듈에 대한 설명 정보 조회
+ * @param purchasedModules
+ * @returns 실제 모듈에 대한 설명 정보
+ */
+export async function fetchModules(
+  purchasedModules?: FetchPurchasedModule2[],
+): Promise<Schema['Module']['type'][]> {
+  try {
+    if (!purchasedModules) {
+      return [];
+    }
+
+    const { data, errors } = await client.models.Module.list({
+      filter: {
+        or: purchasedModules.map((value) => ({
+          id: {
+            eq: value.moduleId!,
+          },
+        })),
+      },
+      authMode: 'userPool',
+    });
+
+    if (errors && errors.length > 0) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('fetchModules: ' + errors);
+    }
+
+    return data;
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('fetchModules: ' + error);
   }
 }
