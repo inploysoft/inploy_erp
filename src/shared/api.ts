@@ -2,7 +2,13 @@ import { generateClient } from 'aws-amplify/data';
 import { ConsoleLogger } from 'aws-amplify/utils';
 
 import type { Schema } from '../../amplify/data/resource';
-import { FetchPurchasedModule2 } from './types/api';
+import {
+  FetchPurchasedModule2,
+  MemberManagementEntity,
+  ModuleEntity,
+  WorkforceEntity,
+} from './types/api';
+import { InployModule } from './types/types';
 
 const client = generateClient<Schema>();
 
@@ -160,42 +166,49 @@ export async function fetchModules(
 }
 
 //
-const memberManagementFields = [
-  'id',
+export const defaultSet = ['id', 'status'] as const;
+
+export const memberManagementSet = [
   'memberIds.*',
   'membershipIds.*',
   'membershipRegistrationIds.*',
 ] as const;
 
-const selectionSetMap = {
-  memberManagement: memberManagementFields,
-  salesManagement: ['id'],
-  workforce: ['id'],
-} as const;
+export const workforceSet = ['trainerIds.*'] as const;
 
-type Module = 'memberManagement' | 'salesManagement' | 'workforce';
+const selectionSetMap = {
+  memberManagement: memberManagementSet,
+  workforce: workforceSet,
+} as const;
 
 export async function fetchModuleInstance(
   purchasedModules?: FetchPurchasedModule2[],
   modules?: Schema['Module']['type'][],
-): Promise<Record<Module, any[]> | []> {
+): Promise<ModuleEntity | undefined> {
   try {
-    if (!modules || modules.length === 0) {
-      logger.error('modules is required');
-      return [];
+    if (
+      !purchasedModules ||
+      purchasedModules.length === 0 ||
+      !modules ||
+      modules.length === 0
+    ) {
+      logger.error('fetchModuleInstance: ' + 'No parameters');
+      return;
     }
 
-    if (!purchasedModules) {
-      return [];
-    }
-
-    // TODO: 20250415 any[] -> 엔티티 모델 생성 후 타입 변경
-    const result = {} as Record<Module, any[]>;
+    const memberManagementResult = {} as Record<
+      Extract<InployModule, 'memberManagement'>,
+      MemberManagementEntity
+    >;
+    const workforceResult = {} as Record<
+      Extract<InployModule, 'workforce'>,
+      WorkforceEntity
+    >;
 
     for (const module of modules) {
-      const moduleType = module.moduleType as Module;
+      const moduleType = module.moduleType as InployModule;
 
-      const selectionSet = selectionSetMap[moduleType];
+      const moduleSet = selectionSetMap[moduleType];
 
       // lazy loading resolver
       const moduleInstanceIdFilters = (
@@ -211,7 +224,7 @@ export async function fetchModuleInstance(
         filter: {
           or: moduleInstanceIdFilters,
         },
-        selectionSet: selectionSet,
+        selectionSet: [...defaultSet, ...moduleSet],
         authMode: 'userPool',
       });
 
@@ -220,10 +233,24 @@ export async function fetchModuleInstance(
         throw new Error('fetchModuleInstance: ' + errors);
       }
 
-      result[moduleType] = data;
+      const result = {
+        type: moduleType,
+        ...data[0],
+      };
+
+      if (moduleType === 'memberManagement') {
+        memberManagementResult['memberManagement'] = result;
+      }
+
+      if (moduleType === 'workforce') {
+        workforceResult['workforce'] = result;
+      }
     }
 
-    return result;
+    return {
+      ...memberManagementResult,
+      ...workforceResult,
+    };
   } catch (error) {
     logger.error('Exceptional errors: ', error);
     throw new Error('fetchModuleInstance: ' + error);
