@@ -158,3 +158,74 @@ export async function fetchModules(
     throw new Error('fetchModules: ' + error);
   }
 }
+
+//
+const memberManagementFields = [
+  'id',
+  'memberIds.*',
+  'membershipIds.*',
+  'membershipRegistrationIds.*',
+] as const;
+
+const selectionSetMap = {
+  memberManagement: memberManagementFields,
+  salesManagement: ['id'],
+  workforce: ['id'],
+} as const;
+
+type Module = 'memberManagement' | 'salesManagement' | 'workforce';
+
+export async function fetchModuleInstance(
+  purchasedModules?: FetchPurchasedModule2[],
+  modules?: Schema['Module']['type'][],
+): Promise<Record<Module, any[]> | []> {
+  try {
+    if (!modules || modules.length === 0) {
+      logger.error('modules is required');
+      return [];
+    }
+
+    if (!purchasedModules) {
+      return [];
+    }
+
+    // TODO: 20250415 any[] -> 엔티티 모델 생성 후 타입 변경
+    const result = {} as Record<Module, any[]>;
+
+    for (const module of modules) {
+      const moduleType = module.moduleType as Module;
+
+      const selectionSet = selectionSetMap[moduleType];
+
+      // lazy loading resolver
+      const moduleInstanceIdFilters = (
+        await Promise.all(
+          purchasedModules.map(async (value) => {
+            const instance = value.moduleInstanceId;
+            return instance?.id ? { id: { eq: instance.id } } : null;
+          }),
+        )
+      ).filter((f): f is { id: { eq: string } } => f !== null);
+
+      const { data, errors } = await client.models.ModuleInstance.list({
+        filter: {
+          or: moduleInstanceIdFilters,
+        },
+        selectionSet: selectionSet,
+        authMode: 'userPool',
+      });
+
+      if (errors && errors.length > 0) {
+        logger.error('GraphQL errors: ', errors);
+        throw new Error('fetchModuleInstance: ' + errors);
+      }
+
+      result[moduleType] = data;
+    }
+
+    return result;
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('fetchModuleInstance: ' + error);
+  }
+}
