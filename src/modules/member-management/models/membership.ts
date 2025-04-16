@@ -1,4 +1,4 @@
-import { CustomField, Nullable } from '@/shared/types';
+import { CustomField, Nullable } from '@/shared/types/types';
 
 export type MembershipRegisterType = 'duration' | 'count';
 
@@ -14,7 +14,7 @@ export interface Membership {
   durationUnit: Nullable<MembershipDurationUnit>;
   sessionCount: Nullable<number>;
   price: Nullable<number>;
-  customFields: Nullable<CustomField[]>;
+  customFields: Nullable<CustomField>;
   createdAt: string;
   updatedAt: string;
 }

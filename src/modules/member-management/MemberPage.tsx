@@ -1,16 +1,55 @@
 import { useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
+
 import { SectionCards } from '@/components/ui/sidebar/SectionCards';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCoreContext } from '@/shared/contexts/CoreContext';
-
+import { fetchMemberWithRelations } from '@/shared/api';
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
+import { isMemberManagementEntity } from '@/shared/lib/utils';
 import { MemberDetailSheet } from './MemberDetailSheet';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
+import { formatMemberTableData } from './utils/helpers';
 
 export function MemberPage() {
-  const { memberTableData } = useCoreContext();
+  const { fetchModuleInstanceQuery } = useUserBootstrap();
+
+  const fetchMemberWithRelationsQuery = useQuery({
+    queryKey: [
+      'fetchMemberWithRelations',
+      fetchModuleInstanceQuery.data,
+      fetchModuleInstanceQuery.data?.memberManagement,
+    ],
+    queryFn: async () => {
+      console.log(fetchModuleInstanceQuery.data?.memberManagement);
+
+      if (!fetchModuleInstanceQuery.data) {
+        return;
+      }
+
+      if (
+        isMemberManagementEntity(
+          fetchModuleInstanceQuery.data?.memberManagement,
+          'memberManagement',
+        )
+      ) {
+        const fetched = await fetchMemberWithRelations(
+          fetchModuleInstanceQuery.data.memberManagement.memberIds,
+        );
+
+        if (!fetched) {
+          return;
+        }
+
+        return formatMemberTableData(fetched);
+      }
+
+      return [];
+    },
+    enabled: !!fetchModuleInstanceQuery.data?.memberManagement,
+  });
 
   //
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
@@ -46,7 +85,7 @@ export function MemberPage() {
         <TabsContent value="totalMembers">
           <DataTable
             columns={memberColumns}
-            data={memberTableData}
+            data={fetchMemberWithRelationsQuery.data ?? []}
             //
             filterKey="name"
             onRowClick={(row) => {
@@ -65,15 +104,42 @@ export function MemberPage() {
         </TabsContent>
 
         <TabsContent value="expiringSoonMembers">
-          <DataTable columns={memberColumns} data={memberTableData} />
+          <DataTable
+            columns={memberColumns}
+            data={fetchMemberWithRelationsQuery.data ?? []}
+            //
+            filterKey="name"
+            onRowClick={(row) => {
+              setRowSelected(row);
+              setOpenDetailSheet(true);
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="recentlyExpiredMembers">
-          <DataTable columns={memberColumns} data={memberTableData} />
+          <DataTable
+            columns={memberColumns}
+            data={fetchMemberWithRelationsQuery.data ?? []}
+            //
+            filterKey="name"
+            onRowClick={(row) => {
+              setRowSelected(row);
+              setOpenDetailSheet(true);
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="recentlyRegisteredMembers">
-          <DataTable columns={memberColumns} data={memberTableData} />
+          <DataTable
+            columns={memberColumns}
+            data={fetchMemberWithRelationsQuery.data ?? []}
+            //
+            filterKey="name"
+            onRowClick={(row) => {
+              setRowSelected(row);
+              setOpenDetailSheet(true);
+            }}
+          />
         </TabsContent>
       </Tabs>
     </>

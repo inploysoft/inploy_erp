@@ -3,20 +3,20 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { DataTable } from '@/components/ui/table/DataTable';
-import { useCoreContext } from '@/shared/contexts/CoreContext';
 
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { EmployeeTableData } from '../member-management/types/views';
 import { getEmployeeColumns } from '../member-management/utils/columns';
 import { EmployeeDialog } from './components/EmployeeDialog';
 import { fetchEmployees } from './utils/api';
 
 export function EmployeePage() {
-  const { companyId } = useCoreContext();
+  const { fetchLoginUserQuery } = useUserBootstrap();
 
   const { data } = useQuery({
-    queryKey: ['employees', companyId],
-    queryFn: () => fetchEmployees(companyId),
-    enabled: !!companyId,
+    queryKey: ['employees', fetchLoginUserQuery.data?.companyId],
+    queryFn: () => fetchEmployees(fetchLoginUserQuery.data?.companyId ?? ''),
+    enabled: !!fetchLoginUserQuery.data?.companyId,
   });
 
   //

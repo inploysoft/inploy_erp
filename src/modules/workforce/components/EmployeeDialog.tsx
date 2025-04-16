@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { EmployeeTableData } from '@/modules/member-management/types/views';
-import { useCoreContext } from '@/shared/contexts/CoreContext';
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { formatKoreanPhoneToInternational } from '@/shared/lib/format';
 
 import { updateEmployee } from '../utils/api';
@@ -53,13 +53,16 @@ export function EmployeeDialog({
   employee,
   handleCloseModal,
 }: EmployeeDialogProps) {
-  const { companyId } = useCoreContext();
+  const { fetchLoginUserQuery } = useUserBootstrap();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: updateEmployee,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['employees', companyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['employees', fetchLoginUserQuery.data?.companyId],
+      });
+
       handleCloseModal();
     },
   });
