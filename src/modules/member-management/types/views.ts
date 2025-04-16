@@ -4,6 +4,8 @@ import { CompanyMember } from '@/modules/member-management/models/companyMember'
 import { Member } from '@/modules/member-management/models/member';
 import { Membership } from '@/modules/member-management/models/membership';
 import { MembershipRegistration } from '@/modules/member-management/models/membershipRegistration';
+import { Trainer } from '@/modules/workforce/models/trainer';
+import { FetchMemberWithRelations } from '@/shared/types/api';
 
 // TODO: 20250406
 // entity required 변경 -> Membership['name'] 변경,
@@ -17,6 +19,24 @@ export type MemberTableData = Pick<
   // remainingDays: number;
   // remainingCount: number;
 };
+
+export type MemberTableData2 = Omit<
+  Member,
+  'moduleInstanceId' | 'createdAt' | 'updatedAt'
+> & {
+  memberships: MemberDetail[];
+};
+
+export type dd = Omit<FetchMemberWithRelations, 'membershipRegistrationIds'> & {
+  memberships: MembershipRegistration;
+};
+
+export type MemberDetail = Omit<
+  MembershipRegistration,
+  'memberId' | 'membershipId' | 'trainerId'
+> &
+  Membership &
+  Trainer;
 
 export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
 

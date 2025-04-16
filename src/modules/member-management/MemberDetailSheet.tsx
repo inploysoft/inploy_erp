@@ -14,10 +14,10 @@ import {
   EmptyMembershipMessage,
   RenderMembershipCard,
 } from './components/MembershipCard';
-import { MemberTableData } from './types/views';
+import { MemberTableData2 } from './types/views';
 
 interface MemberDetailSheetProps {
-  member: MemberTableData;
+  member: MemberTableData2;
   open: boolean;
   setOpen: (open: boolean) => void;
 }

@@ -4,9 +4,11 @@ import { FetchPurchasedModule } from '@/modules/member-management/types/api';
 import {
   MembershipTableData,
   MemberTableData,
+  MemberTableData2,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
 import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
+import { FetchMemberWithRelations } from '@/shared/types/api';
 import {
   MembershipDurationUnit,
   MembershipRegisterType,
@@ -35,6 +37,41 @@ export function getMemberList(
       memberships: registeredMemberships,
     } as MemberTableData;
   });
+}
+
+/**
+ * 회원 목록 반환
+ * @param members 전체 회원 목록
+ * @param registeredMemberships 회원이 구매한 이용권 목록
+ * @returns 회원 목록
+ */
+export function formatMemberTableData(
+  member: FetchMemberWithRelations[],
+): MemberTableData2[] {
+  console.log(member);
+
+  const result = member.flatMap((member) => {
+    const { membershipRegistrationIds, ...rest } = member;
+
+    const membershipRegistrationFlatten = membershipRegistrationIds.flatMap(
+      (membershipRegistration) => {
+        const { trainer, membership, ...rest } = membershipRegistration;
+
+        return {
+          ...rest,
+          ...membership,
+          ...trainer,
+        };
+      },
+    );
+
+    return {
+      ...rest,
+      memberships: membershipRegistrationFlatten,
+    };
+  });
+
+  return result;
 }
 
 /**

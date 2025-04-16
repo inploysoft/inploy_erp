@@ -15,10 +15,10 @@ export function cn(...inputs: ClassValue[]) {
 
 //
 export function isMemberManagementEntity(
-  module: ModuleEntity,
+  module: MemberManagementEntity | WorkforceEntity,
   type: Extract<InployModule, 'memberManagement'>,
-): module is ModuleEntityGeneric<MemberManagementEntity> {
-  return module.memberManagement.type == type;
+): module is MemberManagementEntity {
+  return module.type == type;
 }
 
 export function isWorkforceEntity(
