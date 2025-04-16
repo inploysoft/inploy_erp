@@ -10,7 +10,7 @@ import {
   getMembershipList,
   getRegisteredMembershipList,
 } from '@/modules/member-management/utils/helpers';
-import { InployModules } from '@/shared/types';
+import { InployModules } from '@/shared/types/types';
 import { CoreContext } from './CoreContext';
 
 export default function CoreProvider({ children }: { children: ReactNode }) {

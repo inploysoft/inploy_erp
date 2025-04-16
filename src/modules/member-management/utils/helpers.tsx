@@ -10,6 +10,7 @@ import {
 import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
 import { FetchMemberWithRelations } from '@/shared/types/api';
 import {
+  Membership,
   MembershipDurationUnit,
   MembershipRegisterType,
 } from '../models/membership';
@@ -81,6 +82,17 @@ export function formatMemberTableData(
  */
 export function getMembershipList(
   memberships: FetchPurchasedModule['moduleInstanceId']['membershipIds'],
+): MembershipTableData[] {
+  return memberships.flatMap((membershipInfo) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { moduleInstanceId, ...rest } = membershipInfo;
+
+    return rest;
+  });
+}
+
+export function formatMembershipTableData(
+  memberships: Membership[],
 ): MembershipTableData[] {
   return memberships.flatMap((membershipInfo) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
