@@ -1,10 +1,8 @@
 import dayjs from 'dayjs';
 
-import { FetchPurchasedModule } from '@/modules/member-management/types/api';
 import {
   MembershipTableData,
   MemberTableData,
-  RegisteredMembership,
 } from '@/modules/member-management/types/views';
 import { FetchMemberWithRelations } from '@/shared/types/api';
 import {
@@ -23,8 +21,6 @@ import { MembershipRegistrationStatus } from '../models/membershipRegistration';
 export function formatMemberTableData(
   member: FetchMemberWithRelations[],
 ): MemberTableData[] {
-  console.log(member);
-
   const result = member.flatMap((member) => {
     const { membershipRegistrationIds, ...rest } = member;
 
@@ -62,28 +58,6 @@ export function formatMembershipTableData(
     const { moduleInstanceId, ...rest } = membershipInfo;
 
     return rest;
-  });
-}
-
-/**
- * 회원이 구매한 이용권 목록 반환
- * @param memberships 전체 이용권 목록
- * @param registeredMemberships 회원이 구매한 이용권 목록
- * @returns 회원이 구매한 이용권 목록 (이용권 내용 포함)
- */
-export function getRegisteredMembershipList(
-  memberships: FetchPurchasedModule['moduleInstanceId']['membershipIds'],
-  registeredMemberships: FetchPurchasedModule['moduleInstanceId']['membershipRegistrationIds'],
-): RegisteredMembership[] {
-  return registeredMemberships.map((item) => {
-    const registered = memberships.filter(
-      (value) => value.id === item.membershipId,
-    );
-
-    return {
-      ...item,
-      ...registered[0],
-    };
   });
 }
 

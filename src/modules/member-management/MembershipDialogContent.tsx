@@ -30,7 +30,8 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreateMembership } from '@/modules/member-management/types/api';
-import { useCoreContext } from '@/shared/contexts/CoreContext';
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
+import { isMemberManagementEntity } from '@/shared/lib/utils';
 
 const client = generateClient<Schema>();
 
@@ -58,7 +59,7 @@ const countFormSchema = z.object({
 });
 
 export function MembershipDialogContent() {
-  const { memberManagementInstanceId } = useCoreContext();
+  const { fetchModuleInstanceQuery } = useUserBootstrap();
 
   // Form for duration-based membership
   const durationForm = useForm<z.infer<typeof durationFormSchema>>({
@@ -85,63 +86,85 @@ export function MembershipDialogContent() {
     async (values: z.infer<typeof durationFormSchema>) => {
       console.log('Duration form values:', values);
 
-      const membership: CreateMembership = {
-        registerType: 'duration',
-        ...values,
-        moduleInstanceId: memberManagementInstanceId,
-      };
-
-      const { data, errors } = await client.models.Membership.create(
-        {
-          ...membership,
-        },
-        {
-          authMode: 'userPool',
-        },
-      );
-
-      if (errors) {
-        console.error(errors);
+      if (!fetchModuleInstanceQuery.data) {
         return;
       }
 
-      if (data) {
-        console.log(data);
+      if (
+        isMemberManagementEntity(
+          fetchModuleInstanceQuery.data?.memberManagement,
+          'memberManagement',
+        )
+      ) {
+        const membership: CreateMembership = {
+          registerType: 'duration',
+          ...values,
+          moduleInstanceId: fetchModuleInstanceQuery.data.memberManagement.id,
+        };
+
+        const { data, errors } = await client.models.Membership.create(
+          {
+            ...membership,
+          },
+          {
+            authMode: 'userPool',
+          },
+        );
+
+        if (errors) {
+          console.error(errors);
+          return;
+        }
+
+        if (data) {
+          console.log(data);
+        }
       }
     },
-    [memberManagementInstanceId],
+    [fetchModuleInstanceQuery.data],
   );
 
   const onSubmitCount = useCallback(
     async (values: z.infer<typeof countFormSchema>) => {
       console.log('Count form values:', values);
 
-      const membership: CreateMembership = {
-        registerType: 'count',
-        ...values,
-        moduleInstanceId: memberManagementInstanceId,
-      };
-
-      const { data, errors } = await client.models.Membership.create(
-        {
-          ...membership,
-        },
-        {
-          authMode: 'userPool',
-        },
-      );
-
-      if (errors) {
-        console.error(errors);
-
+      if (!fetchModuleInstanceQuery.data) {
         return;
       }
 
-      if (data) {
-        console.log(data);
+      if (
+        isMemberManagementEntity(
+          fetchModuleInstanceQuery.data?.memberManagement,
+          'memberManagement',
+        )
+      ) {
+        const membership: CreateMembership = {
+          registerType: 'count',
+          ...values,
+          moduleInstanceId: fetchModuleInstanceQuery.data.memberManagement.id,
+        };
+
+        const { data, errors } = await client.models.Membership.create(
+          {
+            ...membership,
+          },
+          {
+            authMode: 'userPool',
+          },
+        );
+
+        if (errors) {
+          console.error(errors);
+
+          return;
+        }
+
+        if (data) {
+          console.log(data);
+        }
       }
     },
-    [memberManagementInstanceId],
+    [fetchModuleInstanceQuery.data],
   );
 
   return (
