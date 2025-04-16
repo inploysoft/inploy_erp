@@ -4,19 +4,21 @@ import { CompanyMember } from '@/modules/member-management/models/companyMember'
 import { Member } from '@/modules/member-management/models/member';
 import { Membership } from '@/modules/member-management/models/membership';
 import { MembershipRegistration } from '@/modules/member-management/models/membershipRegistration';
+import { Trainer } from '@/modules/workforce/models/trainer';
 
-// TODO: 20250406
-// entity required 변경 -> Membership['name'] 변경,
-// expiredDate, remainingDays, remainingCount -> membership[] 에 포함
-export type MemberTableData = Pick<
+export type MemberTableData = Omit<
   Member,
-  'id' | 'name' | 'birthDate' | 'gender' | 'phone'
+  'moduleInstanceId' | 'createdAt' | 'updatedAt'
 > & {
-  memberships: RegisteredMembership[];
-  // expiredDate: string;
-  // remainingDays: number;
-  // remainingCount: number;
+  memberships: MemberDetail[];
 };
+
+export type MemberDetail = Omit<
+  MembershipRegistration,
+  'memberId' | 'membershipId' | 'trainerId'
+> &
+  Membership &
+  Trainer;
 
 export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
 

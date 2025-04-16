@@ -9,7 +9,7 @@ const client = generateClient<Schema>();
 
 export async function fetchEmployees(
   companyId: string,
-): Promise<EmployeeTableData[] | null> {
+): Promise<EmployeeTableData[] | undefined> {
   const { data, errors } = await client.models.CompanyMember.list({
     authMode: 'userPool',
     filter: {
@@ -21,7 +21,7 @@ export async function fetchEmployees(
 
   if (errors) {
     console.log('FetchEmployeeError: ', errors);
-    return null;
+    return;
   }
 
   const result: EmployeeTableData[] = data.map((item) => {
@@ -39,7 +39,7 @@ export async function fetchEmployees(
 
 export async function updateEmployee(
   employee: UpdateData<EmployeeTableData>,
-): Promise<Schema['CompanyMember']['type'] | null> {
+): Promise<Schema['CompanyMember']['type'] | undefined> {
   const { data, errors } = await client.models.CompanyMember.update(employee, {
     authMode: 'userPool',
   });
@@ -47,7 +47,11 @@ export async function updateEmployee(
   if (errors) {
     console.error(errors);
 
-    return null;
+    return;
+  }
+
+  if (!data) {
+    return;
   }
 
   return data;

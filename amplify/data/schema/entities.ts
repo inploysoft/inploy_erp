@@ -56,6 +56,8 @@ export const MembershipRegistrationModel = a.model({
 export const TrainerModel = a.model({
   moduleInstanceId: a.id(),
   sub: a.id().required(),
+  name: a.string().required(),
+  phone: a.phone(),
   team: a.string(),
   customFields: a.json().array(),
   //

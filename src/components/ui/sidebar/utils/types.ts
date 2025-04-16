@@ -1,5 +1,3 @@
-import { FetchPurchasedModule } from '@/modules/member-management/types/api';
-
 //
 export interface NavItem {
   title: string;
@@ -19,6 +17,5 @@ export interface NavBreadCrumb {
 }
 
 export interface SidebarLayoutProps {
-  purchasedModules: FetchPurchasedModule[];
   onSendNavMenus: (menu: string, MenuItem: string) => void;
 }

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import { Badge } from '@/components/ui/badge/badge';
 import { Card } from '@/components/ui/card';
-import { RegisteredMembership } from '../types/views';
+import { MemberDetail } from '../types/views';
 import {
   convertMembershipDurationUnitToKorean,
   convertMembershipRegisterTypeToKorean,
@@ -10,7 +10,7 @@ import {
 } from '../utils/helpers';
 
 interface MembershipCardProps {
-  membership: RegisteredMembership;
+  membership: MemberDetail;
 }
 
 export function MembershipCountCard({ membership }: MembershipCardProps) {
@@ -81,7 +81,7 @@ export function EmptyMembershipMessage({ message }: { message: string }) {
   );
 }
 
-export function RenderMembershipCard(membership: RegisteredMembership) {
+export function RenderMembershipCard(membership: MemberDetail) {
   return membership.registerType === 'duration' ? (
     <MembershipDurationCard key={membership.id} membership={membership} />
   ) : (

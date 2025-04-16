@@ -1,4 +1,4 @@
-import { Nullable } from '@/shared/types';
+import { CustomField, Nullable } from '@/shared/types/types';
 
 export interface Member {
   moduleInstanceId: Nullable<string>;
@@ -6,7 +6,7 @@ export interface Member {
   gender: Nullable<string>;
   birthDate: Nullable<string>;
   phone: string;
-  customFields: (string | number | boolean | object | null)[] | null;
+  customFields: Nullable<CustomField>;
   id: string;
   createdAt: string;
   updatedAt: string;

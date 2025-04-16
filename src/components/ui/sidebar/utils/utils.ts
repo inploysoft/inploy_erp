@@ -4,19 +4,26 @@ import {
   workforceSideBarData,
 } from '@/components/ui/sidebar/utils/constants';
 import { NavMenu } from '@/components/ui/sidebar/utils/types';
-import { FetchPurchasedModule } from '@/modules/member-management/types/api';
-import { InployModules } from '@/shared/types';
+import { InployModule } from '@/shared/types/types';
+import type { Schema } from '../../../../../amplify/data/resource';
 
-export function createNavMenus(modules: FetchPurchasedModule[]): NavMenu[] {
+/**
+ * 사이드바 메뉴 생성
+ * @param modules
+ * @returns 사이드바 메뉴
+ */
+export function createNavMenus(modules: Schema['Module']['type'][]): NavMenu[] {
   const result: NavMenu[] = [...coreSideBarData];
 
   for (const module of modules) {
-    if (module.module.moduleType === InployModules.Workforce) {
-      result.push(...workforceSideBarData);
+    const moduleType = module.moduleType as InployModule;
+
+    if (moduleType === 'memberManagement') {
+      result.push(...memberManagementSideBarData);
     }
 
-    if (module.module.moduleType === InployModules.MemberManagement) {
-      result.push(...memberManagementSideBarData);
+    if (moduleType === 'workforce') {
+      result.push(...workforceSideBarData);
     }
   }
 

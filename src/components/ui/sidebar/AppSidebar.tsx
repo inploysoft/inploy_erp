@@ -8,8 +8,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { createNavMenus } from '@/components/ui/sidebar/utils/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { SearchForm } from './SearchForm';
 import {
   Sidebar,
@@ -24,24 +24,28 @@ import {
   SidebarRail,
 } from './Sidebar';
 import { NavMenu, SidebarLayoutProps } from './utils/types';
+import { createNavMenus } from './utils/utils';
 
 type AppSidebarProps = ComponentProps<typeof Sidebar> & SidebarLayoutProps;
 
-export function AppSidebar({
-  purchasedModules,
-  onSendNavMenus,
-  ...props
-}: AppSidebarProps) {
+export function AppSidebar({ onSendNavMenus, ...props }: AppSidebarProps) {
+  const { fetchModulesQuery } = useUserBootstrap();
+
   const location = useLocation();
 
   const [navMenus, setNavMenus] = useState<NavMenu[]>([]);
 
   useEffect(() => {
-    const result = createNavMenus(purchasedModules);
+    if (!fetchModulesQuery.data) {
+      return;
+    }
+
+    const result = createNavMenus(fetchModulesQuery.data);
 
     setNavMenus(result);
-  }, [onSendNavMenus, purchasedModules]);
+  }, [fetchModulesQuery.data]);
 
+  //`
   const handleClickMenu = useCallback(
     (menu: string, menuItem: string) => () => {
       onSendNavMenus(menu, menuItem);
@@ -63,7 +67,7 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
-        {navMenus.length === 1 ? (
+        {navMenus.length === 0 ? (
           <Skeleton />
         ) : (
           navMenus.map((menu) => (

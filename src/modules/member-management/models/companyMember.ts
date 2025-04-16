@@ -1,4 +1,4 @@
-import { Nullable } from '@/shared/types';
+import { Nullable } from '@/shared/types/types';
 
 export interface CompanyMember {
   companyId: Nullable<string>;
