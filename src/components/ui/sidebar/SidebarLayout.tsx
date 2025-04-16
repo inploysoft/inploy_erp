@@ -1,8 +1,7 @@
-import { CSSProperties, useCallback, useEffect, useState } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
+import { Outlet } from 'react-router';
 
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../../amplify/data/resource';
 
 import {
   Breadcrumb,
@@ -13,91 +12,16 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-
 import { navBreadCrumb } from '@/components/ui/sidebar/utils/constants';
-
-import {
-  FetchPurchasedModule,
-  selectionSet,
-} from '@/modules/member-management/types/api';
-import { useCoreContext } from '@/shared/contexts/CoreContext';
-import { Outlet } from 'react-router';
 import { AppSidebar } from './AppSidebar';
 import { SidebarProvider } from './context/SidebarProvider';
 import { SidebarInset, SidebarTrigger } from './Sidebar';
 import { NavBreadCrumb } from './utils/types';
 
-const client = generateClient<Schema>();
-
 export function SidebarLayout() {
-  const { user, signOut } = useAuthenticator();
-
-  const { getPurchasedModules, setCompanyId } = useCoreContext();
-
-  //
-  const [purchasedModules, setPurchasedModules] = useState<
-    FetchPurchasedModule[]
-  >([]);
+  const { signOut } = useAuthenticator();
 
   const [navMenus, setNavMenus] = useState<NavBreadCrumb>(navBreadCrumb);
-
-  useEffect(() => {
-    const handler = async () => {
-      const { data: companyMember, errors: companyMemberErrors } =
-        await client.models.CompanyMember.list({
-          authMode: 'userPool',
-          filter: {
-            sub: { eq: user.userId },
-          },
-        });
-
-      if (companyMemberErrors || !companyMember[0].companyId) {
-        console.log('FetchCompanyMemberError: ', companyMemberErrors);
-
-        return;
-      }
-
-      const { data: company, errors: companyErrors } =
-        await client.models.Company.get(
-          {
-            id: companyMember[0].companyId,
-          },
-          {
-            authMode: 'userPool',
-          },
-        );
-
-      if (companyErrors || !company?.purchasedModuleId) {
-        console.log('FetchCompanyError: ', companyErrors);
-        return;
-      }
-
-      const { data: purchasedModules, errors: purchasedModuleErrors } =
-        await client.models.PurchasedModule.list({
-          authMode: 'userPool',
-          filter: {
-            companyId: { eq: companyMember[0].companyId! },
-          },
-          selectionSet: selectionSet,
-        });
-
-      if (purchasedModuleErrors) {
-        console.log('FetchPurchaseError: ', purchasedModuleErrors);
-
-        return;
-      }
-
-      console.log(purchasedModules);
-
-      setPurchasedModules(purchasedModules);
-
-      getPurchasedModules(purchasedModules);
-
-      setCompanyId(companyMember[0].companyId);
-    };
-
-    void handler();
-  }, [user, getPurchasedModules, setCompanyId]);
 
   const handleNavMenu = useCallback((menu: string, menuItem: string) => {
     setNavMenus({

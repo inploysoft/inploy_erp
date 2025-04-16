@@ -6,11 +6,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   EmployeeTableData,
   MembershipTableData,
-  MemberTableData2,
+  MemberTableData,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
 
-export const memberColumns: ColumnDef<MemberTableData2>[] = [
+export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
     id: 'select',
     header: ({ table }) => (

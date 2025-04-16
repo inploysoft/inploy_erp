@@ -23,7 +23,7 @@ const logger = new ConsoleLogger('API');
  */
 export async function fetchLoginUser(
   userId: string,
-): Promise<Schema['CompanyMember']['type'] | null> {
+): Promise<Schema['CompanyMember']['type'] | undefined> {
   try {
     const { data, errors } = await client.models.CompanyMember.list({
       filter: {
@@ -40,7 +40,7 @@ export async function fetchLoginUser(
     }
 
     if (!data || data.length === 0) {
-      return null;
+      return;
     }
 
     return data[0];
@@ -57,10 +57,10 @@ export async function fetchLoginUser(
  */
 export async function fetchCompany(
   companyId?: string | null,
-): Promise<Schema['Company']['type'] | null> {
+): Promise<Schema['Company']['type'] | undefined> {
   try {
     if (!companyId) {
-      return null;
+      return;
     }
 
     const { data, errors } = await client.models.Company.get(
@@ -75,6 +75,10 @@ export async function fetchCompany(
     if (errors && errors.length > 0) {
       logger.error('GraphQL errors: ', errors);
       throw new Error('fetchCompany: ' + errors);
+    }
+
+    if (!data) {
+      return;
     }
 
     return data;

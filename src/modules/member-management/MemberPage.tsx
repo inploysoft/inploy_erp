@@ -9,7 +9,7 @@ import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { isMemberManagementEntity } from '@/shared/lib/utils';
 import { MemberDetailSheet } from './MemberDetailSheet';
-import { MemberTableData2 } from './types/views';
+import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { formatMemberTableData } from './utils/helpers';
 
@@ -54,7 +54,7 @@ export function MemberPage() {
   //
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
 
-  const [rowSelected, setRowSelected] = useState<MemberTableData2 | null>(null);
+  const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
 
   return (
     <>

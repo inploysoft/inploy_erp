@@ -4,7 +4,7 @@ import {
   workforceSideBarData,
 } from '@/components/ui/sidebar/utils/constants';
 import { NavMenu } from '@/components/ui/sidebar/utils/types';
-import { InployModules } from '@/shared/types/types';
+import { InployModule } from '@/shared/types/types';
 import type { Schema } from '../../../../../amplify/data/resource';
 
 /**
@@ -16,11 +16,14 @@ export function createNavMenus(modules: Schema['Module']['type'][]): NavMenu[] {
   const result: NavMenu[] = [...coreSideBarData];
 
   for (const module of modules) {
-    if (module.moduleType === InployModules.Workforce) {
-      result.push(...workforceSideBarData);
-    }
-    if (module.moduleType === InployModules.MemberManagement) {
+    const moduleType = module.moduleType as InployModule;
+
+    if (moduleType === 'memberManagement') {
       result.push(...memberManagementSideBarData);
+    }
+
+    if (moduleType === 'workforce') {
+      result.push(...workforceSideBarData);
     }
   }
 
