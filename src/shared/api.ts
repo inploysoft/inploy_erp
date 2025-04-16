@@ -1,8 +1,10 @@
 import { generateClient } from 'aws-amplify/data';
 import { ConsoleLogger } from 'aws-amplify/utils';
 
+import { Member } from '@/modules/member-management/models/member';
 import type { Schema } from '../../amplify/data/resource';
 import {
+  FetchMemberWithRelations,
   FetchPurchasedModule2,
   MemberManagementEntity,
   ModuleEntity,
@@ -254,5 +256,62 @@ export async function fetchModuleInstance(
   } catch (error) {
     logger.error('Exceptional errors: ', error);
     throw new Error('fetchModuleInstance: ' + error);
+  }
+}
+
+//
+export const fetchMemberWithRelationsSet = [
+  'id',
+  'name',
+  'phone',
+  'gender',
+  'birthDate',
+  'registeredAt',
+  'customFields',
+  'membershipRegistrationIds.id',
+  'membershipRegistrationIds.status',
+  'membershipRegistrationIds.usedSessionCount',
+  'membershipRegistrationIds.registeredAt',
+  'membershipRegistrationIds.expiredAt',
+  'membershipRegistrationIds.customFields',
+  'membershipRegistrationIds.membership.*',
+  'membershipRegistrationIds.trainer.*',
+] as const;
+
+/**
+ * 회원 테이블에 사용되는 회원 정보 조회
+ * @description Member + MembershipRegistration 테이블 조회
+ * @param member
+ * @returns 회원 및 정보 조회
+ */
+export async function fetchMemberWithRelations(
+  member: Member[],
+): Promise<FetchMemberWithRelations[] | undefined> {
+  try {
+    const { data, errors } = await client.models.Member.list({
+      filter: {
+        or: member.map((value) => ({
+          id: {
+            eq: value.id,
+          },
+        })),
+      },
+      selectionSet: fetchMemberWithRelationsSet,
+      authMode: 'userPool',
+    });
+
+    if (errors && errors.length > 0) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('fetchMemberWithRelations: ' + errors);
+    }
+
+    if (!data || data.length === 0) {
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('fetchMemberWithRelations: ' + error);
   }
 }

@@ -3,6 +3,7 @@ import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../../amplify/data/resource';
 import {
   defaultSet,
+  fetchMemberWithRelationsSet,
   fetchPurchasedModuleSelectionSet,
   memberManagementSet,
   workforceSet,
@@ -40,3 +41,8 @@ export type ModuleEntity = Record<
 >;
 
 export type ModuleEntityGeneric<TData> = Record<InployModule, TData>;
+
+export type FetchMemberWithRelations = SelectionSet<
+  Schema['Member']['type'],
+  typeof fetchMemberWithRelationsSet
+>;
