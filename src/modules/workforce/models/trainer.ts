@@ -6,7 +6,7 @@ export interface Trainer {
   //
   sub: string;
   team: Nullable<string>;
-  customFields: Nullable<CustomField[]>;
+  customFields: Nullable<CustomField>;
   createdAt: string;
   updatedAt: string;
 }
