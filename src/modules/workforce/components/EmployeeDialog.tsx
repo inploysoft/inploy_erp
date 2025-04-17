@@ -18,18 +18,35 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { EmployeeTableData } from '@/modules/member-management/types/views';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { formatKoreanPhoneToInternational } from '@/shared/lib/format';
-
+import { EmployeeTableData } from '../types/api';
 import { updateEmployee } from '../utils/api';
 
 interface EmployeeDialogProps {
   employee: EmployeeTableData | null;
   handleCloseModal: () => void;
 }
+
+interface RankOption {
+  label: string;
+  value: string;
+}
+
+const rankOptions: RankOption[] = [
+  { label: '관리자', value: 'admin' },
+  { label: '트레이너', value: 'trainer' },
+];
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -44,9 +61,6 @@ const formSchema = z.object({
   rank: z.string().min(1, {
     message: '직급은 필수 입력 사항입니다.',
   }),
-  position: z.string().min(1, {
-    message: '직책은 필수 입력 사항입니다.',
-  }),
 });
 
 export function EmployeeDialog({
@@ -54,6 +68,7 @@ export function EmployeeDialog({
   handleCloseModal,
 }: EmployeeDialogProps) {
   const { fetchLoginUserQuery } = useUserBootstrap();
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -69,13 +84,6 @@ export function EmployeeDialog({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: employee?.name ?? '',
-      rank: employee?.rank ?? '',
-      position: employee?.position ?? '',
-      email: employee?.email,
-      phone: employee?.phone,
-    },
   });
 
   useEffect(() => {
@@ -86,7 +94,6 @@ export function EmployeeDialog({
     form.reset({
       name: employee.name,
       rank: employee.rank ?? '',
-      position: employee.position ?? '',
       email: employee.email,
       phone: employee.phone,
     });
@@ -102,6 +109,8 @@ export function EmployeeDialog({
       id: employee.id,
       phone: formatKoreanPhoneToInternational(values.phone),
     });
+
+    handleCloseModal();
   }
 
   return (
@@ -135,23 +144,30 @@ export function EmployeeDialog({
                   <FormItem>
                     <FormLabel>직급</FormLabel>
 
-                    <FormControl>
-                      <Input placeholder="직급" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="직급" />
+                        </SelectTrigger>
+                      </FormControl>
 
-              <FormField
-                control={form.control}
-                name="position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>직책</FormLabel>
+                      <SelectContent>
+                        {rankOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.label}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
 
-                    <FormControl>
-                      <Input placeholder="직책" {...field} />
-                    </FormControl>
+                        <SelectItem value="add-employee">
+                          직급 추가하기
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <FormMessage />
                   </FormItem>
                 )}
               />
