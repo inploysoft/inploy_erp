@@ -1,11 +1,18 @@
 import { generateClient } from 'aws-amplify/data';
+import { ConsoleLogger } from 'aws-amplify/utils';
 import type { Schema } from '../../../../amplify/data/resource';
 
+import { z } from 'zod';
+
 import { UpdateData } from '@/modules/member-management/types/api';
-import { EmployeeTableData } from '@/modules/member-management/types/views';
+import { EmployeeTableData } from '@/modules/workforce/types/api';
 import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
+import { WorkforceEntity } from '@/shared/types/api';
+import { formSchema } from '../components/EmployeeDialog';
 
 const client = generateClient<Schema>();
+
+const logger = new ConsoleLogger('API');
 
 export async function fetchEmployees(
   companyId: string,
@@ -55,4 +62,43 @@ export async function updateEmployee(
   }
 
   return data;
+}
+
+export async function createTrainer(
+  sub: string,
+  workforceModule: WorkforceEntity | undefined,
+  employee: z.infer<typeof formSchema>,
+): Promise<Schema['Trainer']['type'] | undefined> {
+  if (!workforceModule) {
+    return;
+  }
+
+  try {
+    const { data, errors } = await client.models.Trainer.create(
+      {
+        moduleInstanceId: workforceModule.id,
+        sub: sub,
+        name: employee.name,
+        phone: employee.phone,
+      },
+      {
+        authMode: 'userPool',
+      },
+    );
+
+    if (errors && errors.length > 0) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('createTrainer: ' + errors);
+    }
+
+    if (!data) {
+      logger.error('createTrainer: ', errors);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('createTrainer: ' + error);
+  }
 }

@@ -5,6 +5,8 @@ export interface Trainer {
   id: string;
   //
   sub: string;
+  name: string;
+  phone: Nullable<string>;
   team: Nullable<string>;
   customFields: Nullable<CustomField>;
   createdAt: string;

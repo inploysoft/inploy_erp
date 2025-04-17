@@ -8,6 +8,8 @@ import {
   fetchModules,
   fetchPurchasedModules,
 } from '../api';
+import { isMemberManagementEntity, isWorkforceEntity } from '../lib/utils';
+import { MemberManagementEntity, WorkforceEntity } from '../types/api';
 
 /**
  * 유저 부트스트랩
@@ -49,10 +51,37 @@ export const useUserBootstrap = () => {
     enabled: !!fetchModulesQuery.data,
   });
 
+  // Modules
+  function memberManagementModule(): MemberManagementEntity | undefined {
+    if (
+      isMemberManagementEntity(
+        'memberManagement',
+        fetchModuleInstanceQuery.data?.memberManagement,
+      )
+    ) {
+      return fetchModuleInstanceQuery.data?.memberManagement;
+    }
+
+    return;
+  }
+
+  function workforceModule(): WorkforceEntity | undefined {
+    if (
+      isWorkforceEntity('workforce', fetchModuleInstanceQuery.data?.workforce)
+    ) {
+      return fetchModuleInstanceQuery.data?.workforce;
+    }
+
+    return;
+  }
+
   return {
     fetchLoginUserQuery,
     fetchPurchasedModulesQuery,
     fetchModulesQuery,
     fetchModuleInstanceQuery,
+    //
+    memberManagementModule,
+    workforceModule,
   };
 };
