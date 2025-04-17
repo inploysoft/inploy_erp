@@ -4,11 +4,14 @@ import { LucidePencil } from 'lucide-react';
 import { Button } from '@/components/ui/button/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  EmployeeTableData,
   MembershipTableData,
   MemberTableData,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
+import {
+  EmployeeTableData,
+  TrainerTableData,
+} from '@/modules/workforce/types/api';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
@@ -159,22 +162,6 @@ export function getEmployeeColumns(
       cell: (info) => info.getValue(),
     },
     {
-      accessorKey: 'rank',
-      header: () => <span>직급</span>,
-      cell: (info) => {
-        if (info.row.original.isAdmin) {
-          return <span>관리자</span>;
-        }
-
-        return info.getValue();
-      },
-    },
-    {
-      accessorKey: 'position',
-      header: () => <span>직책</span>,
-      cell: (info) => info.getValue(),
-    },
-    {
       accessorKey: 'email',
       header: () => <span>이메일</span>,
       cell: (info) => info.getValue(),
@@ -201,3 +188,33 @@ export function getEmployeeColumns(
     },
   ];
 }
+
+export const trainerColumns: ColumnDef<TrainerTableData>[] = [
+  {
+    accessorKey: 'id',
+    header: () => <span>id</span>,
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+  },
+  {
+    accessorKey: 'sub',
+    header: () => <span>sub</span>,
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+  },
+  {
+    accessorKey: 'name',
+    header: () => <span>이름</span>,
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: 'phone',
+    header: () => <span>전화번호</span>,
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: 'team',
+    header: () => <span>팀</span>,
+    cell: (info) => info.getValue(),
+  },
+];

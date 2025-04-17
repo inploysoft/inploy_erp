@@ -64,6 +64,13 @@ export async function updateEmployee(
   return data;
 }
 
+/**
+ * 트레이너 생성
+ * @param sub
+ * @param workforceModule
+ * @param employee
+ * @returns 트레이너 생성 결과
+ */
 export async function createTrainer(
   sub: string,
   workforceModule: WorkforceEntity | undefined,
@@ -100,5 +107,37 @@ export async function createTrainer(
   } catch (error) {
     logger.error('Exceptional errors: ', error);
     throw new Error('createTrainer: ' + error);
+  }
+}
+
+/**
+ * 트레이너 목록 조회
+ * @returns 트레이너 목록
+ */
+export async function fetchTrainers(): Promise<
+  Schema['Trainer']['type'][] | undefined
+> {
+  try {
+    const { data, errors } = await client.models.Trainer.list({
+      authMode: 'userPool',
+    });
+
+    if (errors) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('fetchTrainers: ' + errors);
+    }
+
+    if (!data) {
+      logger.error('fetchTrainers: ', errors);
+      return;
+    }
+
+    return data.map((item) => ({
+      ...item,
+      phone: formatInternationalPhoneToKorean(item.phone ?? ''),
+    }));
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('fetchTrainers: ' + error);
   }
 }
