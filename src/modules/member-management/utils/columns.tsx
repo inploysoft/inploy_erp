@@ -8,6 +8,7 @@ import {
   MemberTableData,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
+import { getRankLabel } from '@/modules/workforce/components/EmployeeDialog';
 import {
   EmployeeTableData,
   TrainerTableData,
@@ -162,6 +163,16 @@ export function getEmployeeColumns(
       cell: (info) => info.getValue(),
     },
     {
+      accessorKey: 'rank',
+      header: () => <span>직급</span>,
+      cell: (info) => getRankLabel(info.getValue() as string),
+    },
+    {
+      accessorKey: 'position',
+      header: () => <span>직책</span>,
+      cell: (info) => info.getValue(),
+    },
+    {
       accessorKey: 'email',
       header: () => <span>이메일</span>,
       cell: (info) => info.getValue(),
@@ -207,6 +218,7 @@ export const trainerColumns: ColumnDef<TrainerTableData>[] = [
     header: () => <span>이름</span>,
     cell: (info) => info.getValue(),
   },
+
   {
     accessorKey: 'phone',
     header: () => <span>전화번호</span>,

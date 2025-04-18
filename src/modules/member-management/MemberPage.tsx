@@ -7,7 +7,7 @@ import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
-import { MemberDetailSheet } from './MemberDetailSheet';
+import { MemberDetailSheet } from './components/MemberDetailSheet';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { formatMemberTableData } from './utils/helpers';

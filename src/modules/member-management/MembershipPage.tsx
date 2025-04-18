@@ -5,7 +5,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { H2 } from '@/theme/Typography';
-import { MembershipDialogContent } from './MembershipDialogContent';
+import { MembershipDialogContent } from './components/MembershipDialogContent';
 import { MembershipTableData } from './types/views';
 import { membershipColumns } from './utils/columns';
 import { formatMembershipTableData } from './utils/helpers';

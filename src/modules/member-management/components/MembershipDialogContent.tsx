@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../amplify/data/resource';
+import type { Schema } from '../../../../amplify/data/resource';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
