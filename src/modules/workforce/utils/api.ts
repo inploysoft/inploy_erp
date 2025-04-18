@@ -141,3 +141,73 @@ export async function fetchTrainers(): Promise<
     throw new Error('fetchTrainers: ' + error);
   }
 }
+
+/**
+ * 트레이너 조회
+ * @param sub
+ * @returns 트레이너 조회 결과
+ */
+export async function fetchTrainer(
+  sub: string,
+): Promise<Schema['Trainer']['type'] | undefined> {
+  try {
+    const { data, errors } = await client.models.Trainer.list({
+      authMode: 'userPool',
+      filter: {
+        sub: {
+          eq: sub,
+        },
+      },
+    });
+
+    if (errors) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('fetchTrainer: ' + errors);
+    }
+
+    if (!data || data.length === 0) {
+      logger.error('fetchTrainer: ', errors);
+      return;
+    }
+
+    return data[0];
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('fetchTrainer: ' + error);
+  }
+}
+
+/**
+ * 트레이너 삭제
+ * @param id
+ * @returns 트레이너 삭제 결과
+ */
+export async function deleteTrainer(
+  id: string,
+): Promise<Schema['Trainer']['type'] | undefined> {
+  try {
+    const { data, errors } = await client.models.Trainer.delete(
+      {
+        id: id,
+      },
+      {
+        authMode: 'userPool',
+      },
+    );
+
+    if (errors) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('deleteTrainer: ' + errors);
+    }
+
+    if (!data) {
+      logger.error('deleteTrainer: ', errors);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('deleteTrainer: ' + error);
+  }
+}
