@@ -58,6 +58,7 @@ export function DataTable<TData>({
     initialState: {
       columnVisibility: {
         id: false,
+        sub: false,
       },
     },
     getCoreRowModel: getCoreRowModel(),

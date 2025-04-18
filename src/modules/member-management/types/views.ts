@@ -1,6 +1,5 @@
 /* UI 에서 쓰는 조합형 타입 */
 
-import { CompanyMember } from '@/modules/member-management/models/companyMember';
 import { Member } from '@/modules/member-management/models/member';
 import { Membership } from '@/modules/member-management/models/membership';
 import { MembershipRegistration } from '@/modules/member-management/models/membershipRegistration';
@@ -21,8 +20,6 @@ export type MemberDetail = Omit<
   Trainer;
 
 export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
-
-export type EmployeeTableData = Omit<CompanyMember, 'companyId' | 'createdAt'>;
 
 export type RegisteredMembership = Omit<
   MembershipRegistration,

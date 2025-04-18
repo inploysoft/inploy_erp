@@ -1,12 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import {
-  MemberManagementEntity,
-  ModuleEntity,
-  ModuleEntityGeneric,
-  WorkforceEntity,
-} from '../types/api';
+import { MemberManagementEntity, WorkforceEntity } from '../types/api';
 import { InployModule } from '../types/types';
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,15 +10,15 @@ export function cn(...inputs: ClassValue[]) {
 
 //
 export function isMemberManagementEntity(
-  module: MemberManagementEntity | WorkforceEntity,
   type: Extract<InployModule, 'memberManagement'>,
+  module?: MemberManagementEntity | WorkforceEntity,
 ): module is MemberManagementEntity {
-  return module.type == type;
+  return module?.type == type;
 }
 
 export function isWorkforceEntity(
-  module: ModuleEntity,
   type: Extract<InployModule, 'workforce'>,
-): module is ModuleEntityGeneric<WorkforceEntity> {
-  return module.workforce.type == type;
+  module?: MemberManagementEntity | WorkforceEntity,
+): module is WorkforceEntity {
+  return module?.type == type;
 }
