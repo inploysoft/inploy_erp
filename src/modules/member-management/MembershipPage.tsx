@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
-import { isMemberManagementEntity } from '@/shared/lib/utils';
 import { H2 } from '@/theme/Typography';
 import { MembershipDialogContent } from './MembershipDialogContent';
 import { MembershipTableData } from './types/views';
@@ -12,28 +11,17 @@ import { membershipColumns } from './utils/columns';
 import { formatMembershipTableData } from './utils/helpers';
 
 export function MembershipPage() {
-  const { fetchModuleInstanceQuery } = useUserBootstrap();
+  const { memberManagementModule } = useUserBootstrap();
 
   const [tableData, setTableData] = useState<MembershipTableData[]>([]);
 
   useEffect(() => {
-    if (!fetchModuleInstanceQuery.data) {
-      return;
-    }
+    const result = formatMembershipTableData(
+      memberManagementModule?.membershipIds ?? [],
+    );
 
-    if (
-      isMemberManagementEntity(
-        fetchModuleInstanceQuery.data?.memberManagement,
-        'memberManagement',
-      )
-    ) {
-      const result = formatMembershipTableData(
-        fetchModuleInstanceQuery.data.memberManagement.membershipIds,
-      );
-
-      setTableData(result);
-    }
-  }, [fetchModuleInstanceQuery.data]);
+    setTableData(result);
+  }, [memberManagementModule]);
 
   return (
     <>

@@ -2,6 +2,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 
 import { useQuery } from '@tanstack/react-query';
 
+import { useMemo } from 'react';
 import {
   fetchLoginUser,
   fetchModuleInstance,
@@ -10,7 +11,6 @@ import {
 } from '../api';
 import { isMemberManagementEntity, isWorkforceEntity } from '../lib/utils';
 import { MemberManagementEntity, WorkforceEntity } from '../types/api';
-
 /**
  * 유저 부트스트랩
  * @returns 유저 정보, 구매한 모듈, 사이드바 메뉴 정보
@@ -51,21 +51,22 @@ export const useUserBootstrap = () => {
     enabled: !!fetchModulesQuery.data,
   });
 
-  // Modules
-  function memberManagementModule(): MemberManagementEntity | undefined {
-    if (
-      isMemberManagementEntity(
-        'memberManagement',
-        fetchModuleInstanceQuery.data?.memberManagement,
-      )
-    ) {
-      return fetchModuleInstanceQuery.data?.memberManagement;
-    }
+  // TODO 20250418 zod를 이용한 스키마 검증으로 변경
+  const memberManagementModule: MemberManagementEntity | undefined =
+    useMemo(() => {
+      if (
+        isMemberManagementEntity(
+          'memberManagement',
+          fetchModuleInstanceQuery.data?.memberManagement,
+        )
+      ) {
+        return fetchModuleInstanceQuery.data?.memberManagement;
+      }
 
-    return;
-  }
+      return;
+    }, [fetchModuleInstanceQuery.data]);
 
-  function workforceModule(): WorkforceEntity | undefined {
+  const workforceModule: WorkforceEntity | undefined = useMemo(() => {
     if (
       isWorkforceEntity('workforce', fetchModuleInstanceQuery.data?.workforce)
     ) {
@@ -73,7 +74,7 @@ export const useUserBootstrap = () => {
     }
 
     return;
-  }
+  }, [fetchModuleInstanceQuery.data]);
 
   return {
     fetchLoginUserQuery,

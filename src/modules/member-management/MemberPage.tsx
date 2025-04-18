@@ -7,54 +7,34 @@ import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
-import { isMemberManagementEntity } from '@/shared/lib/utils';
 import { MemberDetailSheet } from './MemberDetailSheet';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { formatMemberTableData } from './utils/helpers';
 
 export function MemberPage() {
-  const { fetchModuleInstanceQuery } = useUserBootstrap();
+  const { memberManagementModule } = useUserBootstrap();
 
-  const fetchMemberWithRelationsQuery = useQuery({
-    queryKey: [
-      'fetchMemberWithRelations',
-      fetchModuleInstanceQuery.data,
-      fetchModuleInstanceQuery.data?.memberManagement,
-    ],
-    queryFn: async () => {
-      console.log(fetchModuleInstanceQuery.data?.memberManagement);
-
-      if (!fetchModuleInstanceQuery.data) {
-        return;
-      }
-
-      if (
-        isMemberManagementEntity(
-          fetchModuleInstanceQuery.data?.memberManagement,
-          'memberManagement',
-        )
-      ) {
-        const fetched = await fetchMemberWithRelations(
-          fetchModuleInstanceQuery.data.memberManagement.memberIds,
-        );
-
-        if (!fetched) {
-          return;
-        }
-
-        return formatMemberTableData(fetched);
-      }
-
-      return [];
-    },
-    enabled: !!fetchModuleInstanceQuery.data?.memberManagement,
-  });
-
-  //
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
 
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
+
+  //
+  const fetchMemberWithRelationsQuery = useQuery({
+    queryKey: ['fetchMemberWithRelations', memberManagementModule],
+    queryFn: async () => {
+      const fetched = await fetchMemberWithRelations(
+        memberManagementModule?.memberIds ?? [],
+      );
+
+      if (!fetched) {
+        return;
+      }
+
+      return formatMemberTableData(fetched);
+    },
+    enabled: !!memberManagementModule,
+  });
 
   return (
     <>
