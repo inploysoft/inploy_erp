@@ -5,14 +5,21 @@ import {
   defaultSet,
   fetchMemberWithRelationsSet,
   fetchPurchasedModuleSelectionSet,
+  fetchPurchasedModuleWithModuleInstanceSet,
   memberManagementSet,
   workforceSet,
 } from '../api';
+
 import { InployModule } from './types';
 
-export type FetchPurchasedModule2 = SelectionSet<
+export type FetchPurchasedModule = SelectionSet<
   Schema['PurchasedModule']['type'],
   typeof fetchPurchasedModuleSelectionSet
+>;
+
+export type FetchPurchasedModuleWithModuleInstance = SelectionSet<
+  Schema['PurchasedModule']['type'],
+  typeof fetchPurchasedModuleWithModuleInstanceSet
 >;
 
 //
