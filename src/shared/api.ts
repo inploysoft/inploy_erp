@@ -90,6 +90,7 @@ export async function fetchCompany(
 
 //
 export const fetchPurchasedModuleSelectionSet = [
+  'id',
   'moduleId',
   'status',
   'purchasedAt',
@@ -189,14 +190,15 @@ const selectionSetMap = {
 
 export async function fetchModuleInstance(
   purchasedModules?: FetchPurchasedModule2[],
-  modules?: Schema['Module']['type'][],
+  inployModules?: Schema['Module']['type'][],
 ): Promise<ModuleEntity | undefined> {
+  console.log('fetchModuleInstance', purchasedModules);
   try {
     if (
       !purchasedModules ||
       purchasedModules.length === 0 ||
-      !modules ||
-      modules.length === 0
+      !inployModules ||
+      inployModules.length === 0
     ) {
       logger.error('fetchModuleInstance: ' + 'No parameters');
       return;
@@ -211,8 +213,30 @@ export async function fetchModuleInstance(
       WorkforceEntity
     >;
 
-    for (const module of modules) {
-      const moduleType = module.moduleType as InployModule;
+    for (const purchasedModule of purchasedModules) {
+      const { data: purchased, errors: purchasedErrors } =
+        await client.models.PurchasedModule.get(
+          {
+            id: purchasedModule.id,
+          },
+          {
+            selectionSet: ['module.*'],
+            authMode: 'userPool',
+          },
+        );
+
+      if (purchasedErrors && purchasedErrors.length > 0) {
+        logger.error('GraphQL errors: ', purchasedErrors);
+        throw new Error('fetchModuleInstance: ' + purchasedErrors);
+      }
+
+      if (!purchased) {
+        logger.error('fetchModuleInstance: ', purchased);
+        continue;
+      }
+
+      //
+      const moduleType = purchased.module.moduleType as InployModule;
 
       const moduleSet = selectionSetMap[moduleType];
 
@@ -228,6 +252,9 @@ export async function fetchModuleInstance(
 
       const { data, errors } = await client.models.ModuleInstance.list({
         filter: {
+          id: {
+            eq: purchasedModule.moduleInstanceId?.id,
+          },
           or: moduleInstanceIdFilters,
         },
         selectionSet: [...defaultSet, ...moduleSet],
@@ -252,6 +279,53 @@ export async function fetchModuleInstance(
         workforceResult['workforce'] = result;
       }
     }
+
+    console.log('memberManagementResult', memberManagementResult);
+    console.log('workforceResult', workforceResult);
+
+    // for (const module of inployModules) {
+    //   const moduleType = module.moduleType as InployModule;
+
+    //   const moduleSet = selectionSetMap[moduleType];
+
+    //   // lazy loading resolver
+    //   const moduleInstanceIdFilters = (
+    //     await Promise.all(
+    //       purchasedModules.map(async (value) => {
+    //         const instance = value.moduleInstanceId;
+    //         return instance?.id ? { id: { eq: instance.id } } : null;
+    //       }),
+    //     )
+    //   ).filter((f): f is { id: { eq: string } } => f !== null);
+
+    //   const { data, errors } = await client.models.ModuleInstance.list({
+    //     filter: {
+    //       or: moduleInstanceIdFilters,
+    //     },
+    //     selectionSet: [...defaultSet, ...moduleSet],
+    //     authMode: 'userPool',
+    //   });
+
+    //   if (errors && errors.length > 0) {
+    //     logger.error('GraphQL errors: ', errors);
+    //     throw new Error('fetchModuleInstance: ' + errors);
+    //   }
+
+    //   const result = {
+    //     type: moduleType,
+    //     ...data[0],
+    //   };
+
+    //   console.log('result', result);
+
+    //   if (moduleType === 'memberManagement') {
+    //     memberManagementResult['memberManagement'] = result;
+    //   }
+
+    //   if (moduleType === 'workforce') {
+    //     workforceResult['workforce'] = result;
+    //   }
+    // }
 
     return {
       ...memberManagementResult,
