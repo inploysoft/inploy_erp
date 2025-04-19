@@ -10,11 +10,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { H4 } from '@/theme/Typography';
 import { LucideCake, LucidePhone, LucideVenusAndMars } from 'lucide-react';
-import {
-  EmptyMembershipMessage,
-  RenderMembershipCard,
-} from './components/MembershipCard';
-import { MemberTableData } from './types/views';
+import { MemberTableData } from '../types/views';
+import { EmptyMembershipMessage, RenderMembershipCard } from './MembershipCard';
 
 interface MemberDetailSheetProps {
   member: MemberTableData;

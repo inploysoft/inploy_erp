@@ -3,11 +3,10 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { DataTable } from '@/components/ui/table/DataTable';
-
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
-import { EmployeeTableData } from '../member-management/types/views';
 import { getEmployeeColumns } from '../member-management/utils/columns';
 import { EmployeeDialog } from './components/EmployeeDialog';
+import { EmployeeTableData } from './types/api';
 import { fetchEmployees } from './utils/api';
 
 export function EmployeePage() {
