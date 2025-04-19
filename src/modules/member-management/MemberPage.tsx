@@ -2,12 +2,14 @@ import { useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
+import { Button } from '@/components/ui/button/button';
 import { SectionCards } from '@/components/ui/sidebar/SectionCards';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
+import { createExcel } from './components/MemberExcel';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { formatMemberTableData } from './utils/helpers';
@@ -36,6 +38,10 @@ export function MemberPage() {
     enabled: !!memberManagementModule,
   });
 
+  const onClickExport = async () => {
+    await createExcel();
+  };
+
   return (
     <>
       <div className="@container/main flex flex-col gap-2 pb-4">
@@ -48,19 +54,25 @@ export function MemberPage() {
         defaultValue="totalMembers"
         className="flex w-full flex-col justify-start gap-6"
       >
-        <TabsList>
-          <TabsTrigger value="totalMembers">전체</TabsTrigger>
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="totalMembers">전체</TabsTrigger>
 
-          <TabsTrigger value="expiringSoonMembers">만료 예정 회원</TabsTrigger>
+            <TabsTrigger value="expiringSoonMembers">
+              만료 예정 회원
+            </TabsTrigger>
 
-          <TabsTrigger value="recentlyExpiredMembers">
-            최근 만료 회원
-          </TabsTrigger>
+            <TabsTrigger value="recentlyExpiredMembers">
+              최근 만료 회원
+            </TabsTrigger>
 
-          <TabsTrigger value="recentlyRegisteredMembers">
-            최근 등록 회원
-          </TabsTrigger>
-        </TabsList>
+            <TabsTrigger value="recentlyRegisteredMembers">
+              최근 등록 회원
+            </TabsTrigger>
+          </TabsList>
+
+          <Button onClick={onClickExport}>Export</Button>
+        </div>
 
         <TabsContent value="totalMembers">
           <DataTable
