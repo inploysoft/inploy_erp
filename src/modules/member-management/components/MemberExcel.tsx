@@ -1,3 +1,6 @@
+import type { Schema } from 'amplify/data/resource';
+
+import { generateClient } from 'aws-amplify/api';
 import * as XLSX from 'xlsx';
 
 const url = 'https://docs.sheetjs.com/executive.json';
@@ -63,14 +66,12 @@ export async function importExcel() {
   return objects;
 }
 
-// const client = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
+const client = generateClient<Schema>();
 
 export function parseExcel(file: File) {
   const reader = new FileReader();
 
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const binaryStr = e.target?.result;
 
     if (!binaryStr) {
@@ -90,15 +91,35 @@ export function parseExcel(file: File) {
 
     const [headers, ...rows] = data;
 
-    console.log(headers, rows);
+    const safeRows = rows.map((row) => row.map((cell) => String(cell ?? '')));
+
+    if (!Array.isArray(safeRows) || !safeRows.every((r) => Array.isArray(r))) {
+      throw new Error('safeRows is not a 2D array');
+    }
+
+    const { data: result, errors } = await client.queries.parseExcelToJson(
+      {
+        headers: ['Name', 'Age', 'City'],
+        rows: ['John', '25', 'New York'],
+      },
+      {
+        authMode: 'userPool',
+      },
+    );
+
+    if (errors) {
+      console.log(errors);
+      return;
+    }
+
+    if (!result) {
+      console.log('result is null');
+      return;
+    }
+
+    const dd = JSON.parse(result);
+    console.log(dd);
   };
 
   reader.readAsArrayBuffer(file);
-}
-
-export async function parseExcelWithLLM() {
-  const response = await client.responses.create({
-    model: 'gpt-4o-mini',
-    input: 'Write a one-sentence bedtime story about a unicorn.',
-  });
 }
