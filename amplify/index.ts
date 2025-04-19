@@ -14,6 +14,7 @@ import { ModuleModel } from './data/schema/module';
 import { ModuleInstanceModel } from './data/schema/moduleInstance';
 import { PurchasedModuleModel } from './data/schema/purchasedModule';
 import { fetchPurchasedModules } from './functions/fetchPurchasedModules/resource';
+import { parseExcel } from './functions/parseExcel/resource';
 import { sayHello } from './functions/say-hello/resource';
 
 export const schema = a
@@ -83,5 +84,15 @@ export const schema = a
       .returns(a.string())
       .authorization((allow) => [allow.authenticated()])
       .handler(a.handler.function(sayHello)),
+
+    parseExcel: a
+      .query()
+      .arguments({
+        headers: a.string().array(),
+        rows: a.string().array(),
+      })
+      .returns(a.json().array())
+      .authorization((allow) => [allow.authenticated()])
+      .handler(a.handler.function(parseExcel)),
   })
   .authorization((allow) => allow.resource(postConfirmation));
