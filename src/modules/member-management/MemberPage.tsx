@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button/button';
+import { Input } from '@/components/ui/input';
 import { SectionCards } from '@/components/ui/sidebar/SectionCards';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
-import { createExcel, importExcel } from './components/MemberExcel';
+import { createExcel, importExcel, parseExcel } from './components/MemberExcel';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { formatMemberTableData } from './utils/helpers';
@@ -46,6 +47,15 @@ export function MemberPage() {
     await importExcel();
   };
 
+  const onChangeFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    parseExcel(file);
+  };
   return (
     <>
       <div className="@container/main flex flex-col gap-2 pb-4">
@@ -76,7 +86,9 @@ export function MemberPage() {
           </TabsList>
           <div className="flex gap-2">
             <Button onClick={onClickExport}>엑셀 내보내기</Button>
+
             <Button onClick={onClickImport}>엑셀 가져오기</Button>
+            <Input id="picture" type="file" onChange={onChangeFileUpload} />
           </div>
         </div>
 

@@ -62,3 +62,43 @@ export async function importExcel() {
 
   return objects;
 }
+
+// const client = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
+
+export function parseExcel(file: File) {
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const binaryStr = e.target?.result;
+
+    if (!binaryStr) {
+      console.log('binaryStr is null');
+      return;
+    }
+
+    const workbook = XLSX.read(binaryStr, { type: 'binary' });
+
+    const sheetName = workbook.SheetNames[0]; // 첫 번째 시트
+    console.log('sheetName', sheetName);
+
+    const worksheet = workbook.Sheets[sheetName];
+    console.log('worksheet', worksheet);
+
+    const data = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
+
+    const [headers, ...rows] = data;
+
+    console.log(headers, rows);
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+export async function parseExcelWithLLM() {
+  const response = await client.responses.create({
+    model: 'gpt-4o-mini',
+    input: 'Write a one-sentence bedtime story about a unicorn.',
+  });
+}
