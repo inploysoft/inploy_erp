@@ -5,7 +5,8 @@ import { Member } from '@/modules/member-management/models/member';
 import type { Schema } from '../../amplify/data/resource';
 import {
   FetchMemberWithRelations,
-  FetchPurchasedModule2,
+  FetchPurchasedModule,
+  FetchPurchasedModuleWithModuleInstance,
   MemberManagementEntity,
   ModuleEntity,
   WorkforceEntity,
@@ -107,7 +108,7 @@ export const fetchPurchasedModuleSelectionSet = [
  */
 export async function fetchPurchasedModules(
   companyId?: string | null,
-): Promise<FetchPurchasedModule2[]> {
+): Promise<FetchPurchasedModule[]> {
   try {
     if (!companyId) {
       logger.error('companyId is required');
@@ -142,7 +143,7 @@ export async function fetchPurchasedModules(
  * @returns 실제 모듈에 대한 설명 정보
  */
 export async function fetchModules(
-  purchasedModules?: FetchPurchasedModule2[],
+  purchasedModules?: FetchPurchasedModule[],
 ): Promise<Schema['Module']['type'][]> {
   try {
     if (!purchasedModules) {
@@ -173,6 +174,45 @@ export async function fetchModules(
 }
 
 //
+export const fetchPurchasedModuleWithModuleInstanceSet = ['module.*'] as const;
+
+/**
+ * 구매한 모듈 조회
+ * @param purchasedModule 구매한 모듈
+ * @returns 구매한 모듈 조회
+ */
+export async function fetchPurchasedModule(
+  purchasedModule: FetchPurchasedModule,
+): Promise<FetchPurchasedModuleWithModuleInstance | undefined> {
+  try {
+    const { data, errors } = await client.models.PurchasedModule.get(
+      {
+        id: purchasedModule.id,
+      },
+      {
+        selectionSet: fetchPurchasedModuleWithModuleInstanceSet,
+        authMode: 'userPool',
+      },
+    );
+
+    if (errors && errors.length > 0) {
+      logger.error('GraphQL errors: ', errors);
+      throw new Error('fetchPurchasedModulesWithModuleInstance: ' + errors);
+    }
+
+    if (!data) {
+      logger.error('fetchPurchasedModulesWithModuleInstance: ', data);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    logger.error('Exceptional errors: ', error);
+    throw new Error('fetchPurchasedModulesWithModuleInstance: ' + error);
+  }
+}
+
+//
 export const defaultSet = ['id', 'status'] as const;
 
 export const memberManagementSet = [
@@ -188,8 +228,14 @@ const selectionSetMap = {
   workforce: workforceSet,
 } as const;
 
+/**
+ * 구매한 모듈 인스턴스 조회
+ * @param purchasedModules 구매한 모듈
+ * @param inployModules 인플로이 제공 모듈
+ * @returns 구매한 모듈 인스턴스 조회
+ */
 export async function fetchModuleInstance(
-  purchasedModules?: FetchPurchasedModule2[],
+  purchasedModules?: FetchPurchasedModule[],
   inployModules?: Schema['Module']['type'][],
 ): Promise<ModuleEntity | undefined> {
   console.log('fetchModuleInstance', purchasedModules);
@@ -213,30 +259,11 @@ export async function fetchModuleInstance(
       WorkforceEntity
     >;
 
+    // TODO: 20250419 구매한 모듈 한번에 가져오기
     for (const purchasedModule of purchasedModules) {
-      const { data: purchased, errors: purchasedErrors } =
-        await client.models.PurchasedModule.get(
-          {
-            id: purchasedModule.id,
-          },
-          {
-            selectionSet: ['module.*'],
-            authMode: 'userPool',
-          },
-        );
+      const purchased = await fetchPurchasedModule(purchasedModule);
 
-      if (purchasedErrors && purchasedErrors.length > 0) {
-        logger.error('GraphQL errors: ', purchasedErrors);
-        throw new Error('fetchModuleInstance: ' + purchasedErrors);
-      }
-
-      if (!purchased) {
-        logger.error('fetchModuleInstance: ', purchased);
-        continue;
-      }
-
-      //
-      const moduleType = purchased.module.moduleType as InployModule;
+      const moduleType = purchased?.module.moduleType as InployModule;
 
       const moduleSet = selectionSetMap[moduleType];
 
@@ -266,6 +293,11 @@ export async function fetchModuleInstance(
         throw new Error('fetchModuleInstance: ' + errors);
       }
 
+      if (!data || data.length === 0) {
+        logger.error('fetchModuleInstance: ', data);
+        continue;
+      }
+
       const result = {
         type: moduleType,
         ...data[0],
@@ -279,53 +311,6 @@ export async function fetchModuleInstance(
         workforceResult['workforce'] = result;
       }
     }
-
-    console.log('memberManagementResult', memberManagementResult);
-    console.log('workforceResult', workforceResult);
-
-    // for (const module of inployModules) {
-    //   const moduleType = module.moduleType as InployModule;
-
-    //   const moduleSet = selectionSetMap[moduleType];
-
-    //   // lazy loading resolver
-    //   const moduleInstanceIdFilters = (
-    //     await Promise.all(
-    //       purchasedModules.map(async (value) => {
-    //         const instance = value.moduleInstanceId;
-    //         return instance?.id ? { id: { eq: instance.id } } : null;
-    //       }),
-    //     )
-    //   ).filter((f): f is { id: { eq: string } } => f !== null);
-
-    //   const { data, errors } = await client.models.ModuleInstance.list({
-    //     filter: {
-    //       or: moduleInstanceIdFilters,
-    //     },
-    //     selectionSet: [...defaultSet, ...moduleSet],
-    //     authMode: 'userPool',
-    //   });
-
-    //   if (errors && errors.length > 0) {
-    //     logger.error('GraphQL errors: ', errors);
-    //     throw new Error('fetchModuleInstance: ' + errors);
-    //   }
-
-    //   const result = {
-    //     type: moduleType,
-    //     ...data[0],
-    //   };
-
-    //   console.log('result', result);
-
-    //   if (moduleType === 'memberManagement') {
-    //     memberManagementResult['memberManagement'] = result;
-    //   }
-
-    //   if (moduleType === 'workforce') {
-    //     workforceResult['workforce'] = result;
-    //   }
-    // }
 
     return {
       ...memberManagementResult,
