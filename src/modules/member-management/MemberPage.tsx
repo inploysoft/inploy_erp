@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
-import { createExcel } from './components/MemberExcel';
+import { createExcel, importExcel } from './components/MemberExcel';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { formatMemberTableData } from './utils/helpers';
@@ -42,6 +42,10 @@ export function MemberPage() {
     await createExcel();
   };
 
+  const onClickImport = async () => {
+    await importExcel();
+  };
+
   return (
     <>
       <div className="@container/main flex flex-col gap-2 pb-4">
@@ -70,8 +74,10 @@ export function MemberPage() {
               최근 등록 회원
             </TabsTrigger>
           </TabsList>
-
-          <Button onClick={onClickExport}>Export</Button>
+          <div className="flex gap-2">
+            <Button onClick={onClickExport}>엑셀 내보내기</Button>
+            <Button onClick={onClickImport}>엑셀 가져오기</Button>
+          </div>
         </div>
 
         <TabsContent value="totalMembers">
