@@ -1,6 +1,6 @@
 import type { Schema } from 'amplify/data/resource';
-
 import { generateClient } from 'aws-amplify/api';
+
 import * as XLSX from 'xlsx';
 
 const url = 'https://docs.sheetjs.com/executive.json';
@@ -82,14 +82,12 @@ export function parseExcel(file: File) {
     const workbook = XLSX.read(binaryStr, { type: 'binary' });
 
     const sheetName = workbook.SheetNames[0]; // 첫 번째 시트
-    console.log('sheetName', sheetName);
-
     const worksheet = workbook.Sheets[sheetName];
-    console.log('worksheet', worksheet);
 
     const data = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
 
     const [headers, ...rows] = data;
+    console.log(headers, rows);
 
     const safeRows = rows.map((row) => row.map((cell) => String(cell ?? '')));
 
@@ -99,8 +97,17 @@ export function parseExcel(file: File) {
 
     const { data: result, errors } = await client.queries.parseExcelToJson(
       {
-        headers: ['Name', 'Age', 'City'],
-        rows: ['John', '25', 'New York'],
+        headers: headers,
+        rows: JSON.stringify(safeRows),
+        subParsingFields: [
+          'branch',
+          'registerType',
+          'displayName',
+          'durationValue',
+          'durationUnit',
+          'sessionCount',
+          'expiredAt',
+        ],
       },
       {
         authMode: 'userPool',

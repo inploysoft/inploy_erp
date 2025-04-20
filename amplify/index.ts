@@ -14,7 +14,7 @@ import { ModuleModel } from './data/schema/module';
 import { ModuleInstanceModel } from './data/schema/moduleInstance';
 import { PurchasedModuleModel } from './data/schema/purchasedModule';
 import { fetchPurchasedModules } from './functions/fetchPurchasedModules/resource';
-import { parseExcelToJson } from './functions/parseExcel/resource';
+import { parseExcelToJson } from './functions/parseExcelToJson/resource';
 import { sayHello } from './functions/say-hello/resource';
 
 export const schema = a
@@ -88,8 +88,9 @@ export const schema = a
     parseExcelToJson: a
       .query()
       .arguments({
-        headers: a.string().array(),
-        rows: a.string().array(),
+        headers: a.string().array().required(),
+        rows: a.json().required(),
+        subParsingFields: a.string().array(),
       })
       .returns(a.json().array())
       .authorization((allow) => [allow.authenticated()])
