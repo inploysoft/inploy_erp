@@ -90,7 +90,7 @@ export const schema = a
       .arguments({
         headers: a.string().array().required(),
         rows: a.json().required(),
-        subParsingFields: a.string().array(),
+        subParsingKeys: a.json(),
       })
       .returns(a.json().array())
       .authorization((allow) => [allow.authenticated()])

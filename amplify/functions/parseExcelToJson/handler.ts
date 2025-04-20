@@ -3,7 +3,11 @@ import { env } from '$amplify/env/parse-excel-to-json';
 import { OpenAI } from 'openai';
 
 import type { Schema } from '../../data/resource';
-import { finalInstructions, subParsingInstructions } from './prompt';
+import {
+  finalInstructions,
+  subParsingInstructions,
+  SubParsingKeys,
+} from './prompt';
 
 const client = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -12,41 +16,42 @@ const client = new OpenAI({
 export const handler: Schema['parseExcelToJson']['functionHandler'] = async (
   event,
 ) => {
-  const { headers, rows, subParsingFields } = event.arguments;
+  const { headers, rows, subParsingKeys } = event.arguments;
 
-  let subParsingResponse: string | null = null;
-  let subFields: string[] | null = null;
+  let subParsingResponse: string = '';
 
-  if (subParsingFields) {
+  if (subParsingKeys) {
     const response = await client.responses.create({
       model: 'gpt-4o-mini',
       instructions: subParsingInstructions(rows as unknown as string[][]),
       input: `Rows: ${rows}`,
     });
 
-    const nonNullableSubParsingFields = subParsingFields?.filter(
-      (field): field is string => field !== null,
-    );
-
     subParsingResponse = response.output_text;
-    subFields = nonNullableSubParsingFields;
   }
 
   const nonNullableHeaders = headers.filter(
     (header): header is string => header !== null,
   );
 
+  if (!subParsingKeys) {
+    return JSON.parse('No subParsingKeys');
+  }
+
   const instructions = finalInstructions(
     nonNullableHeaders,
     rows as unknown as string[][],
     subParsingResponse,
-    subFields,
+    subParsingKeys as SubParsingKeys,
   );
+
+  console.log('subParsingResponse', subParsingResponse);
+  console.log('subParsingKeys', subParsingKeys);
 
   const response = await client.responses.create({
     model: 'gpt-4o-mini',
     instructions: instructions,
-    input: `Headers: ${headers}, Rows: ${rows}, SubParsingResponse: ${subParsingResponse}, SubFields: ${subFields}`,
+    input: `Headers: ${headers}, Rows: ${rows}, SubParsingResponse: ${subParsingResponse}, SubParsingKeys: ${subParsingKeys}`,
   });
 
   return JSON.parse(response.output_text);

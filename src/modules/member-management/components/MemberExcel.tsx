@@ -2,6 +2,8 @@ import type { Schema } from 'amplify/data/resource';
 import { generateClient } from 'aws-amplify/api';
 
 import * as XLSX from 'xlsx';
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const url = 'https://docs.sheetjs.com/executive.json';
 
@@ -68,6 +70,33 @@ export async function importExcel() {
 
 const client = generateClient<Schema>();
 
+const memberExcelSchema = z
+  .object({
+    branch: z.string(),
+    displayName: z.string().describe('1:1 PT'),
+    registerType: z
+      .enum(['duration', 'count'])
+      .describe(
+        'Set to duration if there is no count (e.g. 20회). Otherwise, set to count',
+      ),
+    durationValue: z.number(),
+    durationUnit: z.enum(['minute', 'hour', 'day', 'month']),
+    sessionCount: z
+      .number()
+      .optional()
+      .describe(
+        'Only include this field if a count (e.g. "20회") is explicitly present. Otherwise, omit this field entirely.',
+      ),
+    usedSessionCount: z
+      .number()
+      .optional()
+      .describe(
+        'Only include this field if a count (e.g. "20회") is explicitly present. Otherwise, omit this field entirely.',
+      ),
+    expiredAt: z.string().date().describe('2025-09-02'),
+  })
+  .describe('Map the subfields to the row');
+
 export function parseExcel(file: File) {
   const reader = new FileReader();
 
@@ -81,33 +110,33 @@ export function parseExcel(file: File) {
 
     const workbook = XLSX.read(binaryStr, { type: 'binary' });
 
-    const sheetName = workbook.SheetNames[0]; // 첫 번째 시트
+    const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
 
-    const data = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
+    const data = XLSX.utils.sheet_to_json<string[]>(worksheet, {
+      header: 1,
+      raw: false,
+    });
 
+    // TODO: 20250420 rows: string[][] -> 구조 변경
     const [headers, ...rows] = data;
+
     console.log(headers, rows);
 
-    const safeRows = rows.map((row) => row.map((cell) => String(cell ?? '')));
+    const jsonSchema = zodToJsonSchema(memberExcelSchema, {
+      name: 'memberExcelSchema',
+      errorMessages: true,
+    });
 
-    if (!Array.isArray(safeRows) || !safeRows.every((r) => Array.isArray(r))) {
-      throw new Error('safeRows is not a 2D array');
-    }
+    console.log(jsonSchema.definitions?.memberExcelSchema);
 
     const { data: result, errors } = await client.queries.parseExcelToJson(
       {
         headers: headers,
-        rows: JSON.stringify(safeRows),
-        subParsingFields: [
-          'branch',
-          'registerType',
-          'displayName',
-          'durationValue',
-          'durationUnit',
-          'sessionCount',
-          'expiredAt',
-        ],
+        rows: JSON.stringify(rows),
+        subParsingKeys: JSON.stringify(
+          jsonSchema.definitions?.memberExcelSchema.properties,
+        ),
       },
       {
         authMode: 'userPool',
