@@ -14,6 +14,7 @@ import { ModuleModel } from './data/schema/module';
 import { ModuleInstanceModel } from './data/schema/moduleInstance';
 import { PurchasedModuleModel } from './data/schema/purchasedModule';
 import { fetchPurchasedModules } from './functions/fetchPurchasedModules/resource';
+import { parseComplexField } from './functions/parseComplexField/resource';
 import { parseExcelToJson } from './functions/parseExcelToJson/resource';
 import { sayHello } from './functions/say-hello/resource';
 
@@ -95,5 +96,14 @@ export const schema = a
       .returns(a.json().array())
       .authorization((allow) => [allow.authenticated()])
       .handler(a.handler.function(parseExcelToJson)),
+
+    parseComplexField: a
+      .query()
+      .arguments({
+        complexFields: a.string().array().required(),
+      })
+      .returns(a.json().array())
+      .authorization((allow) => [allow.authenticated()])
+      .handler(a.handler.function(parseComplexField)),
   })
   .authorization((allow) => allow.resource(postConfirmation));
