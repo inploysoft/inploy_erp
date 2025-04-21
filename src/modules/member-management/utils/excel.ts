@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 
 import { awsLogger } from '@/shared/lib/config';
+import { MemberExcelRowObject } from '../types/views';
 import { llmParsedMembershipsFromExcel } from './api';
 
 const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
@@ -47,19 +48,22 @@ const excelHeaderValue = [
   'name',
   'phone',
   'gender',
-  'birthday',
+  'birthDate',
   'address',
   'lastVisitedAt',
   'FCtrainer',
   'memoAt',
   'memo',
   'memberships',
-  'latestExpiredAt',
-  'status',
+  'latestExpiredAt', // 필요없음
+  'status', // 멤버십 상태...
   'PTtrainer',
-];
+] as const;
 
-export async function transformMemberExcelData({ headers, rows }: ParseExcel) {
+export async function transformMemberExcelData({
+  headers,
+  rows,
+}: ParseExcel): Promise<MemberExcelRowObject[]> {
   const headerMap: Record<string, string> = Object.fromEntries(
     headers.map((key, index) => [key, excelHeaderValue[index]]),
   );
@@ -68,6 +72,7 @@ export async function transformMemberExcelData({ headers, rows }: ParseExcel) {
 
   const membershipTexts = rows.map((cell) => cell[membershipIndex]);
 
+  //
   const preprocessed = membershipTexts.map((block) => {
     return block
       .split('\n')
@@ -81,9 +86,9 @@ export async function transformMemberExcelData({ headers, rows }: ParseExcel) {
         }
 
         normalizedLine = normalizedLine
-          .replace(/[-\/]/g, '') // -, / 제거
-          .replace(/\s+/g, ' ') // 연속된 공백을 단일 공백으로
-          .trim(); // 앞뒤 공백 제거
+          .replace(/[-/]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
 
         if (date) {
           normalizedLine = normalizedLine.replace('___DATE___', date);
@@ -97,12 +102,14 @@ export async function transformMemberExcelData({ headers, rows }: ParseExcel) {
   // TODO: 20250422 300rows로 배치 변환 로직 추가
   const memberships = await llmParsedMembershipsFromExcel(preprocessed);
 
+  // TODO: 20250422 타입 재정의 (zod 사용)
   const result = rows.map((row, idx) => {
     const obj: Record<string, unknown> = {};
 
     for (let i = 0; i < headers.length; i++) {
       const originalKey = headers[i];
-      const targetKey = headerMap[originalKey] ?? originalKey;
+      const targetKey =
+        (headerMap[originalKey] as keyof MemberExcelRowObject) ?? originalKey;
 
       if (i === membershipIndex) {
         obj[targetKey] = memberships?.[idx];
@@ -114,5 +121,5 @@ export async function transformMemberExcelData({ headers, rows }: ParseExcel) {
     return obj;
   });
 
-  return result;
+  return result as unknown as MemberExcelRowObject[];
 }

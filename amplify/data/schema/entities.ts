@@ -9,6 +9,9 @@ export const MemberModel = a.model({
   phone: a.phone().required(),
   gender: a.string(),
   birthDate: a.date(),
+  address: a.string(),
+  memo: a.string(),
+  lastVisitedAt: a.date(),
   registeredAt: a.datetime(),
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
