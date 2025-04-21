@@ -100,9 +100,9 @@ export const schema = a
     parseComplexField: a
       .query()
       .arguments({
-        complexFields: a.string().array().required(),
+        complexFields: a.string().required().array().required(),
       })
-      .returns(a.json().array())
+      .returns(a.json().required().array().required())
       .authorization((allow) => [allow.authenticated()])
       .handler(a.handler.function(parseComplexField)),
   })

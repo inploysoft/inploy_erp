@@ -2,8 +2,6 @@ import type { Schema } from 'amplify/data/resource';
 import { generateClient } from 'aws-amplify/api';
 
 import * as XLSX from 'xlsx';
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const url = 'https://docs.sheetjs.com/executive.json';
 
@@ -71,33 +69,6 @@ export async function importExcel() {
 //
 const client = generateClient<Schema>();
 
-const memberExcelSchema = z
-  .object({
-    branch: z.string(),
-    displayName: z.string().describe('1:1 PT'),
-    registerType: z
-      .enum(['duration', 'count'])
-      .describe(
-        'Set to duration if there is no count (e.g. 20회). Otherwise, set to count',
-      ),
-    durationValue: z.number(),
-    durationUnit: z.enum(['minute', 'hour', 'day', 'month']),
-    sessionCount: z
-      .number()
-      .optional()
-      .describe(
-        'Only include this field if a count (e.g. "20회") is explicitly present. Otherwise, omit this field entirely.',
-      ),
-    usedSessionCount: z
-      .number()
-      .optional()
-      .describe(
-        'Only include this field if a count (e.g. "20회") is explicitly present. Otherwise, omit this field entirely.',
-      ),
-    expiredAt: z.string().date().describe('2025-09-02'),
-  })
-  .describe('Map the subfields to the row');
-
 export function parseExcel(file: File) {
   const reader = new FileReader();
 
@@ -114,13 +85,13 @@ export function parseExcel(file: File) {
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
 
-    const data = XLSX.utils.sheet_to_json<string[]>(worksheet, {
+    const excelData = XLSX.utils.sheet_to_json<string[]>(worksheet, {
       header: 1,
       raw: false,
     });
 
     // TODO: 20250420 rows: string[][] -> 구조 변경
-    const [headers, ...rows] = data;
+    const [headers, ...rows] = excelData;
 
     const headerValue = [
       'name',
@@ -149,11 +120,40 @@ export function parseExcel(file: File) {
 
     // 2. rows에서 "이용권"만 추출
     const membershipTexts = rows.map((cell) => cell[membershipIndex]);
+    console.log('membershipTexts', membershipTexts);
+
+    const preprocessed = membershipTexts.map((block) => {
+      return block
+        .split('\n')
+        .map((line) => {
+          const date = line.match(/\d{4}-\d{2}-\d{2}/)?.[0] ?? null;
+
+          let normalizedLine = line;
+
+          if (date) {
+            normalizedLine = normalizedLine.replace(date, '___DATE___');
+          }
+
+          normalizedLine = normalizedLine
+            .replace(/[-\/]/g, '') // -, / 제거
+            .replace(/\s+/g, ' ') // 연속된 공백을 단일 공백으로
+            .trim(); // 앞뒤 공백 제거
+
+          if (date) {
+            normalizedLine = normalizedLine.replace('___DATE___', date);
+          }
+
+          return normalizedLine;
+        })
+        .join('\n');
+    });
+
+    console.log('preprocessed', preprocessed);
 
     // 3. 한꺼번에 LLM 호출 → 배열 반환
-    const { data: result, errors } = await client.queries.parseComplexField(
+    const { data, errors } = await client.queries.parseComplexField(
       {
-        complexFields: membershipTexts,
+        complexFields: preprocessed,
       },
       { authMode: 'userPool' },
     );
@@ -163,50 +163,31 @@ export function parseExcel(file: File) {
       return;
     }
 
-    if (!result) {
+    if (!data) {
       console.log('result is null');
       return;
     }
 
-    console.log('result', JSON.parse(result));
+    const parsed = data.map((str) => JSON.parse(str));
 
     // 4.
     // headerMap으로 맵핑
+    const structuredRows = rows.map((row, idx) => {
+      const obj: Record<string, any> = {};
 
-    console.log(headers, rows);
+      for (let i = 0; i < headers.length; i++) {
+        const originalKey = headers[i];
+        const targetKey = headerMap[originalKey] ?? originalKey;
 
-    const jsonSchema = zodToJsonSchema(memberExcelSchema, {
-      name: 'memberExcelSchema',
-      errorMessages: true,
+        if (i === membershipIndex) {
+          obj[targetKey] = parsed[idx];
+        } else {
+          obj[targetKey] = row[i];
+        }
+      }
+
+      return obj;
     });
-
-    console.log(jsonSchema.definitions?.memberExcelSchema);
-
-    // const { data: result, errors } = await client.queries.parseExcelToJson(
-    //   {
-    //     headers: headers,
-    //     rows: JSON.stringify(rows),
-    //     subParsingKeys: JSON.stringify(
-    //       jsonSchema.definitions?.memberExcelSchema.properties,
-    //     ),
-    //   },
-    //   {
-    //     authMode: 'userPool',
-    //   },
-    // );
-
-    // if (errors) {
-    //   console.log(errors);
-    //   return;
-    // }
-
-    // if (!result) {
-    //   console.log('result is null');
-    //   return;
-    // }
-
-    // const dd = JSON.parse(result);
-    // console.log(dd);
   };
 
   reader.readAsArrayBuffer(file);

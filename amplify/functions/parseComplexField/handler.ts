@@ -14,22 +14,23 @@ export const handler: Schema['parseComplexField']['functionHandler'] = async (
 ) => {
   const { complexFields } = event.arguments;
 
-  const nonNullableFields = complexFields.filter(
-    (field): field is string => field !== null,
-  );
-
   const response = await client.responses.create({
     model: 'gpt-4o-mini',
-    instructions: generateInstructions(nonNullableFields),
+    instructions: generateInstructions(),
     input: [
       {
         role: 'system',
-        content: `You are an expert at structured data extraction. Convert the unstructured data ${nonNullableFields} into the given structure.`,
+        content: `Input data is a string array containing multiple membership descriptions. You are job is to separate each membership description from the element to format it into a structured output.`,
       },
-      { role: 'user', content: `${nonNullableFields}` },
+      {
+        role: 'user',
+        content: JSON.stringify(complexFields, null, 2),
+      },
     ],
     text: structuredText(),
   });
 
-  return JSON.parse(response.output_text);
+  const parsed = JSON.parse(response.output_text);
+
+  return parsed.memberships;
 };
