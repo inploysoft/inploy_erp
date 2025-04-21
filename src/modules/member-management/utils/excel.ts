@@ -1,8 +1,9 @@
 import * as XLSX from 'xlsx';
 
 import { awsLogger } from '@/shared/lib/config';
-import { MemberExcelRowObject } from '../types/views';
+import { MemberExcelRowObject, MemberTableData2 } from '../types/views';
 import { llmParsedMembershipsFromExcel } from './api';
+import { formatMemberTableDataFromExcel } from './helpers';
 
 const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise((resolve, reject) => {
@@ -60,10 +61,10 @@ const excelHeaderValue = [
   'PTtrainer',
 ] as const;
 
-export async function transformMemberExcelData({
+export async function transformMemberExcelToObjects({
   headers,
   rows,
-}: ParseExcel): Promise<MemberExcelRowObject[]> {
+}: ParseExcel): Promise<MemberTableData2[]> {
   const headerMap: Record<string, string> = Object.fromEntries(
     headers.map((key, index) => [key, excelHeaderValue[index]]),
   );
@@ -103,7 +104,7 @@ export async function transformMemberExcelData({
   const memberships = await llmParsedMembershipsFromExcel(preprocessed);
 
   // TODO: 20250422 타입 재정의 (zod 사용)
-  const result = rows.map((row, idx) => {
+  const excelObjectMap = rows.map((row, idx) => {
     const obj: Record<string, unknown> = {};
 
     for (let i = 0; i < headers.length; i++) {
@@ -121,5 +122,9 @@ export async function transformMemberExcelData({
     return obj;
   });
 
-  return result as unknown as MemberExcelRowObject[];
+  const result = formatMemberTableDataFromExcel(
+    excelObjectMap as unknown as MemberExcelRowObject[],
+  );
+
+  return result;
 }

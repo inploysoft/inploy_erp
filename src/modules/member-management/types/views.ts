@@ -1,4 +1,6 @@
 /* UI 에서 쓰는 조합형 타입 */
+import { z } from 'zod';
+
 import { Member } from '@/modules/member-management/models/member';
 import { Membership } from '@/modules/member-management/models/membership';
 import {
@@ -6,6 +8,7 @@ import {
   MembershipRegistrationStatus,
 } from '@/modules/member-management/models/membershipRegistration';
 import { Trainer } from '@/modules/workforce/models/trainer';
+import { memberExcelSchema } from './api';
 
 export type MemberTableData = Omit<
   Member,
@@ -24,13 +27,16 @@ export interface MemberExcelRowObject {
   FCtrainer: string;
   memoAt: string;
   memo: string;
-  memberships: Membership[];
+  memberships: z.infer<typeof memberExcelSchema>[];
   latestExpiredAt: string;
   status: MembershipRegistrationStatus;
   PTtrainer: string;
 }
 
-export type MemberTableData2 = Omit<MemberExcelRowObject, 'latestExpiredAt'>;
+export type MemberTableData2 = Omit<
+  MemberExcelRowObject,
+  'address' | 'memo' | 'memoAt' | 'latestExpiredAt'
+>;
 
 export type MemberDetail = Omit<
   MembershipRegistration,

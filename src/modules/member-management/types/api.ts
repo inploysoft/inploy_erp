@@ -20,7 +20,7 @@ export type UpdateData<TData> = {
 } & Partial<Omit<TData, 'id'>>;
 
 //
-const memberExcelSchema = z.object({
+export const memberExcelSchema = z.object({
   branch: z.string(),
   registerType: z.enum(['duration', 'count']),
   displayName: z.string(),

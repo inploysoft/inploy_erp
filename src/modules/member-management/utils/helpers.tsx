@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 
 import {
+  MemberExcelRowObject,
   MembershipTableData,
   MemberTableData,
+  MemberTableData2,
 } from '@/modules/member-management/types/views';
 import { FetchMemberWithRelations } from '@/shared/types/api';
 import {
@@ -43,6 +45,15 @@ export function formatMemberTableData(
   });
 
   return result;
+}
+
+export function formatMemberTableDataFromExcel(
+  excelObjects: MemberExcelRowObject[],
+) {
+  return excelObjects.map<MemberTableData2>(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ({ address, memo, memoAt, latestExpiredAt, ...rest }) => rest,
+  );
 }
 
 /**

@@ -9,11 +9,12 @@ import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
+import { H3 } from '@/theme/Typography';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
 import { createExcel, importExcel } from './components/MemberExcel';
-import { MemberTableData } from './types/views';
-import { memberColumns } from './utils/columns';
-import { parseExcel2, transformMemberExcelData } from './utils/excel';
+import { MemberTableData, MemberTableData2 } from './types/views';
+import { memberColumns, memberColumns2 } from './utils/columns';
+import { parseExcel2, transformMemberExcelToObjects } from './utils/excel';
 import { formatMemberTableData } from './utils/helpers';
 
 export function MemberPage() {
@@ -24,6 +25,8 @@ export function MemberPage() {
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
 
   //
+  const [memberTable, setMemberTable] = useState<MemberTableData2[]>([]);
+
   const fetchMemberWithRelationsQuery = useQuery({
     queryKey: ['fetchMemberWithRelations', memberManagementModule],
     queryFn: async () => {
@@ -63,7 +66,9 @@ export function MemberPage() {
       return;
     }
 
-    await transformMemberExcelData(parsedData);
+    const result = await transformMemberExcelToObjects(parsedData);
+
+    setMemberTable(result);
   };
   return (
     <>
@@ -123,43 +128,23 @@ export function MemberPage() {
         </TabsContent>
 
         <TabsContent value="expiringSoonMembers">
+          <H3>엑셀 추가하면 보임 (테이블 형식 이걸로 바꿀 예정)</H3>
+
           <DataTable
-            columns={memberColumns}
-            data={fetchMemberWithRelationsQuery.data ?? []}
+            columns={memberColumns2}
+            data={memberTable}
             //
             filterKey="name"
-            onRowClick={(row) => {
-              setRowSelected(row);
-              setOpenDetailSheet(true);
-            }}
+            // onRowClick={(row) => {
+            //   setRowSelected(row);
+            //   setOpenDetailSheet(true);
+            // }}
           />
         </TabsContent>
 
-        <TabsContent value="recentlyExpiredMembers">
-          <DataTable
-            columns={memberColumns}
-            data={fetchMemberWithRelationsQuery.data ?? []}
-            //
-            filterKey="name"
-            onRowClick={(row) => {
-              setRowSelected(row);
-              setOpenDetailSheet(true);
-            }}
-          />
-        </TabsContent>
+        <TabsContent value="recentlyExpiredMembers"></TabsContent>
 
-        <TabsContent value="recentlyRegisteredMembers">
-          <DataTable
-            columns={memberColumns}
-            data={fetchMemberWithRelationsQuery.data ?? []}
-            //
-            filterKey="name"
-            onRowClick={(row) => {
-              setRowSelected(row);
-              setOpenDetailSheet(true);
-            }}
-          />
-        </TabsContent>
+        <TabsContent value="recentlyRegisteredMembers"></TabsContent>
       </Tabs>
     </>
   );
