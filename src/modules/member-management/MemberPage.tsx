@@ -10,9 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
-import { createExcel, importExcel, parseExcel } from './components/MemberExcel';
+import { createExcel, importExcel } from './components/MemberExcel';
 import { MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
+import { parseExcel2, transformMemberExcelData } from './utils/excel';
 import { formatMemberTableData } from './utils/helpers';
 
 export function MemberPage() {
@@ -47,14 +48,22 @@ export function MemberPage() {
     await importExcel();
   };
 
-  const onChangeFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
 
     if (!file) {
       return;
     }
 
-    parseExcel(file);
+    const parsedData = await parseExcel2(file);
+
+    if (!parsedData) {
+      return;
+    }
+
+    await transformMemberExcelData(parsedData);
   };
   return (
     <>
