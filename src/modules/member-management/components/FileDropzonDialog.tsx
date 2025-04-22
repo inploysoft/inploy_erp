@@ -1,6 +1,6 @@
 import { DragEvent, useState } from 'react';
 
-import { CheckCircle2, FileSpreadsheet } from 'lucide-react';
+import { CheckCircle2, FileSpreadsheet, XCircle } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import {
@@ -14,6 +14,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '../../../components/ui/button/button';
+import { isExcelFile } from '../utils/helpers';
 
 interface ManualDropzoneProps {
   onDrop: (files: File[]) => void;
@@ -25,9 +26,17 @@ export function FileDropzoneDialog({ onDrop, className }: ManualDropzoneProps) {
   const [_isLoading, setIsLoading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isInvalidFile, setIsInvalidFile] = useState<string>();
 
   const processFiles = async (files: File[]) => {
     const file = files[0];
+
+    const validFiles = files.filter(isExcelFile);
+
+    // TODO 20250424 xls 보안 문제 (거절 고민)
+    if (validFiles.length === 0) {
+      setIsInvalidFile('엑셀 파일(.xlsx, .xls)만 업로드할 수 있어요');
+    }
 
     setFile(file);
 
@@ -117,11 +126,23 @@ export function FileDropzoneDialog({ onDrop, className }: ManualDropzoneProps) {
             >
               {file && isComplete ? (
                 <div className="flex flex-col items-center">
-                  <CheckCircle2 className="h-8 w-8 text-green-700" />
+                  {isInvalidFile ? (
+                    <>
+                      <XCircle className="h-8 w-8 text-red-700" />
 
-                  <p className="text-md mt-4 font-medium text-green-700">
-                    {file?.name ?? '업로드 실패'}
-                  </p>
+                      <p className="text-md mt-4 font-medium text-red-700">
+                        {isInvalidFile}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-8 w-8 text-green-700" />
+
+                      <p className="text-md mt-4 font-medium text-green-700">
+                        {file?.name}
+                      </p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <>
