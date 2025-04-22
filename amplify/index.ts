@@ -14,6 +14,8 @@ import { ModuleModel } from './data/schema/module';
 import { ModuleInstanceModel } from './data/schema/moduleInstance';
 import { PurchasedModuleModel } from './data/schema/purchasedModule';
 import { fetchPurchasedModules } from './functions/fetchPurchasedModules/resource';
+import { parseComplexField } from './functions/parseComplexField/resource';
+import { parseExcelToJson } from './functions/parseExcelToJson/resource';
 import { sayHello } from './functions/say-hello/resource';
 
 export const schema = a
@@ -83,5 +85,25 @@ export const schema = a
       .returns(a.string())
       .authorization((allow) => [allow.authenticated()])
       .handler(a.handler.function(sayHello)),
+
+    parseExcelToJson: a
+      .query()
+      .arguments({
+        headers: a.string().array().required(),
+        rows: a.json().required(),
+        subParsingKeys: a.json(),
+      })
+      .returns(a.json().array())
+      .authorization((allow) => [allow.authenticated()])
+      .handler(a.handler.function(parseExcelToJson)),
+
+    parseComplexField: a
+      .query()
+      .arguments({
+        complexFields: a.string().required().array().required(),
+      })
+      .returns(a.json().required().array().required())
+      .authorization((allow) => [allow.authenticated()])
+      .handler(a.handler.function(parseComplexField)),
   })
   .authorization((allow) => allow.resource(postConfirmation));

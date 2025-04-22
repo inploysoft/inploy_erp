@@ -2,7 +2,12 @@ import { CustomField, Nullable } from '@/shared/types/types';
 
 export type MembershipRegisterType = 'duration' | 'count';
 
-export type MembershipDurationUnit = 'minute' | 'hour' | 'day' | 'month';
+export type MembershipDurationUnit =
+  | 'none'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'month';
 
 export interface Membership {
   moduleInstanceId: Nullable<string>;

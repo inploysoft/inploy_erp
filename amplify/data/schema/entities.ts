@@ -9,6 +9,9 @@ export const MemberModel = a.model({
   phone: a.phone().required(),
   gender: a.string(),
   birthDate: a.date(),
+  address: a.string(),
+  memo: a.string(),
+  lastVisitedAt: a.date(),
   registeredAt: a.datetime(),
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
@@ -22,7 +25,7 @@ export const MembershipModel = a.model({
   registerType: a.enum(['duration', 'count']),
   displayName: a.string().required(),
   durationValue: a.integer(),
-  durationUnit: a.enum(['minute', 'hour', 'day', 'month']),
+  durationUnit: a.enum(['none', 'minute', 'hour', 'day', 'month']),
   sessionCount: a.integer(),
   price: a.integer().required(),
   customFields: a.json().array(),

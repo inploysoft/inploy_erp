@@ -37,6 +37,7 @@ import {
   fetchTrainer,
   updateEmployee,
 } from '../utils/api';
+
 interface EmployeeDialogProps {
   employee: EmployeeTableData | null;
   handleCloseModal: () => void;

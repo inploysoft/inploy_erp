@@ -1,11 +1,14 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { LucidePencil } from 'lucide-react';
 
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   MembershipTableData,
   MemberTableData,
+  MemberTableData2,
   RegisteredMembership,
 } from '@/modules/member-management/types/views';
 import { getRankLabel } from '@/modules/workforce/components/EmployeeDialog';
@@ -13,6 +16,7 @@ import {
   EmployeeTableData,
   TrainerTableData,
 } from '@/modules/workforce/types/api';
+import { memberExcelSchema } from '../types/api';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
   {
@@ -83,6 +87,106 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
         </div>
       );
     },
+    enableSorting: true,
+  },
+];
+
+export const memberColumns2: ColumnDef<MemberTableData2>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'id',
+    header: () => <span>id</span>,
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+  },
+  {
+    accessorKey: 'name',
+    header: () => <span>이름</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'phone',
+    header: () => <span>핸드폰</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'gender',
+    header: () => <span>성별</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'birthDate',
+    header: () => <span>생일</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'lastVisitedAt',
+    header: () => <span>최근방문일</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'FCtrainer',
+    header: () => <span>FCtrainer</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'memberships',
+    header: () => <span>이용권</span>,
+    cell: (info) => {
+      const memberships = info.getValue() as z.infer<
+        typeof memberExcelSchema
+      >[];
+
+      return (
+        <div>
+          {memberships.map((value, index) => (
+            <div key={index}>
+              <span>{value.displayName}</span>
+              {/* <span>{value.usedSessionCount}</span> */}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'status',
+    header: () => <span>이용권 상태</span>,
+    cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'PTtrainer',
+    header: () => <span>PTtrainer</span>,
+    cell: (info) => info.getValue(),
     enableSorting: true,
   },
 ];
