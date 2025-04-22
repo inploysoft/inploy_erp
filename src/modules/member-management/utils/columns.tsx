@@ -16,6 +16,7 @@ import {
   EmployeeTableData,
   TrainerTableData,
 } from '@/modules/workforce/types/api';
+import dayjs from 'dayjs';
 import { memberExcelSchema } from '../types/api';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
@@ -91,6 +92,39 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
   },
 ];
 
+export const memberData2: MemberTableData2[] = [
+  {
+    name: '강지혜',
+    phone: '010-1234-5678',
+    FCtrainer: '조원준',
+    PTtrainer: '조원준',
+    status: 'valid',
+    lastVisitedAt: '2025-04-01',
+    memberships: [
+      {
+        branch: '에이블짐 건대역점',
+        displayName: '헬스이용권',
+        registerType: 'duration',
+        sessionCount: 0,
+        usedSessionCount: 0,
+        durationValue: 3,
+        durationUnit: 'month',
+        expiredAt: '2025-07-31',
+      },
+      {
+        branch: '에이블짐 건대역점',
+        displayName: '1:1 PT',
+        registerType: 'count',
+        sessionCount: 24,
+        usedSessionCount: 24,
+        durationValue: 3,
+        durationUnit: 'month',
+        expiredAt: '2025-02-31',
+      },
+    ],
+  },
+];
+
 export const memberColumns2: ColumnDef<MemberTableData2>[] = [
   {
     id: 'select',
@@ -116,49 +150,33 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
   },
   {
     accessorKey: 'id',
-    header: () => <span>id</span>,
+    header: 'id',
     cell: (info) => info.getValue(),
     enableHiding: true,
   },
   {
     accessorKey: 'name',
-    header: () => <span>이름</span>,
+    header: '이름',
     cell: (info) => info.getValue(),
     enableSorting: true,
   },
   {
     accessorKey: 'phone',
-    header: () => <span>핸드폰</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'gender',
-    header: () => <span>성별</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'birthDate',
-    header: () => <span>생일</span>,
+    header: '핸드폰번호',
     cell: (info) => info.getValue(),
     enableSorting: true,
   },
   {
     accessorKey: 'lastVisitedAt',
-    header: () => <span>최근방문일</span>,
+    header: '최근방문일',
     cell: (info) => info.getValue(),
     enableSorting: true,
   },
+
   {
-    accessorKey: 'FCtrainer',
-    header: () => <span>FCtrainer</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'memberships',
-    header: () => <span>이용권</span>,
+    id: 'membershipDisplayName',
+    header: '보유이용권',
+    accessorFn: (row) => row.memberships,
     cell: (info) => {
       const memberships = info.getValue() as z.infer<
         typeof memberExcelSchema
@@ -167,9 +185,30 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
       return (
         <div>
           {memberships.map((value, index) => (
-            <div key={index}>
+            <div className="my-1 flex" key={index}>
               <span>{value.displayName}</span>
-              {/* <span>{value.usedSessionCount}</span> */}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    enableSorting: true,
+  },
+
+  {
+    id: 'membershipExpiredAt',
+    header: '만료일',
+    accessorFn: (row) => row.memberships,
+    cell: (info) => {
+      const memberships = info.getValue() as z.infer<
+        typeof memberExcelSchema
+      >[];
+
+      return (
+        <div>
+          {memberships.map((value, index) => (
+            <div className="flex gap-8" key={index}>
+              <span>{value.expiredAt}</span>
             </div>
           ))}
         </div>
@@ -178,14 +217,47 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: 'status',
-    header: () => <span>이용권 상태</span>,
+    id: 'membershipStatus',
+    header: '이용권 상태',
+    accessorFn: (row) => row.memberships,
+    cell: (info) => {
+      const memberships = info.getValue() as z.infer<
+        typeof memberExcelSchema
+      >[];
+
+      return (
+        <div>
+          {memberships.map((value, index) => {
+            let status: string = '';
+            const today = dayjs().startOf('day');
+            const expiry = dayjs(value.expiredAt).startOf('day');
+
+            if (today > expiry) {
+              status = '만료';
+            } else {
+              status = '유효';
+            }
+
+            return (
+              <div className="flex gap-8" key={index}>
+                <span>{status}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    },
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'FCtrainer',
+    header: 'FC담당자',
     cell: (info) => info.getValue(),
     enableSorting: true,
   },
   {
     accessorKey: 'PTtrainer',
-    header: () => <span>PTtrainer</span>,
+    header: 'PT담당자',
     cell: (info) => info.getValue(),
     enableSorting: true,
   },
