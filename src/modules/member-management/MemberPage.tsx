@@ -12,14 +12,13 @@ import { H3 } from '@/theme/Typography';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
 import { MemberTableData, MemberTableData2 } from './types/views';
 import { memberColumns, memberColumns2 } from './utils/columns';
-import { parseExcel2, transformMemberExcelToObjects } from './utils/excel';
+import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
 import { formatMemberTableData } from './utils/helpers';
 
 export function MemberPage() {
   const { memberManagementModule } = useUserBootstrap();
 
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
-  const [openFileDropzone, setOpenFileDropzone] = useState(false);
 
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
 
@@ -43,7 +42,7 @@ export function MemberPage() {
   });
 
   const handleExcel = async (files: File[]) => {
-    const parsedData = await parseExcel2(files[0]);
+    const parsedData = await parseExcel(files[0]);
 
     if (!parsedData) {
       return;

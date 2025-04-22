@@ -19,7 +19,7 @@ interface ParseExcel {
   rows: string[][];
 }
 
-export async function parseExcel2(file: File): Promise<ParseExcel | undefined> {
+export async function parseExcel(file: File): Promise<ParseExcel | undefined> {
   const buffer = await readFileAsArrayBuffer(file);
 
   const data = new Uint8Array(buffer);
