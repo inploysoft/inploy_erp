@@ -35,7 +35,7 @@ export interface MemberExcelRowObject {
 
 export type MemberTableData2 = Omit<
   MemberExcelRowObject,
-  'address' | 'memo' | 'memoAt' | 'latestExpiredAt'
+  'address' | 'memo' | 'memoAt' | 'latestExpiredAt' | 'gender' | 'birthDate'
 >;
 
 export type MemberDetail = Omit<

@@ -36,3 +36,5 @@ export const memberExcelSchema2D = z.array(z.array(memberExcelSchema));
 export type ParseComplexField = {
   memberships: z.infer<typeof memberExcelSchema>[];
 };
+
+

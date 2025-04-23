@@ -5,13 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 import { SectionCards } from '@/components/ui/sidebar/SectionCards';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileDropzoneDialog } from '@/modules/member-management/components/FileDropzonDialog';
+import { FileDropzoneDialog } from '@/modules/member-management/components/FileDropzoneDialog';
 import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { H3 } from '@/theme/Typography';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
 import { MemberTableData, MemberTableData2 } from './types/views';
-import { memberColumns, memberColumns2 } from './utils/columns';
+import { memberColumns, memberColumns2, memberData2 } from './utils/columns';
 import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
 import { formatMemberTableData } from './utils/helpers';
 
@@ -23,7 +23,7 @@ export function MemberPage() {
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
 
   //
-  const [memberTable, setMemberTable] = useState<MemberTableData2[]>([]);
+  const [_memberTable, setMemberTable] = useState<MemberTableData2[]>([]);
 
   const fetchMemberWithRelationsQuery = useQuery({
     queryKey: ['fetchMemberWithRelations', memberManagementModule],
@@ -112,7 +112,7 @@ export function MemberPage() {
 
           <DataTable
             columns={memberColumns2}
-            data={memberTable}
+            data={memberData2}
             //
             filterKey="name"
             // onRowClick={(row) => {
