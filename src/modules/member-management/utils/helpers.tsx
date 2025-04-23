@@ -49,10 +49,11 @@ export function formatMemberTableData(
 
 export function formatMemberTableDataFromExcel(
   excelObjects: MemberExcelRowObject[],
-) {
+): MemberTableData2[] {
   return excelObjects.map<MemberTableData2>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ address, memo, memoAt, latestExpiredAt, ...rest }) => rest,
+    ({ address, memo, memoAt, latestExpiredAt, gender, birthDate, ...rest }) =>
+      rest,
   );
 }
 

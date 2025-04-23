@@ -71,5 +71,5 @@ export const TrainerModel = a.model({
   customFields: a.json().array(),
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
-  membershipRegistration: a.hasOne('MembershipRegistration', 'trainerId'),
+  membershipRegistrationIds: a.hasMany('MembershipRegistration', 'trainerId'),
 });

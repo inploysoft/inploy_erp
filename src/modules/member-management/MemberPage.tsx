@@ -23,7 +23,7 @@ export function MemberPage() {
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
 
   //
-  const [memberTable, setMemberTable] = useState<MemberTableData2[]>([]);
+  const [_memberTable, setMemberTable] = useState<MemberTableData2[]>([]);
 
   const fetchMemberWithRelationsQuery = useQuery({
     queryKey: ['fetchMemberWithRelations', memberManagementModule],
