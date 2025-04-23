@@ -62,8 +62,9 @@ export function MemberPage() {
       </div>
 
       <Tabs
+        className="flex w-full flex-col justify-start gap-4"
+        //
         defaultValue="totalMembers"
-        className="flex w-full flex-col justify-start gap-6"
       >
         <div className="flex items-center justify-between">
           <TabsList>
