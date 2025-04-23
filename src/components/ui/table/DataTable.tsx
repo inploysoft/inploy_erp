@@ -86,10 +86,8 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="rounded-md border">
-      <DataTableViewOptions table={table} />
-
-      <div className="flex items-center py-4">
+    <div className="rounded-md border bg-white p-6">
+      <div className="flex items-center">
         <Input
           placeholder="Filter emails..."
           value={
@@ -103,6 +101,8 @@ export function DataTable<TData>({
           }
           className="max-w-sm"
         />
+
+        <DataTableViewOptions table={table} />
       </div>
 
       <Table>
