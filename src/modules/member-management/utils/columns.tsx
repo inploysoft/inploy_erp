@@ -92,39 +92,6 @@ export const memberColumns: ColumnDef<MemberTableData>[] = [
   },
 ];
 
-export const memberData2: MemberTableData2[] = [
-  {
-    name: '강지혜',
-    phone: '010-1234-5678',
-    FCtrainer: '조원준',
-    PTtrainer: '조원준',
-    status: 'valid',
-    lastVisitedAt: '2025-04-01',
-    memberships: [
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '헬스이용권',
-        registerType: 'duration',
-        sessionCount: 0,
-        usedSessionCount: 0,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-07-31',
-      },
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '1:1 PT',
-        registerType: 'count',
-        sessionCount: 24,
-        usedSessionCount: 24,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-02-31',
-      },
-    ],
-  },
-];
-
 export const memberColumns2: ColumnDef<MemberTableData2>[] = [
   {
     id: 'select',
@@ -194,7 +161,6 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
     },
     enableSorting: true,
   },
-
   {
     id: 'membershipExpiredAt',
     header: '만료일',
