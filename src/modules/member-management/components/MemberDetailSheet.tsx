@@ -10,11 +10,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { H4 } from '@/theme/Typography';
 import { LucideCake, LucidePhone, LucideVenusAndMars } from 'lucide-react';
-import { MemberTableData } from '../types/views';
+import { MemberTableData2 } from '../types/views';
 import { EmptyMembershipMessage, RenderMembershipCard } from './MembershipCard';
 
 interface MemberDetailSheetProps {
-  member: MemberTableData;
+  member: MemberTableData2;
   open: boolean;
   setOpen: (open: boolean) => void;
 }

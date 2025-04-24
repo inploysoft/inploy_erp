@@ -46,7 +46,7 @@ export function DataTable<TData>({
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 3,
+    pageSize: 20,
   });
 
   const [rowSelection, setRowSelection] = useState({});
@@ -86,7 +86,7 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md">
       <DataTableViewOptions table={table} />
 
       <div className="flex items-center py-4">
