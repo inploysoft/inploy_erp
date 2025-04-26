@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button/button';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/table/DataTable';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { H2 } from '@/theme/Typography';
-import { MembershipDialogContent } from './components/MembershipDialogContent';
+import { MembershipRegistrationDialog } from './components/MembershipRegistrationDialog';
 import { MembershipTableData } from './types/views';
-import { membershipColumns } from './utils/columns';
-import { formatMembershipTableData } from './utils/helpers';
+import { membershipColumns2 } from './utils/columns';
+import {
+  formatMembershipTableData,
+  MembershipTableData2,
+} from './utils/helpers';
 
 export function MembershipPage() {
   const { memberManagementModule } = useUserBootstrap();
 
   const [tableData, setTableData] = useState<MembershipTableData[]>([]);
+  const [tableData2, setTableData2] = useState<MembershipTableData2[]>([]);
 
   useEffect(() => {
-    const result = formatMembershipTableData(
-      memberManagementModule?.membershipIds ?? [],
-    );
+    if (!memberManagementModule) {
+      return;
+    }
 
-    setTableData(result);
+    const result = formatMembershipTableData(memberManagementModule);
+
+    setTableData2(result);
   }, [memberManagementModule]);
 
   return (
@@ -29,19 +33,19 @@ export function MembershipPage() {
         <div className="flex items-center justify-between">
           <H2>이용권 관리</H2>
 
-          <Dialog>
-            <DialogTrigger asChild={true}>
-              <Button>이용권 등록</Button>
-            </DialogTrigger>
-
-            <MembershipDialogContent />
-          </Dialog>
+          <MembershipRegistrationDialog />
         </div>
       </div>
 
-      <DataTable
+      {/* <DataTable
         columns={membershipColumns}
         data={tableData}
+        filterKey="displayName"
+      /> */}
+
+      <DataTable
+        columns={membershipColumns2}
+        data={tableData2}
         filterKey="displayName"
       />
     </>
