@@ -12,7 +12,7 @@ export const MemberModel = a.model({
   address: a.string(),
   memo: a.string(),
   lastVisitedAt: a.date(),
-  registeredAt: a.datetime(),
+  registeredAt: a.date(),
   customFields: a.json().array(), // [{ key: 'parking', value: true }]
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
@@ -55,10 +55,9 @@ export const MembershipRegistrationModel = a.model({
   memberId: a.id(),
   membershipPlanId: a.id(),
   trainerId: a.id(),
-  status: a.enum(['valid', 'expired']),
   usedSessionCount: a.integer().default(0),
-  registeredAt: a.datetime().required(),
-  expiredAt: a.datetime(),
+  registeredAt: a.date().required(),
+  expiredAt: a.date(),
   customFields: a.json().array(),
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),

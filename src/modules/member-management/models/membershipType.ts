@@ -5,7 +5,7 @@ export interface MembershipType {
   id: string;
   //
   displayName: Nullable<string>;
-  isActive: boolean;
+  isActive: Nullable<boolean>;
   description: Nullable<string>;
   customFields: Nullable<CustomField>;
   createdAt: string;
