@@ -19,11 +19,22 @@ export const MemberModel = a.model({
   membershipRegistrationIds: a.hasMany('MembershipRegistration', 'memberId'),
 });
 
-// 이용권 정보
-export const MembershipModel = a.model({
+// 이용권 종류
+export const MembershipTypeModel = a.model({
   moduleInstanceId: a.id(),
-  registerType: a.enum(['duration', 'count']),
   displayName: a.string().required(),
+  isActive: a.boolean().default(true),
+  description: a.string(),
+  customFields: a.json().array(),
+  //
+  moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
+  membershipPlan: a.hasMany('MembershipPlan', 'membershipTypeId'),
+});
+
+// 이용권 옵션
+export const MembershipPlanModel = a.model({
+  moduleInstanceId: a.id(),
+  membershipTypeId: a.id(),
   durationValue: a.integer(),
   durationUnit: a.enum(['none', 'minute', 'hour', 'day', 'month']),
   sessionCount: a.integer(),
@@ -31,23 +42,18 @@ export const MembershipModel = a.model({
   customFields: a.json().array(),
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
+  membershipType: a.belongsTo('MembershipType', 'membershipTypeId'),
   membershipRegistrationIds: a.hasMany(
     'MembershipRegistration',
-    'membershipId',
+    'membershipPlanId',
   ),
 });
 
-// 이용권 등록 정보
+// 실제 구매 이용권 정보
 export const MembershipRegistrationModel = a.model({
   moduleInstanceId: a.id(),
   memberId: a.id(),
-  membershipType: a.string(),
-  name: a.string(),
-  months: a.integer(),
-  counts: a.integer(),
-  registerType: a.enum(['count', 'months']),
-  price: a.integer(),
-  membershipId: a.id(),
+  membershipPlanId: a.id(),
   trainerId: a.id(),
   status: a.enum(['valid', 'expired']),
   usedSessionCount: a.integer().default(0),
@@ -57,7 +63,7 @@ export const MembershipRegistrationModel = a.model({
   //
   moduleInstance: a.belongsTo('ModuleInstance', 'moduleInstanceId'),
   member: a.belongsTo('Member', 'memberId'),
-  membership: a.belongsTo('Membership', 'membershipId'),
+  membershipPlan: a.belongsTo('MembershipPlan', 'membershipPlanId'),
   trainer: a.belongsTo('Trainer', 'trainerId'),
 });
 
