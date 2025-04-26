@@ -6,16 +6,12 @@ import { H2 } from '@/theme/Typography';
 import { MembershipRegistrationDialog } from './components/MembershipRegistrationDialog';
 import { MembershipTableData } from './types/views';
 import { membershipColumns2 } from './utils/columns';
-import {
-  formatMembershipTableData,
-  MembershipTableData2,
-} from './utils/helpers';
+import { formatMembershipTableData } from './utils/helpers';
 
 export function MembershipPage() {
   const { memberManagementModule } = useUserBootstrap();
 
-  const [tableData, setTableData] = useState<MembershipTableData[]>([]);
-  const [tableData2, setTableData2] = useState<MembershipTableData2[]>([]);
+  const [tableData2, setTableData2] = useState<MembershipTableData[]>([]);
 
   useEffect(() => {
     if (!memberManagementModule) {
@@ -36,12 +32,6 @@ export function MembershipPage() {
           <MembershipRegistrationDialog />
         </div>
       </div>
-
-      {/* <DataTable
-        columns={membershipColumns}
-        data={tableData}
-        filterKey="displayName"
-      /> */}
 
       <DataTable
         columns={membershipColumns2}

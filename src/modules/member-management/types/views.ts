@@ -8,6 +8,7 @@ import {
   MembershipRegistrationStatus,
 } from '@/modules/member-management/models/membershipRegistration';
 import { Trainer } from '@/modules/workforce/models/trainer';
+import { MembershipPlan } from '../models/membershipPlan';
 import { memberExcelSchema } from './api';
 
 export type MemberTableData = Omit<
@@ -51,7 +52,10 @@ export type MemberDetail = Omit<
   Membership &
   Trainer;
 
-export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
+export interface MembershipTableData {
+  displayName: string;
+  plans: MembershipPlan[];
+}
 
 export type RegisteredMembership = Omit<
   MembershipRegistration,
