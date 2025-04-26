@@ -12,8 +12,8 @@ import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { cn } from '@/shared/lib/utils';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
-import { MemberExcelRowObject, MemberTableData2 } from './types/views';
-import { memberColumns2 } from './utils/columns';
+import { MemberExcelRowObject, MemberTableData } from './types/views';
+import { memberColumns } from './utils/columns';
 import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
 import { formatMemberTableData } from './utils/helpers';
 
@@ -34,7 +34,7 @@ const membershipTypes = [
   '1:1 PT',
 ];
 
-const memberData2: MemberTableData2[] = [
+const memberData2: MemberTableData[] = [
   {
     name: '강지혜',
     phone: '010-1234-5678',
@@ -158,10 +158,9 @@ export function MemberPage() {
 
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
 
-  const [rowSelected, setRowSelected] = useState<MemberTableData2 | null>(null);
+  const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
   const [_memberTable, setMemberTable] = useState<MemberExcelRowObject[]>([]);
 
-  const [timeRange, setTimeRange] = useState('30d');
   const [selectedType, setSelectedType] = useState<string>();
 
   const fetchMemberWithRelationsQuery = useQuery({
@@ -191,18 +190,6 @@ export function MemberPage() {
 
     setMemberTable(result);
   };
-
-  //
-  // const queryClient = useQueryClient();
-
-  // const mutation = useMutation({
-  //   mutationFn: transformMemberExcelToObjects,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['formatMemberTableData', memberManagementModule?.memberIds],
-  //     });
-  //   },
-  // });
 
   return (
     <>
@@ -239,7 +226,7 @@ export function MemberPage() {
 
         <TabsContent value="totalMembers">
           <DataTable
-            columns={memberColumns2}
+            columns={memberColumns}
             data={fetchMemberWithRelationsQuery.data ?? []}
             //
             filterKey="name"
@@ -285,7 +272,7 @@ export function MemberPage() {
 
             <CardContent>
               <DataTable
-                columns={memberColumns2}
+                columns={memberColumns}
                 data={memberData2}
                 //
                 filterKey="name"
