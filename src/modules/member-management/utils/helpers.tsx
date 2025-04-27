@@ -125,19 +125,51 @@ export function isExpired(expiredAt: string): boolean {
 }
 
 /**
- * 이용권 만료일 (expiredAt)이 오늘부터 30일 이내인지 확인하는 함수
+ * 오늘부터 최근 30일 이내 만료 예정인 이용권을 가지고 있는 회원 리스트를 반환하는 함수
  *
  * @param {MemberTableData[]} memberTableData Array of membership objects
- * @returns {MemberTableData[]} Memberships that will expire within 30 days from today
+ * @returns {MemberTableData[]} Members who have memberships that will expire within 30 days from today
  */
 export function isWithin30Days(
   memberTableData: MemberTableData[],
 ): MemberTableData[] {
   return memberTableData.map((member) => {
     const validMemberships = member.memberships.filter((membership) => {
-      const diffInDays = dayjs(membership.expiredAt).diff(dayjs(), 'day');
+      const diffInDays = dayjs(membership.expiredAt)
+        .add(1, 'day')
+        .diff(dayjs(), 'day');
 
       return diffInDays >= 0 && diffInDays <= 30;
+    });
+
+    return {
+      ...member,
+      memberships: validMemberships,
+    };
+  });
+}
+
+/**
+ * 오늘부터 최근 30일 이내 만료된 이용권을 가지고 있는 회원 리스트를 반환하는 함수
+ *
+ * @param {MemberTableData[]} memberTableData Array of membership objects
+ * @returns {MemberTableData[]} Members who have memberships that have expired in last 30 days from today
+ */
+export function isExpiredInLast30Days(
+  memberTableData: MemberTableData[],
+): MemberTableData[] {
+  return memberTableData.map((member) => {
+    const validMemberships = member.memberships.filter((membership) => {
+      const thirtyDaysAgo = dayjs().subtract(30, 'day');
+
+      const expirationDate = dayjs(membership.expiredAt)
+        .add(1, 'day')
+        .startOf('day');
+
+      return (
+        expirationDate.isBefore(dayjs()) &&
+        expirationDate.isAfter(thirtyDaysAgo)
+      );
     });
 
     return {

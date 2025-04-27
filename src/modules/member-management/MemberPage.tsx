@@ -15,7 +15,11 @@ import { MemberDetailSheet } from './components/MemberDetailSheet';
 import { MemberExcelRowObject, MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
-import { formatMemberTableData, isWithin30Days } from './utils/helpers';
+import {
+  formatMemberTableData,
+  isExpiredInLast30Days,
+  isWithin30Days,
+} from './utils/helpers';
 
 const membershipTypes = [
   '전체',
@@ -107,6 +111,7 @@ export function MemberPage() {
           </div>
         </div>
 
+        {/* 전체 */}
         <TabsContent value="totalMembers">
           <DataTable
             columns={memberColumns}
@@ -177,7 +182,56 @@ export function MemberPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="recentlyExpiredMembers"></TabsContent>
+        {/* 최근 30일 이내 만료된 회원 */}
+        <TabsContent value="recentlyExpiredMembers">
+          <Card className="@container/card">
+            <CardHeader className="relative">
+              <ScrollArea className="w-full overflow-x-auto">
+                <div className="flex min-w-[1000px] gap-2 whitespace-nowrap">
+                  {membershipTypes.map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setSelectedType(type)}
+                      className={cn(
+                        'rounded-full border px-4 py-1 text-sm transition',
+                        selectedType === type
+                          ? 'border-indigo-500 bg-indigo-500 text-white'
+                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100',
+                      )}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+
+                <ScrollBar hidden orientation="horizontal" />
+              </ScrollArea>
+            </CardHeader>
+
+            <CardContent>
+              <DataTable
+                columns={memberColumns}
+                data={isExpiredInLast30Days(
+                  fetchMemberWithRelationsQuery.data ?? [],
+                )}
+                //
+                filterKey="name"
+                onRowClick={(row) => {
+                  setRowSelected(row);
+                  setOpenDetailSheet(true);
+                }}
+              />
+
+              {rowSelected && (
+                <MemberDetailSheet
+                  open={openDetailSheet}
+                  setOpen={setOpenDetailSheet}
+                  member={rowSelected}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="recentlyRegisteredMembers"></TabsContent>
       </Tabs>
