@@ -130,7 +130,7 @@ export function isExpired(expiredAt: string): boolean {
  * @param {MemberTableData[]} memberTableData Array of membership objects
  * @returns {MemberTableData[]} Members who have memberships that will expire within 30 days from today
  */
-export function isExpiredWithin30Days(
+export function isExpiringWithin30Days(
   memberTableData?: MemberTableData[],
 ): MemberTableData[] {
   if (!memberTableData || memberTableData.length === 0) {

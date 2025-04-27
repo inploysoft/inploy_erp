@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -18,9 +18,13 @@ import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
 import {
   formatMemberTableData,
   isExpiredInLast30Days,
-  isExpiredWithin30Days,
+  isExpiringWithin30Days,
   isRegisteredInLast30Days,
 } from './utils/helpers';
+import {
+  memberTableInitialState,
+  useMemberTableReducer,
+} from './utils/useMemberTableReducer';
 
 const membershipTypes = [
   '전체',
@@ -39,10 +43,35 @@ const membershipTypes = [
   '1:1 PT',
 ];
 
+const tabValue = [
+  {
+    value: 'totalMembers',
+    title: '전체',
+  },
+  {
+    value: 'expiringSoonMembers',
+    title: '만료 예정 회원',
+  },
+
+  {
+    value: 'recentlyExpiredMembers',
+    title: '최근 만료 회원',
+  },
+  {
+    value: 'recentlyRegisteredMembers',
+    title: '최근 등록 회원',
+  },
+];
+
 export function MemberPage() {
   const { memberManagementModule } = useUserBootstrap();
 
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
+
+  const [state, dispatch] = useReducer(
+    useMemberTableReducer,
+    memberTableInitialState,
+  );
 
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
   const [_memberTable, setMemberTable] = useState<MemberExcelRowObject[]>([]);
@@ -60,7 +89,22 @@ export function MemberPage() {
         return;
       }
 
-      return formatMemberTableData(fetched);
+      const formatted = formatMemberTableData(fetched);
+
+      const expiringSoonMembers = isExpiringWithin30Days(formatted);
+      const recentlyExpiredMembers = isExpiredInLast30Days(formatted);
+      const recentlyRegisteredMembers = isRegisteredInLast30Days(formatted);
+
+      dispatch({
+        type: 'setTableData',
+        payload: {
+          expiringSoonMembers,
+          recentlyExpiredMembers,
+          recentlyRegisteredMembers,
+        },
+      });
+
+      return formatted;
     },
     enabled: !!memberManagementModule,
   });
@@ -163,8 +207,7 @@ export function MemberPage() {
             <CardContent>
               <DataTable
                 columns={memberColumns}
-                data={isExpiredWithin30Days(fetchMemberWithRelationsQuery.data)}
-                //
+                data={state.expiringSoonMembers}
                 filterKey="name"
                 onRowClick={(row) => {
                   setRowSelected(row);
@@ -212,7 +255,7 @@ export function MemberPage() {
             <CardContent>
               <DataTable
                 columns={memberColumns}
-                data={isExpiredInLast30Days(fetchMemberWithRelationsQuery.data)}
+                data={state.recentlyExpiredMembers}
                 //
                 filterKey="name"
                 onRowClick={(row) => {
@@ -261,9 +304,7 @@ export function MemberPage() {
             <CardContent>
               <DataTable
                 columns={memberColumns}
-                data={isRegisteredInLast30Days(
-                  fetchMemberWithRelationsQuery.data,
-                )}
+                data={state.recentlyRegisteredMembers}
                 //
                 filterKey="name"
                 onRowClick={(row) => {
