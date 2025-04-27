@@ -46,7 +46,7 @@ export function DataTable<TData>({
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 3,
+    pageSize: 20,
   });
 
   const [rowSelection, setRowSelection] = useState({});

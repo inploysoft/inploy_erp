@@ -1,131 +1,23 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { LucidePencil } from 'lucide-react';
 
-import { z } from 'zod';
+import { LucidePencil } from 'lucide-react';
 
 import { Button } from '@/components/ui/button/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   MembershipTableData,
   MemberTableData,
-  MemberTableData2,
-  RegisteredMembership,
+  MemberTableMembership,
 } from '@/modules/member-management/types/views';
 import { getRankLabel } from '@/modules/workforce/components/EmployeeDialog';
 import {
   EmployeeTableData,
   TrainerTableData,
 } from '@/modules/workforce/types/api';
-import dayjs from 'dayjs';
-import { memberExcelSchema } from '../types/api';
+import { MembershipPlan } from '../models/membershipPlan';
+import { convertMembershipDurationUnitToKorean } from './helpers';
 
 export const memberColumns: ColumnDef<MemberTableData>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'id',
-    header: () => <span>id</span>,
-    cell: (info) => info.getValue(),
-    enableHiding: true,
-  },
-  {
-    accessorKey: 'name',
-    header: () => <span>이름</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'phone',
-    header: () => <span>전화번호</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'birthDate',
-    header: () => <span>생일</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'gender',
-    header: () => <span>성별</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: 'memberships',
-    header: () => <span>이용권</span>,
-    cell: (info) => {
-      const memberships = info.getValue() as RegisteredMembership[];
-
-      return (
-        <div>
-          {memberships.map((value) => (
-            <div key={value.id}>
-              <span>{value.displayName}</span>
-              <span>{value.usedSessionCount}</span>
-            </div>
-          ))}
-        </div>
-      );
-    },
-    enableSorting: true,
-  },
-];
-
-export const memberData2: MemberTableData2[] = [
-  {
-    name: '강지혜',
-    phone: '010-1234-5678',
-    FCtrainer: '조원준',
-    PTtrainer: '조원준',
-    status: 'valid',
-    lastVisitedAt: '2025-04-01',
-    memberships: [
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '헬스이용권',
-        registerType: 'duration',
-        sessionCount: 0,
-        usedSessionCount: 0,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-07-31',
-      },
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '1:1 PT',
-        registerType: 'count',
-        sessionCount: 24,
-        usedSessionCount: 24,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-02-31',
-      },
-    ],
-  },
-];
-
-export const memberColumns2: ColumnDef<MemberTableData2>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -172,15 +64,12 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
     cell: (info) => info.getValue(),
     enableSorting: true,
   },
-
   {
     id: 'membershipDisplayName',
     header: '보유이용권',
     accessorFn: (row) => row.memberships,
     cell: (info) => {
-      const memberships = info.getValue() as z.infer<
-        typeof memberExcelSchema
-      >[];
+      const memberships = info.getValue() as MemberTableMembership[];
 
       return (
         <div>
@@ -194,20 +83,17 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
     },
     enableSorting: true,
   },
-
   {
     id: 'membershipExpiredAt',
     header: '만료일',
     accessorFn: (row) => row.memberships,
     cell: (info) => {
-      const memberships = info.getValue() as z.infer<
-        typeof memberExcelSchema
-      >[];
+      const memberships = info.getValue() as MemberTableMembership[];
 
       return (
         <div>
           {memberships.map((value, index) => (
-            <div className="flex gap-8" key={index}>
+            <div className="my-1 flex" key={index}>
               <span>{value.expiredAt}</span>
             </div>
           ))}
@@ -221,26 +107,14 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
     header: '이용권 상태',
     accessorFn: (row) => row.memberships,
     cell: (info) => {
-      const memberships = info.getValue() as z.infer<
-        typeof memberExcelSchema
-      >[];
+      const memberships = info.getValue() as MemberTableMembership[];
 
       return (
         <div>
           {memberships.map((value, index) => {
-            let status: string = '';
-            const today = dayjs().startOf('day');
-            const expiry = dayjs(value.expiredAt).startOf('day');
-
-            if (today > expiry) {
-              status = '만료';
-            } else {
-              status = '유효';
-            }
-
             return (
-              <div className="flex gap-8" key={index}>
-                <span>{status}</span>
+              <div className="my-1 flex" key={index}>
+                <span>{value.status}</span>
               </div>
             );
           })}
@@ -250,15 +124,18 @@ export const memberColumns2: ColumnDef<MemberTableData2>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: 'FCtrainer',
-    header: 'FC담당자',
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'PTtrainer',
-    header: 'PT담당자',
-    cell: (info) => info.getValue(),
+    id: 'trainer',
+    header: '담당자',
+    accessorFn: (row) => row.memberships,
+    cell: (info) => {
+      const memberships = info.getValue() as MemberTableMembership[];
+
+      return memberships.map((value, index) => (
+        <div className="my-1 flex" key={index}>
+          <span>{value.trainer}</span>
+        </div>
+      ));
+    },
     enableSorting: true,
   },
 ];
@@ -287,39 +164,73 @@ export const membershipColumns: ColumnDef<MembershipTableData>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'id',
-    header: () => <span>id</span>,
+    accessorKey: 'displayName',
+    header: () => '이름',
     cell: (info) => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    id: 'id',
+    header: 'id',
+    accessorFn: (row) => row.plans,
+    cell: (info) => {
+      const memberships = info.getValue() as MembershipPlan[];
+
+      return (
+        <div>
+          {memberships.map((value, index) => (
+            <div className="flex gap-8" key={index}>
+              <span>{value.id}</span>
+            </div>
+          ))}
+        </div>
+      );
+    },
+    enableSorting: true,
     enableHiding: true,
   },
   {
-    accessorKey: 'displayName',
-    header: () => <span>이름</span>,
-    cell: (info) => info.getValue(),
+    id: 'duration',
+    header: '기간',
+    accessorFn: (row) => row.plans,
+    cell: (info) => {
+      const memberships = info.getValue() as MembershipPlan[];
+
+      return (
+        <div>
+          {memberships.map((value, index) => (
+            <div className="flex gap-8" key={index}>
+              <span>
+                {value.durationValue}
+                {convertMembershipDurationUnitToKorean(value.durationUnit)}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    },
     enableSorting: true,
   },
   {
-    accessorKey: 'durationValue',
-    header: () => <span>기간</span>,
-    cell: (info) => info.getValue(),
+    id: 'sessionCount',
+    header: '횟수',
+    accessorFn: (row) => row.plans,
+    cell: (info) => {
+      const memberships = info.getValue() as MembershipPlan[];
+
+      return memberships.map((value) => <p>{value.sessionCount}</p>);
+    },
     enableSorting: true,
   },
   {
-    accessorKey: 'durationUnit',
-    header: () => <span>단위</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'sessionCount',
-    header: () => <span>횟수</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'price',
-    header: () => <span>가격</span>,
-    cell: (info) => info.getValue(),
+    id: 'price',
+    header: '가격',
+    accessorFn: (row) => row.plans,
+    cell: (info) => {
+      const memberships = info.getValue() as MembershipPlan[];
+
+      return memberships.map((value) => <p>{value.price}</p>);
+    },
     enableSorting: true,
   },
 ];

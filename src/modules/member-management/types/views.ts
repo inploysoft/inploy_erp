@@ -1,21 +1,15 @@
 /* UI 에서 쓰는 조합형 타입 */
 import { z } from 'zod';
 
-import { Member } from '@/modules/member-management/models/member';
-import { Membership } from '@/modules/member-management/models/membership';
 import {
   MembershipRegistration,
   MembershipRegistrationStatus,
 } from '@/modules/member-management/models/membershipRegistration';
-import { Trainer } from '@/modules/workforce/models/trainer';
+import { OmitId } from '@/shared/types/types';
+import { Member } from '../models/member';
+import { MembershipPlan } from '../models/membershipPlan';
+import { MembershipType } from '../models/membershipType';
 import { memberExcelSchema } from './api';
-
-export type MemberTableData = Omit<
-  Member,
-  'moduleInstanceId' | 'createdAt' | 'updatedAt'
-> & {
-  memberships: MemberDetail[];
-};
 
 export interface MemberExcelRowObject {
   name: string;
@@ -33,22 +27,27 @@ export interface MemberExcelRowObject {
   PTtrainer: string;
 }
 
-export type MemberTableData2 = Omit<
-  MemberExcelRowObject,
-  'address' | 'memo' | 'memoAt' | 'latestExpiredAt' | 'gender' | 'birthDate'
->;
+//
+export type MemberTableData = Omit<
+  Member,
+  'moduleInstanceId' | 'createdAt' | 'updatedAt'
+> & {
+  memberships: MemberTableMembership[];
+};
 
-export type MemberDetail = Omit<
-  MembershipRegistration,
-  'memberId' | 'membershipId' | 'trainerId'
-> &
-  Membership &
-  Trainer;
+export type MemberTableMembership = OmitId<MembershipPlan> &
+  OmitId<MembershipType> &
+  OmitId<MembershipRegistration> & {
+    membershipPlanId: string;
+    membershipTypeId: string;
+    membershipRegistrationId: string;
+    trainerId: string;
+    status: string;
+    trainer: string;
+  };
 
-export type MembershipTableData = Omit<Membership, 'moduleInstanceId'>;
-
-export type RegisteredMembership = Omit<
-  MembershipRegistration,
-  'moduleInstanceId' | 'memberId' | 'membershipId'
-> &
-  Membership;
+//
+export interface MembershipTableData {
+  displayName: string;
+  plans: MembershipPlan[];
+}

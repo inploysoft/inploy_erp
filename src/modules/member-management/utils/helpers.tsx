@@ -1,18 +1,15 @@
 import dayjs from 'dayjs';
 
 import {
-  MemberExcelRowObject,
   MembershipTableData,
   MemberTableData,
-  MemberTableData2,
 } from '@/modules/member-management/types/views';
-import { FetchMemberWithRelations } from '@/shared/types/api';
+import { formatInternationalPhoneToKorean } from '@/shared/lib/format';
 import {
-  Membership,
-  MembershipDurationUnit,
-  MembershipRegisterType,
-} from '../models/membership';
-import { MembershipRegistrationStatus } from '../models/membershipRegistration';
+  FetchMemberWithRelations,
+  MemberManagementEntity,
+} from '@/shared/types/api';
+import { MembershipDurationUnit } from '../models/membership';
 
 /**
  * 회원 목록 반환
@@ -24,22 +21,31 @@ export function formatMemberTableData(
   member: FetchMemberWithRelations[],
 ): MemberTableData[] {
   const result = member.flatMap((member) => {
-    const { membershipRegistrationIds, ...rest } = member;
+    const { membershipRegistrationIds, phone, ...rest } = member;
 
     const membershipRegistrationFlatten = membershipRegistrationIds.flatMap(
       (membershipRegistration) => {
-        const { trainer, membership, ...rest } = membershipRegistration;
+        const { membershipPlan, trainer } = membershipRegistration;
 
         return {
-          ...rest,
-          ...membership,
-          ...trainer,
+          ...membershipPlan,
+          ...membershipPlan.membershipType,
+          ...membershipRegistration,
+          membershipPlanId: membershipPlan.id,
+          membershipTypeId: membershipPlan.membershipType.id,
+          membershipRegistrationId: membershipRegistration.id,
+          trainerId: trainer.id,
+          status: convertMembershipStatusToKorean(
+            membershipRegistration.expiredAt,
+          ),
+          trainer: trainer.name,
         };
       },
     );
 
     return {
       ...rest,
+      phone: formatInternationalPhoneToKorean(phone),
       memberships: membershipRegistrationFlatten,
     };
   });
@@ -47,29 +53,42 @@ export function formatMemberTableData(
   return result;
 }
 
-export function formatMemberTableDataFromExcel(
-  excelObjects: MemberExcelRowObject[],
-): MemberTableData2[] {
-  return excelObjects.map<MemberTableData2>(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ address, memo, memoAt, latestExpiredAt, gender, birthDate, ...rest }) =>
-      rest,
-  );
-}
+// export function formatMemberTableDataFromExcel(
+//   excelObjects: MemberExcelRowObject[],
+// ): MemberTableData[] {
+//   return excelObjects.map<MemberTableData>(
+//     ({
+//       address,
+//       memo,
+//       memoAt,
+//       latestExpiredAt,
+//       gender,
+//       birthDate,
+//       status,
+//       ...rest
+//     }) => rest,
+//   );
+// }
 
 /**
  * 이용권 목록 반환
  * @param memberships 전체 이용권 목록
  * @returns 이용권 목록
  */
-export function formatMembershipTableData(
-  memberships: Membership[],
-): MembershipTableData[] {
-  return memberships.flatMap((membershipInfo) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { moduleInstanceId, ...rest } = membershipInfo;
 
-    return rest;
+export function formatMembershipTableData({
+  membershipTypeIds,
+  membershipPlanIds,
+}: MemberManagementEntity): MembershipTableData[] {
+  return membershipTypeIds.map((type) => {
+    const plans = membershipPlanIds.filter(
+      (plan) => type.id === plan.membershipTypeId,
+    );
+
+    return {
+      displayName: type.displayName,
+      plans: plans,
+    } as MembershipTableData;
   });
 }
 
@@ -79,28 +98,24 @@ export function formatMembershipTableData(
  * @returns 한글로 변환된 상태 ('유효' | '만료')
  */
 export function convertMembershipStatusToKorean(
-  status: MembershipRegistrationStatus | null,
+  expiredAt: string | null,
 ): string {
-  if (!status) {
-    return '';
+  let status: string = '';
+
+  const today = dayjs().startOf('day');
+  const expiry = dayjs(expiredAt).startOf('day');
+
+  if (today > expiry) {
+    status = '만료';
+  } else {
+    status = '유효';
   }
 
-  return status === 'valid' ? '사용 중' : '만료';
+  return status;
 }
 
-/**
- * 이용권 상태를 한글로 변환
- * @param status 이용권 상태 ('valid' | 'expired')
- * @returns 한글로 변환된 상태 ('유효' | '만료')
- */
-export function convertMembershipRegisterTypeToKorean(
-  registerType: MembershipRegisterType | null,
-): string {
-  if (!registerType) {
-    return '';
-  }
-
-  return registerType === 'duration' ? '기간형' : '횟수형';
+export function isExpired(expiredAt: string): boolean {
+  return dayjs().isAfter(expiredAt, 'day');
 }
 
 /**
@@ -160,15 +175,13 @@ export function getRemainingDays(
 
   if (remaining > 0) return `D-${remaining}`;
   if (remaining === 0) return '오늘 만료';
-  return '만료됨';
+  return '만료';
 }
 
-export const isExcelFile = (file: File) => {
+export function isExcelFile(file: File): boolean {
   const allowedExtensions = ['.xlsx', '.xls'];
 
   const fileName = file.name.toLowerCase();
 
-  console.log(fileName.endsWith('xlsx'));
-
   return allowedExtensions.some((ext) => fileName.endsWith(ext));
-};
+}

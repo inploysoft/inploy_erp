@@ -1,9 +1,8 @@
 import * as XLSX from 'xlsx';
 
 import { awsLogger } from '@/shared/lib/config';
-import { MemberExcelRowObject, MemberTableData2 } from '../types/views';
+import { MemberExcelRowObject } from '../types/views';
 import { llmParsedMembershipsFromExcel } from './api';
-import { formatMemberTableDataFromExcel } from './helpers';
 
 const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise((resolve, reject) => {
@@ -64,7 +63,7 @@ const excelHeaderValue = [
 export async function transformMemberExcelToObjects({
   headers,
   rows,
-}: ParseExcel): Promise<MemberTableData2[]> {
+}: ParseExcel): Promise<MemberExcelRowObject[]> {
   const headerMap: Record<string, string> = Object.fromEntries(
     headers.map((key, index) => [key, excelHeaderValue[index]]),
   );
@@ -122,9 +121,5 @@ export async function transformMemberExcelToObjects({
     return obj;
   });
 
-  const result = formatMemberTableDataFromExcel(
-    excelObjectMap as unknown as MemberExcelRowObject[],
-  );
-
-  return result;
+  return excelObjectMap as unknown as MemberExcelRowObject[];
 }

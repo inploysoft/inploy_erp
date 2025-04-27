@@ -10,12 +10,13 @@ export const ModuleInstanceModel = a.model({
   purchasedModule: a.belongsTo('PurchasedModule', 'purchasedModuleId'),
   entityFieldSchemaIds: a.hasMany('EntityFieldSchema', 'moduleInstanceId'),
   memberIds: a.hasMany('Member', 'moduleInstanceId'),
-  membershipIds: a.hasMany('Membership', 'moduleInstanceId'),
+  membershipTypeIds: a.hasMany('MembershipType', 'moduleInstanceId'),
+  membershipPlanIds: a.hasMany('MembershipPlan', 'moduleInstanceId'),
   membershipRegistrationIds: a.hasMany(
     'MembershipRegistration',
     'moduleInstanceId',
   ),
-  trainerIds: a.hasMany('Trainer', 'moduleInstanceId'), 
+  trainerIds: a.hasMany('Trainer', 'moduleInstanceId'),
 });
 
 /* status

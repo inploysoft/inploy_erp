@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+import { LucideCake, LucidePhone, LucideVenusAndMars } from 'lucide-react';
+
 import {
   Sheet,
   SheetContent,
@@ -9,21 +11,25 @@ import {
 } from '@/components/ui/sheet/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { H4 } from '@/theme/Typography';
-import { LucideCake, LucidePhone, LucideVenusAndMars } from 'lucide-react';
 import { MemberTableData } from '../types/views';
-import { EmptyMembershipMessage, RenderMembershipCard } from './MembershipCard';
+import { isExpired } from '../utils/helpers';
+import { EmptyMembershipMessage, MembershipCard } from './MembershipCard';
 
 interface MemberDetailSheetProps {
-  member: MemberTableData;
   open: boolean;
   setOpen: (open: boolean) => void;
+  member: MemberTableData;
 }
 
 export function MemberDetailSheet({
-  member,
   open,
   setOpen,
+  member,
 }: MemberDetailSheetProps) {
+  const validMemberships = member.memberships.filter(
+    (membership) => !isExpired(membership.expiredAt!),
+  );
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent className="w-full max-w-none p-2 sm:w-[50vw]">
@@ -63,30 +69,32 @@ export function MemberDetailSheet({
                 <TabsList>
                   <TabsTrigger value="all">전체</TabsTrigger>
 
-                  <TabsTrigger value="valid">사용 중</TabsTrigger>
+                  <TabsTrigger value="valid">유효</TabsTrigger>
 
                   <TabsTrigger value="expired">만료</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="all">
-                  {member.memberships.map(RenderMembershipCard)}
+                  {member.memberships.map((value, index) => (
+                    <MembershipCard key={index} memberships={value} />
+                  ))}
                 </TabsContent>
 
                 <TabsContent value="valid">
-                  {member.memberships.some((m) => m.status === 'valid') ? (
-                    member.memberships
-                      .filter((m) => m.status === 'valid')
-                      .map(RenderMembershipCard)
+                  {validMemberships.length > 0 ? (
+                    validMemberships.map((membership, index) => (
+                      <MembershipCard key={index} memberships={membership} />
+                    ))
                   ) : (
-                    <EmptyMembershipMessage message="사용 중인 이용권이 없어요" />
+                    <EmptyMembershipMessage message="유효한 이용권이 없어요" />
                   )}
                 </TabsContent>
 
                 <TabsContent value="expired">
-                  {member.memberships.some((m) => m.status === 'expired') ? (
-                    member.memberships
-                      .filter((m) => m.status === 'expired')
-                      .map(RenderMembershipCard)
+                  {validMemberships.length === 0 ? (
+                    validMemberships.map((membership, index) => (
+                      <MembershipCard key={index} memberships={membership} />
+                    ))
                   ) : (
                     <EmptyMembershipMessage message="만료된 이용권이 없어요" />
                   )}
