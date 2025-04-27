@@ -114,8 +114,37 @@ export function convertMembershipStatusToKorean(
   return status;
 }
 
+/**
+ * 현재 날짜가 주어진 `expiredAt` 날짜를 지났는지 판단하는 함수
+ *
+ * @param {string} expiredAt 만료일
+ * @returns {boolean}
+ */
 export function isExpired(expiredAt: string): boolean {
   return dayjs().isAfter(expiredAt, 'day');
+}
+
+/**
+ * 이용권 만료일 (expiredAt)이 오늘부터 30일 이내인지 확인하는 함수
+ *
+ * @param {MemberTableData[]} memberTableData Array of membership objects
+ * @returns {MemberTableData[]} Memberships that will expire within 30 days from today
+ */
+export function isWithin30Days(
+  memberTableData: MemberTableData[],
+): MemberTableData[] {
+  return memberTableData.map((member) => {
+    const validMemberships = member.memberships.filter((membership) => {
+      const diffInDays = dayjs(membership.expiredAt).diff(dayjs(), 'day');
+
+      return diffInDays >= 0 && diffInDays <= 30;
+    });
+
+    return {
+      ...member,
+      memberships: validMemberships,
+    };
+  });
 }
 
 /**

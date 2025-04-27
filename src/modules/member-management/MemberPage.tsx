@@ -15,7 +15,7 @@ import { MemberDetailSheet } from './components/MemberDetailSheet';
 import { MemberExcelRowObject, MemberTableData } from './types/views';
 import { memberColumns } from './utils/columns';
 import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
-import { formatMemberTableData } from './utils/helpers';
+import { formatMemberTableData, isWithin30Days } from './utils/helpers';
 
 const membershipTypes = [
   '전체',
@@ -101,6 +101,7 @@ export function MemberPage() {
               최근 등록 회원
             </TabsTrigger>
           </TabsList>
+
           <div className="flex gap-2">
             <FileDropzoneDialog onDrop={handleExcel} />
           </div>
@@ -127,6 +128,7 @@ export function MemberPage() {
           )}
         </TabsContent>
 
+        {/* 30일 이내 만료 예정 회원 */}
         <TabsContent value="expiringSoonMembers">
           <Card className="@container/card">
             <CardHeader className="relative">
@@ -155,14 +157,22 @@ export function MemberPage() {
             <CardContent>
               <DataTable
                 columns={memberColumns}
-                data={fetchMemberWithRelationsQuery.data ?? []}
+                data={isWithin30Days(fetchMemberWithRelationsQuery.data ?? [])}
                 //
                 filterKey="name"
-                // onRowClick={(row) => {
-                //   setRowSelected(row);
-                //   setOpenDetailSheet(true);
-                // }}
+                onRowClick={(row) => {
+                  setRowSelected(row);
+                  setOpenDetailSheet(true);
+                }}
               />
+
+              {rowSelected && (
+                <MemberDetailSheet
+                  open={openDetailSheet}
+                  setOpen={setOpenDetailSheet}
+                  member={rowSelected}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
