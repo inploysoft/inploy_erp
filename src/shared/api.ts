@@ -1,8 +1,8 @@
 import { generateClient } from 'aws-amplify/data';
-import { ConsoleLogger } from 'aws-amplify/utils';
 
 import { Member } from '@/modules/member-management/models/member';
 import type { Schema } from '../../amplify/data/resource';
+import { awsLogger } from './lib/config';
 import {
   FetchMemberWithRelations,
   FetchPurchasedModule,
@@ -14,8 +14,6 @@ import {
 import { InployModule } from './types/types';
 
 const client = generateClient<Schema>();
-
-const logger = new ConsoleLogger('API');
 
 /**
  * 로그인 유저 정보 조회
@@ -36,7 +34,7 @@ export async function fetchLoginUser(
     });
 
     if (errors && errors.length > 0) {
-      logger.error('GraphQL errors: ', errors);
+      awsLogger.error('GraphQL errors: ', errors);
       throw new Error('fetchLoginUser: ' + errors);
     }
 
@@ -46,7 +44,7 @@ export async function fetchLoginUser(
 
     return data[0];
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchLoginUser: ' + error);
   }
 }
@@ -74,7 +72,7 @@ export async function fetchCompany(
     );
 
     if (errors && errors.length > 0) {
-      logger.error('GraphQL errors: ', errors);
+      awsLogger.error('GraphQL errors: ', errors);
       throw new Error('fetchCompany: ' + errors);
     }
 
@@ -84,7 +82,7 @@ export async function fetchCompany(
 
     return data;
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchCompany: ' + error);
   }
 }
@@ -111,7 +109,7 @@ export async function fetchPurchasedModules(
 ): Promise<FetchPurchasedModule[]> {
   try {
     if (!companyId) {
-      logger.error('companyId is required');
+      awsLogger.error('companyId is required');
       return [];
     }
 
@@ -126,13 +124,13 @@ export async function fetchPurchasedModules(
     });
 
     if (errors && errors.length > 0) {
-      logger.error('GraphQL errors: ', errors);
+      awsLogger.error('GraphQL errors: ', errors);
       throw new Error('fetchPurchasedModules: ' + errors);
     }
 
     return data;
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchPurchasedModules: ' + error);
   }
 }
@@ -162,13 +160,13 @@ export async function fetchModules(
     });
 
     if (errors && errors.length > 0) {
-      logger.error('GraphQL errors: ', errors);
+      awsLogger.error('GraphQL errors: ', errors);
       throw new Error('fetchModules: ' + errors);
     }
 
     return data;
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchModules: ' + error);
   }
 }
@@ -196,18 +194,18 @@ export async function fetchPurchasedModule(
     );
 
     if (errors && errors.length > 0) {
-      logger.error('GraphQL errors: ', errors);
+      awsLogger.error('GraphQL errors: ', errors);
       throw new Error('fetchPurchasedModulesWithModuleInstance: ' + errors);
     }
 
     if (!data) {
-      logger.error('fetchPurchasedModulesWithModuleInstance: ', data);
+      awsLogger.error('fetchPurchasedModulesWithModuleInstance: ', data);
       return;
     }
 
     return data;
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchPurchasedModulesWithModuleInstance: ' + error);
   }
 }
@@ -217,7 +215,8 @@ export const defaultSet = ['id', 'status'] as const;
 
 export const memberManagementSet = [
   'memberIds.*',
-  'membershipIds.*',
+  'membershipTypeIds.*',
+  'membershipPlanIds.*',
   'membershipRegistrationIds.*',
 ] as const;
 
@@ -238,7 +237,6 @@ export async function fetchModuleInstance(
   purchasedModules?: FetchPurchasedModule[],
   inployModules?: Schema['Module']['type'][],
 ): Promise<ModuleEntity | undefined> {
-  console.log('fetchModuleInstance', purchasedModules);
   try {
     if (
       !purchasedModules ||
@@ -246,7 +244,7 @@ export async function fetchModuleInstance(
       !inployModules ||
       inployModules.length === 0
     ) {
-      logger.error('fetchModuleInstance: ' + 'No parameters');
+      awsLogger.error('fetchModuleInstance: ' + 'No parameters');
       return;
     }
 
@@ -254,6 +252,7 @@ export async function fetchModuleInstance(
       Extract<InployModule, 'memberManagement'>,
       MemberManagementEntity
     >;
+
     const workforceResult = {} as Record<
       Extract<InployModule, 'workforce'>,
       WorkforceEntity
@@ -289,12 +288,12 @@ export async function fetchModuleInstance(
       });
 
       if (errors && errors.length > 0) {
-        logger.error('GraphQL errors: ', errors);
+        awsLogger.error('GraphQL errors: ', errors);
         throw new Error('fetchModuleInstance: ' + errors);
       }
 
       if (!data || data.length === 0) {
-        logger.error('fetchModuleInstance: ', data);
+        awsLogger.error('fetchModuleInstance: ', data);
         continue;
       }
 
@@ -317,7 +316,7 @@ export async function fetchModuleInstance(
       ...workforceResult,
     };
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchModuleInstance: ' + error);
   }
 }
@@ -329,6 +328,7 @@ export const fetchMemberWithRelationsSet = [
   'phone',
   'gender',
   'birthDate',
+  'lastVisitedAt',
   'registeredAt',
   'customFields',
   'membershipRegistrationIds.id',
@@ -364,7 +364,7 @@ export async function fetchMemberWithRelations(
     });
 
     if (errors && errors.length > 0) {
-      logger.error('GraphQL errors: ', errors);
+      awsLogger.error('GraphQL errors: ', errors);
       throw new Error('fetchMemberWithRelations: ' + errors);
     }
 
@@ -374,7 +374,7 @@ export async function fetchMemberWithRelations(
 
     return data;
   } catch (error) {
-    logger.error('Exceptional errors: ', error);
+    awsLogger.error('Exceptional errors: ', error);
     throw new Error('fetchMemberWithRelations: ' + error);
   }
 }

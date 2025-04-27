@@ -3,12 +3,13 @@ import dayjs from 'dayjs';
 import {
   MemberExcelRowObject,
   MembershipTableData,
-  MemberTableData,
   MemberTableData2,
 } from '@/modules/member-management/types/views';
-import { FetchMemberWithRelations } from '@/shared/types/api';
 import {
-  Membership,
+  FetchMemberWithRelations,
+  MemberManagementEntity,
+} from '@/shared/types/api';
+import {
   MembershipDurationUnit,
   MembershipRegisterType,
 } from '../models/membership';
@@ -22,7 +23,7 @@ import { MembershipRegistrationStatus } from '../models/membershipRegistration';
  */
 export function formatMemberTableData(
   member: FetchMemberWithRelations[],
-): MemberTableData[] {
+): MemberTableData2[] {
   const result = member.flatMap((member) => {
     const { membershipRegistrationIds, ...rest } = member;
 
@@ -51,9 +52,16 @@ export function formatMemberTableDataFromExcel(
   excelObjects: MemberExcelRowObject[],
 ): MemberTableData2[] {
   return excelObjects.map<MemberTableData2>(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ address, memo, memoAt, latestExpiredAt, gender, birthDate, ...rest }) =>
-      rest,
+    ({
+      address,
+      memo,
+      memoAt,
+      latestExpiredAt,
+      gender,
+      birthDate,
+      status,
+      ...rest
+    }) => rest,
   );
 }
 
@@ -62,14 +70,20 @@ export function formatMemberTableDataFromExcel(
  * @param memberships 전체 이용권 목록
  * @returns 이용권 목록
  */
-export function formatMembershipTableData(
-  memberships: Membership[],
-): MembershipTableData[] {
-  return memberships.flatMap((membershipInfo) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { moduleInstanceId, ...rest } = membershipInfo;
 
-    return rest;
+export function formatMembershipTableData({
+  membershipTypeIds,
+  membershipPlanIds,
+}: MemberManagementEntity): MembershipTableData[] {
+  return membershipTypeIds.map((type) => {
+    const plans = membershipPlanIds.filter(
+      (plan) => type.id === plan.membershipTypeId,
+    );
+
+    return {
+      displayName: type.displayName,
+      plans: plans,
+    } as MembershipTableData;
   });
 }
 
@@ -163,12 +177,10 @@ export function getRemainingDays(
   return '만료됨';
 }
 
-export const isExcelFile = (file: File) => {
+export function isExcelFile(file: File): boolean {
   const allowedExtensions = ['.xlsx', '.xls'];
 
   const fileName = file.name.toLowerCase();
 
-  console.log(fileName.endsWith('xlsx'));
-
   return allowedExtensions.some((ext) => fileName.endsWith(ext));
-};
+}

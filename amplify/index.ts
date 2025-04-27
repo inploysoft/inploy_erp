@@ -5,8 +5,9 @@ import { CompanyModel } from './data/schema/company';
 import { CompanyMemberModel } from './data/schema/companyMember';
 import {
   MemberModel,
-  MembershipModel,
+  MembershipPlanModel,
   MembershipRegistrationModel,
+  MembershipTypeModel,
   TrainerModel,
 } from './data/schema/entities';
 import { EntityFieldSchemaModel } from './data/schema/entityFieldSchema';
@@ -50,7 +51,12 @@ export const schema = a
       allow.group('ADMINS').to(['delete']),
     ]),
 
-    Membership: MembershipModel.authorization((allow) => [
+    MembershipType: MembershipTypeModel.authorization((allow) => [
+      allow.authenticated().to(['read', 'create', 'update']),
+      allow.group('ADMINS').to(['delete']),
+    ]),
+
+    MembershipPlan: MembershipPlanModel.authorization((allow) => [
       allow.authenticated().to(['read', 'create', 'update']),
       allow.group('ADMINS').to(['delete']),
     ]),
