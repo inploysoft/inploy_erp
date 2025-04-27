@@ -114,8 +114,107 @@ export function convertMembershipStatusToKorean(
   return status;
 }
 
+/**
+ * 현재 날짜가 주어진 `expiredAt` 날짜를 지났는지 판단하는 함수
+ *
+ * @param {string} expiredAt 만료일
+ * @returns {boolean}
+ */
 export function isExpired(expiredAt: string): boolean {
   return dayjs().isAfter(expiredAt, 'day');
+}
+
+/**
+ * 오늘부터 최근 30일 이내 만료 예정인 이용권을 가지고 있는 회원 리스트를 반환하는 함수
+ *
+ * @param {MemberTableData[]} memberTableData Array of membership objects
+ * @returns {MemberTableData[]} Members who have memberships that will expire within 30 days from today
+ */
+export function isExpiringWithin30Days(
+  memberTableData?: MemberTableData[],
+): MemberTableData[] {
+  if (!memberTableData || memberTableData.length === 0) {
+    return [];
+  }
+
+  const result = memberTableData.map((member) => {
+    const validMemberships = member.memberships.filter((membership) => {
+      const diffInDays = dayjs(membership.expiredAt)
+        .add(1, 'day')
+        .diff(dayjs(), 'day');
+
+      return diffInDays >= 0 && diffInDays <= 30;
+    });
+
+    return {
+      ...member,
+      memberships: validMemberships,
+    };
+  });
+
+  return result.filter((value) => value.memberships.length !== 0);
+}
+
+/**
+ * 오늘부터 최근 30일 이내 만료된 이용권을 가지고 있는 회원 리스트를 반환하는 함수
+ *
+ * @param {MemberTableData[]} memberTableData Array of membership objects
+ * @returns {MemberTableData[]} Members who have memberships that have expired in last 30 days from today
+ */
+export function isExpiredInLast30Days(
+  memberTableData?: MemberTableData[],
+): MemberTableData[] {
+  if (!memberTableData || memberTableData.length === 0) {
+    return [];
+  }
+
+  const result = memberTableData.map((member) => {
+    const validMemberships = member.memberships.filter((membership) => {
+      const thirtyDaysAgo = dayjs().subtract(30, 'day');
+
+      const expirationDate = dayjs(membership.expiredAt)
+        .add(1, 'day')
+        .startOf('day');
+
+      return (
+        expirationDate.isBefore(dayjs()) &&
+        expirationDate.isAfter(thirtyDaysAgo)
+      );
+    });
+
+    return {
+      ...member,
+      memberships: validMemberships,
+    };
+  });
+
+  return result.filter((value) => value.memberships.length !== 0);
+}
+
+/**
+ * 오늘부터 최근 30일 이내 등록한 회원 리스트를 반환하는 함수
+ *
+ * @param {MemberTableData[]} memberTableData Array of membership objects
+ * @returns {MemberTableData[]} Members who are registered in last 30 days from today
+ */
+export function isRegisteredInLast30Days(
+  memberTableData?: MemberTableData[],
+): MemberTableData[] {
+  if (!memberTableData || memberTableData.length === 0) {
+    return [];
+  }
+
+  const result = memberTableData.filter((member) => {
+    const registeredDate = dayjs(member.registeredAt).startOf('day');
+
+    const thirtyDaysAgo = dayjs().subtract(30, 'day');
+
+    return (
+      registeredDate.isBefore(dayjs()) && registeredDate.isAfter(thirtyDaysAgo)
+    );
+  });
+
+  return result.filter((value) => value.memberships.length !== 0);
 }
 
 /**
