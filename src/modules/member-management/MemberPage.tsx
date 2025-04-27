@@ -12,8 +12,8 @@ import { fetchMemberWithRelations } from '@/shared/api';
 import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { cn } from '@/shared/lib/utils';
 import { MemberDetailSheet } from './components/MemberDetailSheet';
-import { MemberExcelRowObject, MemberTableData2 } from './types/views';
-import { memberColumns2 } from './utils/columns';
+import { MemberExcelRowObject, MemberTableData } from './types/views';
+import { memberColumns } from './utils/columns';
 import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
 import { formatMemberTableData } from './utils/helpers';
 
@@ -34,134 +34,14 @@ const membershipTypes = [
   '1:1 PT',
 ];
 
-const memberData2: MemberTableData2[] = [
-  {
-    name: '강지혜',
-    phone: '010-1234-5678',
-    FCtrainer: '조원준',
-    PTtrainer: '조원준',
-    lastVisitedAt: '2025-04-01',
-    memberships: [
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '헬스이용권',
-        registerType: 'duration',
-        sessionCount: 0,
-        usedSessionCount: 0,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-07-31',
-      },
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '1:1 PT',
-        registerType: 'count',
-        sessionCount: 24,
-        usedSessionCount: 24,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-02-31',
-      },
-    ],
-  },
-  {
-    name: '홍길동',
-    phone: '010-1234-5678',
-    FCtrainer: '강철구',
-    PTtrainer: '조원준',
-    lastVisitedAt: '2025-04-01',
-    memberships: [
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '헬스이용권',
-        registerType: 'duration',
-        sessionCount: 0,
-        usedSessionCount: 0,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-07-31',
-      },
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '1:1 PT',
-        registerType: 'count',
-        sessionCount: 24,
-        usedSessionCount: 24,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-02-31',
-      },
-    ],
-  },
-  {
-    name: '강지혜',
-    phone: '010-1234-5678',
-    FCtrainer: '조원준',
-    PTtrainer: '조원준',
-    lastVisitedAt: '2025-04-01',
-    memberships: [
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '헬스이용권',
-        registerType: 'duration',
-        sessionCount: 0,
-        usedSessionCount: 0,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-07-31',
-      },
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '1:1 PT',
-        registerType: 'count',
-        sessionCount: 24,
-        usedSessionCount: 24,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-02-31',
-      },
-    ],
-  },
-  {
-    name: '강지혜',
-    phone: '010-1234-5678',
-    FCtrainer: '조원준',
-    PTtrainer: '조원준',
-    lastVisitedAt: '2025-04-01',
-    memberships: [
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '헬스이용권',
-        registerType: 'duration',
-        sessionCount: 0,
-        usedSessionCount: 0,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-07-31',
-      },
-      {
-        branch: '에이블짐 건대역점',
-        displayName: '1:1 PT',
-        registerType: 'count',
-        sessionCount: 24,
-        usedSessionCount: 24,
-        durationValue: 3,
-        durationUnit: 'month',
-        expiredAt: '2025-02-31',
-      },
-    ],
-  },
-];
-
 export function MemberPage() {
   const { memberManagementModule } = useUserBootstrap();
 
   const [openDetailSheet, setOpenDetailSheet] = useState(false);
 
-  const [rowSelected, setRowSelected] = useState<MemberTableData2 | null>(null);
+  const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
   const [_memberTable, setMemberTable] = useState<MemberExcelRowObject[]>([]);
 
-  const [timeRange, setTimeRange] = useState('30d');
   const [selectedType, setSelectedType] = useState<string>();
 
   const fetchMemberWithRelationsQuery = useQuery({
@@ -191,18 +71,6 @@ export function MemberPage() {
 
     setMemberTable(result);
   };
-
-  //
-  // const queryClient = useQueryClient();
-
-  // const mutation = useMutation({
-  //   mutationFn: transformMemberExcelToObjects,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['formatMemberTableData', memberManagementModule?.memberIds],
-  //     });
-  //   },
-  // });
 
   return (
     <>
@@ -239,7 +107,7 @@ export function MemberPage() {
 
         <TabsContent value="totalMembers">
           <DataTable
-            columns={memberColumns2}
+            columns={memberColumns}
             data={fetchMemberWithRelationsQuery.data ?? []}
             //
             filterKey="name"
@@ -285,8 +153,8 @@ export function MemberPage() {
 
             <CardContent>
               <DataTable
-                columns={memberColumns2}
-                data={memberData2}
+                columns={memberColumns}
+                data={fetchMemberWithRelationsQuery.data ?? []}
                 //
                 filterKey="name"
                 // onRowClick={(row) => {
