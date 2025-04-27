@@ -43,26 +43,6 @@ const membershipTypes = [
   '1:1 PT',
 ];
 
-const tabValue = [
-  {
-    value: 'totalMembers',
-    title: '전체',
-  },
-  {
-    value: 'expiringSoonMembers',
-    title: '만료 예정 회원',
-  },
-
-  {
-    value: 'recentlyExpiredMembers',
-    title: '최근 만료 회원',
-  },
-  {
-    value: 'recentlyRegisteredMembers',
-    title: '최근 등록 회원',
-  },
-];
-
 export function MemberPage() {
   const { memberManagementModule } = useUserBootstrap();
 
@@ -73,6 +53,7 @@ export function MemberPage() {
     memberTableInitialState,
   );
 
+  const [memberCounts, setMemberCounts] = useState<number[]>([]);
   const [rowSelected, setRowSelected] = useState<MemberTableData | null>(null);
   const [_memberTable, setMemberTable] = useState<MemberExcelRowObject[]>([]);
 
@@ -94,6 +75,20 @@ export function MemberPage() {
       const expiringSoonMembers = isExpiringWithin30Days(formatted);
       const recentlyExpiredMembers = isExpiredInLast30Days(formatted);
       const recentlyRegisteredMembers = isRegisteredInLast30Days(formatted);
+
+      const memberTableCounts = [
+        fetched.length,
+        expiringSoonMembers.length,
+        recentlyExpiredMembers.length,
+        recentlyRegisteredMembers.length,
+      ];
+
+      setMemberCounts((prev) => {
+        const isSame =
+          prev.length === memberTableCounts.length &&
+          prev.every((v, i) => v === memberTableCounts[i]);
+        return isSame ? prev : memberTableCounts;
+      });
 
       dispatch({
         type: 'setTableData',
@@ -125,7 +120,7 @@ export function MemberPage() {
     <>
       <div className="@container/main flex flex-col gap-2 pb-4">
         <div className="flex flex-col gap-4 py-1 md:gap-6 md:py-2">
-          <SectionCards />
+          <SectionCards memberCounts={memberCounts} />
         </div>
       </div>
 
