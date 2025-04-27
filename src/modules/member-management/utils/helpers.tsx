@@ -180,6 +180,26 @@ export function isExpiredInLast30Days(
 }
 
 /**
+ * 오늘부터 최근 30일 이내 등록한 회원 리스트를 반환하는 함수
+ *
+ * @param {MemberTableData[]} memberTableData Array of membership objects
+ * @returns {MemberTableData[]} Members who are registered in last 30 days from today
+ */
+export function isRegisteredInLast30Days(
+  memberTableData: MemberTableData[],
+): MemberTableData[] {
+  return memberTableData.filter((member) => {
+    const registeredDate = dayjs(member.registeredAt).startOf('day');
+
+    const thirtyDaysAgo = dayjs().subtract(30, 'day');
+
+    return (
+      registeredDate.isBefore(dayjs()) && registeredDate.isAfter(thirtyDaysAgo)
+    );
+  });
+}
+
+/**
  * 이용권 기간 단위를 한글로 변환
  * @param durationUnit 이용권 기간 단위
  * @returns 한글로 변환된 기간 단위
