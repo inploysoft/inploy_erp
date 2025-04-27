@@ -130,10 +130,14 @@ export function isExpired(expiredAt: string): boolean {
  * @param {MemberTableData[]} memberTableData Array of membership objects
  * @returns {MemberTableData[]} Members who have memberships that will expire within 30 days from today
  */
-export function isWithin30Days(
-  memberTableData: MemberTableData[],
+export function isExpiredWithin30Days(
+  memberTableData?: MemberTableData[],
 ): MemberTableData[] {
-  return memberTableData.map((member) => {
+  if (!memberTableData || memberTableData.length === 0) {
+    return [];
+  }
+
+  const result = memberTableData.map((member) => {
     const validMemberships = member.memberships.filter((membership) => {
       const diffInDays = dayjs(membership.expiredAt)
         .add(1, 'day')
@@ -147,6 +151,8 @@ export function isWithin30Days(
       memberships: validMemberships,
     };
   });
+
+  return result.filter((value) => value.memberships.length !== 0);
 }
 
 /**
@@ -156,9 +162,13 @@ export function isWithin30Days(
  * @returns {MemberTableData[]} Members who have memberships that have expired in last 30 days from today
  */
 export function isExpiredInLast30Days(
-  memberTableData: MemberTableData[],
+  memberTableData?: MemberTableData[],
 ): MemberTableData[] {
-  return memberTableData.map((member) => {
+  if (!memberTableData || memberTableData.length === 0) {
+    return [];
+  }
+
+  const result = memberTableData.map((member) => {
     const validMemberships = member.memberships.filter((membership) => {
       const thirtyDaysAgo = dayjs().subtract(30, 'day');
 
@@ -177,6 +187,8 @@ export function isExpiredInLast30Days(
       memberships: validMemberships,
     };
   });
+
+  return result.filter((value) => value.memberships.length !== 0);
 }
 
 /**
@@ -186,9 +198,13 @@ export function isExpiredInLast30Days(
  * @returns {MemberTableData[]} Members who are registered in last 30 days from today
  */
 export function isRegisteredInLast30Days(
-  memberTableData: MemberTableData[],
+  memberTableData?: MemberTableData[],
 ): MemberTableData[] {
-  return memberTableData.filter((member) => {
+  if (!memberTableData || memberTableData.length === 0) {
+    return [];
+  }
+
+  const result = memberTableData.filter((member) => {
     const registeredDate = dayjs(member.registeredAt).startOf('day');
 
     const thirtyDaysAgo = dayjs().subtract(30, 'day');
@@ -197,6 +213,8 @@ export function isRegisteredInLast30Days(
       registeredDate.isBefore(dayjs()) && registeredDate.isAfter(thirtyDaysAgo)
     );
   });
+
+  return result.filter((value) => value.memberships.length !== 0);
 }
 
 /**

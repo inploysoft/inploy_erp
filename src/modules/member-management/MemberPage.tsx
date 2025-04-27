@@ -18,8 +18,8 @@ import { parseExcel, transformMemberExcelToObjects } from './utils/excel';
 import {
   formatMemberTableData,
   isExpiredInLast30Days,
+  isExpiredWithin30Days,
   isRegisteredInLast30Days,
-  isWithin30Days,
 } from './utils/helpers';
 
 const membershipTypes = [
@@ -163,7 +163,7 @@ export function MemberPage() {
             <CardContent>
               <DataTable
                 columns={memberColumns}
-                data={isWithin30Days(fetchMemberWithRelationsQuery.data ?? [])}
+                data={isExpiredWithin30Days(fetchMemberWithRelationsQuery.data)}
                 //
                 filterKey="name"
                 onRowClick={(row) => {
@@ -212,9 +212,7 @@ export function MemberPage() {
             <CardContent>
               <DataTable
                 columns={memberColumns}
-                data={isExpiredInLast30Days(
-                  fetchMemberWithRelationsQuery.data ?? [],
-                )}
+                data={isExpiredInLast30Days(fetchMemberWithRelationsQuery.data)}
                 //
                 filterKey="name"
                 onRowClick={(row) => {
@@ -264,7 +262,7 @@ export function MemberPage() {
               <DataTable
                 columns={memberColumns}
                 data={isRegisteredInLast30Days(
-                  fetchMemberWithRelationsQuery.data ?? [],
+                  fetchMemberWithRelationsQuery.data,
                 )}
                 //
                 filterKey="name"
