@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 
 import {
-  MemberExcelRowObject,
   MembershipTableData,
   MemberTableData,
 } from '@/modules/member-management/types/views';
@@ -54,22 +53,22 @@ export function formatMemberTableData(
   return result;
 }
 
-export function formatMemberTableDataFromExcel(
-  excelObjects: MemberExcelRowObject[],
-): MemberTableData[] {
-  return excelObjects.map<MemberTableData>(
-    ({
-      address,
-      memo,
-      memoAt,
-      latestExpiredAt,
-      gender,
-      birthDate,
-      status,
-      ...rest
-    }) => rest,
-  );
-}
+// export function formatMemberTableDataFromExcel(
+//   excelObjects: MemberExcelRowObject[],
+// ): MemberTableData[] {
+//   return excelObjects.map<MemberTableData>(
+//     ({
+//       address,
+//       memo,
+//       memoAt,
+//       latestExpiredAt,
+//       gender,
+//       birthDate,
+//       status,
+//       ...rest
+//     }) => rest,
+//   );
+// }
 
 /**
  * 이용권 목록 반환

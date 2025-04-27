@@ -5,7 +5,7 @@ import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 import { H2 } from '@/theme/Typography';
 import { MembershipRegistrationDialog } from './components/MembershipRegistrationDialog';
 import { MembershipTableData } from './types/views';
-import { membershipColumns2 } from './utils/columns';
+import { membershipColumns } from './utils/columns';
 import { formatMembershipTableData } from './utils/helpers';
 
 export function MembershipPage() {
@@ -34,7 +34,7 @@ export function MembershipPage() {
       </div>
 
       <DataTable
-        columns={membershipColumns2}
+        columns={membershipColumns}
         data={tableData2}
         filterKey="displayName"
       />
