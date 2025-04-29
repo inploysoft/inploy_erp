@@ -218,7 +218,9 @@ export const membershipColumns: ColumnDef<MembershipTableData>[] = [
     cell: (info) => {
       const memberships = info.getValue() as MembershipPlan[];
 
-      return memberships.map((value) => <p>{value.sessionCount}</p>);
+      return memberships.map((value, index) => (
+        <p key={index}>{value.sessionCount}</p>
+      ));
     },
     enableSorting: true,
   },
@@ -229,7 +231,9 @@ export const membershipColumns: ColumnDef<MembershipTableData>[] = [
     cell: (info) => {
       const memberships = info.getValue() as MembershipPlan[];
 
-      return memberships.map((value) => <p>{value.price}</p>);
+      return memberships.map((value, index) => (
+        <p key={index}>{value.price}</p>
+      ));
     },
     enableSorting: true,
   },
