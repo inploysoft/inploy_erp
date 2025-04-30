@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router';
 
-import { LoginForm } from '@/components/login-form';
 import { SidebarLayout } from '@/components/ui/sidebar/SidebarLayout';
+import { LoginPage } from '@/modules/auth/LoginPage';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
 import { MemberPage } from '@/modules/member-management/MemberPage';
@@ -17,7 +17,7 @@ const loading = <div>Loading...</div>;
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <LoginForm />,
+    element: <LoginPage />,
   },
   {
     path: '/dashboard',
