@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import outputs from '../amplify_outputs.json';
 import App from './App';
-import { InployAuthenticator } from './modules/auth/InployAuthenticator';
 
 import '@aws-amplify/ui-react/styles.css';
 
@@ -21,9 +20,9 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <InployAuthenticator>
-        <App />
-      </InployAuthenticator>
+      <App />
+      {/* <InployAuthenticator>
+      </InployAuthenticator> */}
     </QueryClientProvider>
   </StrictMode>,
 );
