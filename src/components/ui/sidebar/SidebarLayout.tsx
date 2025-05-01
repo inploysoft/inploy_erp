@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { navBreadCrumb } from '@/components/ui/sidebar/utils/constants';
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
+import { awsLogger } from '@/shared/lib/config';
 import { Button } from '../button/button';
 import { AppSidebar } from './AppSidebar';
 import { SidebarProvider } from './context/SidebarProvider';
@@ -20,6 +22,17 @@ import { SidebarInset, SidebarTrigger } from './Sidebar';
 import { NavBreadCrumb } from './utils/types';
 
 export function SidebarLayout() {
+  const { awsGetCurrentUserQuery } = useUserBootstrap();
+
+  if (awsGetCurrentUserQuery.isError) {
+    awsLogger.error('LoginError' + awsGetCurrentUserQuery.error);
+
+    // TODO: 20250502 alert 디자인 변경
+    alert('예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.');
+
+    history.back();
+  }
+
   const navigate = useNavigate();
 
   const [navMenus, setNavMenus] = useState<NavBreadCrumb>(navBreadCrumb);
@@ -34,7 +47,7 @@ export function SidebarLayout() {
   const onClickSignOut = async () => {
     await signOut();
 
-    navigate('/');
+    navigate('/login');
   };
 
   return (

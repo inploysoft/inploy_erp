@@ -16,11 +16,11 @@ const loading = <div>Loading...</div>;
 
 const routes: RouteObject[] = [
   {
-    path: '/',
+    path: '/login',
     element: <LoginPage />,
   },
   {
-    path: '/dashboard',
+    path: '/',
     element: <SidebarLayout />,
     children: [
       {

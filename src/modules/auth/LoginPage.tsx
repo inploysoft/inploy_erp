@@ -51,7 +51,7 @@ export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
       });
 
       if (result.isSignedIn) {
-        navigate('/dashboard');
+        navigate('/');
       }
 
       // TODO: 20250501 로그인 관련 예외처리 추가

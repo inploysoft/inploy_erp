@@ -79,6 +79,7 @@ export const useUserBootstrap = () => {
   }, [fetchModuleInstanceQuery.data]);
 
   return {
+    awsGetCurrentUserQuery,
     fetchLoginUserQuery,
     fetchPurchasedModulesQuery,
     fetchModulesQuery,
