@@ -21,7 +21,7 @@ const client = generateClient<Schema>();
  * @returns 로그인 유저 정보
  */
 export async function fetchLoginUser(
-  userId: string,
+  userId?: string,
 ): Promise<Schema['CompanyMember']['type'] | undefined> {
   try {
     const { data, errors } = await client.models.CompanyMember.list({

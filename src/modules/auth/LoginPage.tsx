@@ -1,6 +1,10 @@
-import { ComponentProps } from 'react';
-import { useForm } from 'react-hook-form';
+import { ComponentProps, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 
+import { signIn } from 'aws-amplify/auth';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import {
@@ -20,7 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/shared/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Button } from '../../components/ui/button/button';
 
 const formSchema = z.object({
@@ -29,6 +33,8 @@ const formSchema = z.object({
 });
 
 export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,9 +43,21 @@ export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      const result = await signIn({
+        username: values.email,
+        password: values.password,
+      });
+
+      if (result.isSignedIn) {
+        navigate('/dashboard');
+      }
+
+      // TODO: 20250501 로그인 관련 예외처리 추가
+    },
+    [navigate],
+  );
 
   return (
     <div

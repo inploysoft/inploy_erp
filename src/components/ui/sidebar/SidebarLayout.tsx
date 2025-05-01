@@ -1,7 +1,7 @@
 import { CSSProperties, useCallback, useState } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 
-import { useAuthenticator } from '@aws-amplify/ui-react';
+import { signOut } from 'aws-amplify/auth';
 
 import {
   Breadcrumb,
@@ -13,13 +13,14 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { navBreadCrumb } from '@/components/ui/sidebar/utils/constants';
+import { Button } from '../button/button';
 import { AppSidebar } from './AppSidebar';
 import { SidebarProvider } from './context/SidebarProvider';
 import { SidebarInset, SidebarTrigger } from './Sidebar';
 import { NavBreadCrumb } from './utils/types';
 
 export function SidebarLayout() {
-  const { signOut } = useAuthenticator();
+  const navigate = useNavigate();
 
   const [navMenus, setNavMenus] = useState<NavBreadCrumb>(navBreadCrumb);
 
@@ -29,6 +30,12 @@ export function SidebarLayout() {
       menuItem: menuItem,
     });
   }, []);
+
+  const onClickSignOut = async () => {
+    await signOut();
+
+    navigate('/');
+  };
 
   return (
     <SidebarProvider
@@ -61,7 +68,7 @@ export function SidebarLayout() {
               </BreadcrumbList>
             </Breadcrumb>
 
-            <button onClick={signOut}>Sign out</button>
+            <Button onClick={onClickSignOut}>Sign out</Button>
           </div>
         </header>
 
