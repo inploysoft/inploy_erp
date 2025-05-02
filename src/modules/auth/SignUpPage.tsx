@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
 
 import { signUp } from 'aws-amplify/auth';
 
@@ -19,11 +18,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { formatKoreanPhoneToInternational } from '@/shared/lib/format';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '../../components/ui/button/button';
 
 const formSchema = z
   .object({
+    name: z.string(),
     username: z.string().email(),
     password: z
       .string()
@@ -32,9 +33,9 @@ const formSchema = z
         '비밀번호는 8자 이상이며, 대소문자, 숫자, 특수문자를 각각 하나 이상 포함해야해요',
       ),
     confirmPassword: z.string(),
-    company: z.string(),
-    isAdmin: z.boolean(),
-    phone: z.string(),
+    'custom:company_name': z.string(),
+    'custom:is_admin': z.boolean(),
+    phone_number: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: '비밀번호가 일치하지 않아요',
@@ -42,33 +43,32 @@ const formSchema = z
   });
 
 export function SignUpPage() {
-  const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    // mode: 'onChange',
     defaultValues: {
+      name: '',
       username: '',
       password: '',
       confirmPassword: '',
-      company: '',
-      isAdmin: false,
-      phone: '',
+      'custom:company_name': '',
+      'custom:is_admin': false,
+      phone_number: '',
     },
   });
 
   const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     const { isSignUpComplete, userId, nextStep } = await signUp({
-      username: 'hello@mycompany.com',
-      password: 'Inploy1234*',
+      username: values.username,
+      password: values.password,
       options: {
         userAttributes: {
-          phone_number: '+821012345678',
-          'custom:company_name': 'john_doe123',
-          'custom:is_admin': 'false',
+          name: values.name,
+          'custom:company_name': values['custom:company_name'],
+          'custom:is_admin': String(values['custom:is_admin']),
+          phone_number: formatKoreanPhoneToInternational(values.phone_number),
         },
       },
     });
@@ -92,6 +92,26 @@ export function SignUpPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이름</FormLabel>
+
+                    <FormControl>
+                      <Input
+                        required
+                        placeholder="이름을 입력해주세요"
+                        {...field}
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="username"
@@ -191,7 +211,7 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="company"
+                name="custom:company_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>회사 이름</FormLabel>
@@ -211,7 +231,7 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="isAdmin"
+                name="custom:is_admin"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>관리자 인가요?</FormLabel>
@@ -232,7 +252,7 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="phone"
+                name="phone_number"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>전화번호</FormLabel>

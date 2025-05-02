@@ -37,7 +37,7 @@ export function formatKoreanPhoneToInternational(phone: string): string {
     const number = phoneUtil.parseAndKeepRawInput(phone, 'KR');
 
     if (phoneUtil.isValidNumberForRegion(number, 'KR')) {
-      return phoneUtil.format(number, PhoneNumberFormat.INTERNATIONAL);
+      return phoneUtil.format(number, PhoneNumberFormat.E164);
     }
 
     return phone;

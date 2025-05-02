@@ -4,11 +4,11 @@ import { postConfirmation } from './post-confirmation/resource';
 // https://docs.amplify.aws/react/build-a-backend/auth/concepts/user-attributes/
 // TODO: 20250413 phone 로그인 옵션 삭제
 export const auth = defineAuth({
-  name: 'inploy-dev-userpool',
   loginWith: {
     email: true,
-    phone: true,
   },
+
+  accountRecovery: 'EMAIL_ONLY',
 
   groups: ['ADMINS', 'EMPLOYEES'],
 
@@ -19,8 +19,7 @@ export const auth = defineAuth({
   access: (allow) => [allow.resource(postConfirmation).to(['addUserToGroup'])],
 
   userAttributes: {
-    email: {
-      mutable: true,
+    fullname: {
       required: true,
     },
 
