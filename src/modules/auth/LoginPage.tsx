@@ -1,4 +1,4 @@
-import { ComponentProps, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
 import { signIn } from 'aws-amplify/auth';
@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/shared/lib/utils';
-
 import { Button } from '../../components/ui/button/button';
 
 const formSchema = z.object({
@@ -32,7 +31,7 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
+export function LoginPage() {
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,9 +62,7 @@ export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
     <div
       className={cn(
         'absolute top-1/2 left-1/2 w-1/3 -translate-x-1/2 -translate-y-1/2',
-        className,
       )}
-      {...props}
     >
       <Card>
         <CardHeader>
@@ -105,7 +102,7 @@ export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Password{' '}
+                      Password
                       <a
                         href="#"
                         className="ml-auto inline-block text-sm font-normal underline-offset-4 hover:underline"
@@ -134,7 +131,7 @@ export function LoginPage({ className, ...props }: ComponentProps<'div'>) {
 
               <div className="text-center text-sm">
                 Don&apos;t have an account?{' '}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/signup" className="underline underline-offset-4">
                   Sign up
                 </a>
               </div>
