@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { formatKoreanPhoneToInternational } from '@/shared/lib/format';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '../../components/ui/button/button';
+import { SignUpOTP } from './components/SignUpOTP';
 
 const formSchema = z
   .object({
@@ -45,6 +46,8 @@ const formSchema = z
 export function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [username, setUsername] = useState<string>('');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,6 +79,10 @@ export function SignUpPage() {
     console.log('isSignUpComplete', isSignUpComplete);
     console.log('userId', userId);
     console.log('nextStep', nextStep);
+
+    if (!isSignUpComplete && nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
+      setUsername(values.username);
+    }
   }, []);
 
   return (
@@ -275,6 +282,8 @@ export function SignUpPage() {
               </Button>
             </form>
           </Form>
+
+          {username && <SignUpOTP username={username} />}
         </CardContent>
       </Card>
     </div>
