@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { signUp } from 'aws-amplify/auth';
@@ -22,20 +22,34 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '../../components/ui/button/button';
 
-const formSchema = z.object({
-  username: z.string().email(),
-  password: z.string(),
-  confirmPassword: z.string(),
-  company: z.string(),
-  isAdmin: z.boolean(),
-  phone: z.string(),
-});
+const formSchema = z
+  .object({
+    username: z.string().email(),
+    password: z
+      .string()
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+        '비밀번호는 8자 이상이며, 대소문자, 숫자, 특수문자를 각각 하나 이상 포함해야해요',
+      ),
+    confirmPassword: z.string(),
+    company: z.string(),
+    isAdmin: z.boolean(),
+    phone: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: '비밀번호가 일치하지 않아요',
+    path: ['confirmPassword'],
+  });
 
 export function SignUpPage() {
   const navigate = useNavigate();
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    // mode: 'onChange',
     defaultValues: {
       username: '',
       password: '',
@@ -47,10 +61,6 @@ export function SignUpPage() {
   });
 
   const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-
-    // 비밀번호 확인 로직 추가
-
     const { isSignUpComplete, userId, nextStep } = await signUp({
       username: 'hello@mycompany.com',
       password: 'Inploy1234*',
@@ -110,12 +120,29 @@ export function SignUpPage() {
                     <FormLabel>비밀번호</FormLabel>
 
                     <FormControl>
-                      <Input
-                        type="password"
-                        required
-                        placeholder="비밀번호를 입력해주세요"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          placeholder="비밀번호를 입력해주세요"
+                          //
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            form.clearErrors('password');
+                          }}
+                        />
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute top-1/2 right-2 -translate-y-1/2"
+                        >
+                          {showPassword ? '숨기기' : '보기'}
+                        </Button>
+                      </div>
                     </FormControl>
 
                     <FormDescription>
@@ -135,12 +162,26 @@ export function SignUpPage() {
                     <FormLabel>비밀번호</FormLabel>
 
                     <FormControl>
-                      <Input
-                        type="password"
-                        required
-                        placeholder="비밀번호를 다시 입력해주세요"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="비밀번호를 다시 입력해주세요"
+                          required
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          {...field}
+                        />
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="absolute top-1/2 right-2 -translate-y-1/2"
+                        >
+                          {showConfirmPassword ? '숨기기' : '보기'}
+                        </Button>
+                      </div>
                     </FormControl>
 
                     <FormMessage />
