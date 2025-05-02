@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 
+import { signUp } from 'aws-amplify/auth';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -10,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,7 +23,7 @@ import { cn } from '@/shared/lib/utils';
 import { Button } from '../../components/ui/button/button';
 
 const formSchema = z.object({
-  email: z.string().email(),
+  username: z.string().email(),
   password: z.string(),
   confirmPassword: z.string(),
   company: z.string(),
@@ -34,7 +37,7 @@ export function SignUpPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
       confirmPassword: '',
       company: '',
@@ -45,6 +48,24 @@ export function SignUpPage() {
 
   const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     console.log(values);
+
+    // 비밀번호 확인 로직 추가
+
+    const { isSignUpComplete, userId, nextStep } = await signUp({
+      username: 'hello@mycompany.com',
+      password: 'Inploy1234*',
+      options: {
+        userAttributes: {
+          phone_number: '+821012345678',
+          'custom:company_name': 'john_doe123',
+          'custom:is_admin': 'false',
+        },
+      },
+    });
+
+    console.log('isSignUpComplete', isSignUpComplete);
+    console.log('userId', userId);
+    console.log('nextStep', nextStep);
   }, []);
 
   return (
@@ -63,7 +84,7 @@ export function SignUpPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="email"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>이메일</FormLabel>
@@ -96,6 +117,10 @@ export function SignUpPage() {
                         {...field}
                       />
                     </FormControl>
+
+                    <FormDescription>
+                      길이 8자리, 대소문자, 숫자, 특수문자 필수
+                    </FormDescription>
 
                     <FormMessage />
                   </FormItem>
