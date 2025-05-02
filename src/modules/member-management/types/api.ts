@@ -1,9 +1,9 @@
+import { z } from 'zod';
+
 import {
   MembershipDurationUnit,
   MembershipRegisterType,
 } from '@/modules/member-management/models/membership';
-
-import { z } from 'zod';
 
 export interface CreateMembership {
   moduleInstanceId: string;
@@ -22,7 +22,6 @@ export type UpdateData<TData> = {
 //
 export const memberExcelSchema = z.object({
   branch: z.string(),
-  registerType: z.enum(['duration', 'count']),
   displayName: z.string(),
   sessionCount: z.number().optional(),
   usedSessionCount: z.number().optional(),
@@ -32,9 +31,3 @@ export const memberExcelSchema = z.object({
 });
 
 export const memberExcelSchema2D = z.array(z.array(memberExcelSchema));
-
-export type ParseComplexField = {
-  memberships: z.infer<typeof memberExcelSchema>[];
-};
-
-

@@ -1,7 +1,6 @@
-import { useAuthenticator } from '@aws-amplify/ui-react';
-
 import { useQuery } from '@tanstack/react-query';
 
+import { getCurrentUser } from 'aws-amplify/auth';
 import { useMemo } from 'react';
 import {
   fetchLoginUser,
@@ -16,12 +15,15 @@ import { MemberManagementEntity, WorkforceEntity } from '../types/api';
  * @returns 유저 정보, 구매한 모듈, 사이드바 메뉴 정보
  */
 export const useUserBootstrap = () => {
-  const { user } = useAuthenticator();
+  const awsGetCurrentUserQuery = useQuery({
+    queryKey: ['awsGetCurrentUser'],
+    queryFn: () => getCurrentUser(),
+  });
 
   const fetchLoginUserQuery = useQuery({
-    queryKey: ['fetchLoginUser', user.userId],
-    queryFn: () => fetchLoginUser(user.userId),
-    enabled: !!user,
+    queryKey: ['fetchLoginUser', awsGetCurrentUserQuery.data?.userId],
+    queryFn: () => fetchLoginUser(awsGetCurrentUserQuery.data?.userId),
+    enabled: !!awsGetCurrentUserQuery.data?.userId,
   });
 
   const fetchPurchasedModulesQuery = useQuery({
@@ -77,6 +79,7 @@ export const useUserBootstrap = () => {
   }, [fetchModuleInstanceQuery.data]);
 
   return {
+    awsGetCurrentUserQuery,
     fetchLoginUserQuery,
     fetchPurchasedModulesQuery,
     fetchModulesQuery,

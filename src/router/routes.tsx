@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { createBrowserRouter, RouteObject } from 'react-router';
 
 import { SidebarLayout } from '@/components/ui/sidebar/SidebarLayout';
+import { LoginPage } from '@/modules/auth/LoginPage';
+import { SignUpPage } from '@/modules/auth/SignUpPage';
 import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
 import { MemberPage } from '@/modules/member-management/MemberPage';
@@ -14,6 +16,14 @@ import { WorkforceDashboardPage } from '@/modules/workforce/WorkforceDashboardPa
 const loading = <div>Loading...</div>;
 
 const routes: RouteObject[] = [
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignUpPage />,
+  },
   {
     path: '/',
     element: <SidebarLayout />,
