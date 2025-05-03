@@ -40,7 +40,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
 
     await dataClient.models.CompanyMember.create({
       sub: event.request.userAttributes['sub'],
-      companyId: event.request.userAttributes['company_id'],
+      companyId: event.request.userAttributes['custom:company_id'],
       email: event.request.userAttributes['email'],
       isAdmin: isAdmin === 'true',
       name: event.request.userAttributes['name'],

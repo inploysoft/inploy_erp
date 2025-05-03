@@ -31,7 +31,7 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-export function LoginPage() {
+export function SignInPage() {
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
