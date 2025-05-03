@@ -19,7 +19,7 @@ export const resources = [
   { trainerId: 2, trainerName: '김창현' },
 ];
 
-export const events = [
+export const eventMockData = [
   /* {
     id: 0,
     title: 'All Day Event very long title',
@@ -31,15 +31,15 @@ export const events = [
   {
     id: 222,
     title: '변요한 회원',
-    start: DateTime.local(2025, 5, 3, 9, 0, 0).toJSDate(),
-    end: DateTime.local(2025, 5, 3).toJSDate(),
+    start: DateTime.now().set({ hour: 15, minute: 0 }).toJSDate(),
+    end: DateTime.now().set({ hour: 16, minute: 0 }).toJSDate(),
     resourceId: 1,
   },
   {
     id: 223,
     title: '강지혜 회원',
-    start: DateTime.local(2025, 5, 3, 2, 0, 0).toJSDate(),
-    end: DateTime.local(2025, 5, 3).toJSDate(),
+    start: DateTime.now().set({ hour: 9, minute: 0 }).toJSDate(),
+    end: DateTime.now().set({ hour: 10, minute: 0 }).toJSDate(),
     resourceId: 2,
   },
   {

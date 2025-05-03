@@ -1,18 +1,17 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { DateTime } from 'luxon';
-import { Calendar, luxonLocalizer } from 'react-big-calendar';
+import { Calendar, luxonLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
-import { events, messagesKo } from './lib/constant';
+import { eventMockData, messagesKo, resources } from './lib/constant';
 
 const localizer = luxonLocalizer(DateTime);
 
-const DnDCalendar = withDragAndDrop(Calendar);
+const DraggableCalendar = withDragAndDrop(Calendar);
 
 export function CalendarPage() {
-  const [myEvents, setEvents] = useState(events);
-  const [dndEvents, setDnDEvents] = useState(events);
+  const [events, setEvents] = useState(eventMockData);
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
@@ -60,7 +59,7 @@ export function CalendarPage() {
         event.allDay = false;
       }
 
-      setDnDEvents((prev) => {
+      setEvents((prev) => {
         const existing = prev.find((ev) => ev.id === event.id) ?? {};
 
         const filtered = prev.filter((ev) => ev.id !== event.id);
@@ -76,31 +75,35 @@ export function CalendarPage() {
         ];
       });
     },
-    [setDnDEvents],
+    [setEvents],
   );
 
   const resizeEvent = useCallback(
     ({ event, start, end }) => {
-      setDnDEvents((prev) => {
+      setEvents((prev) => {
         const existing = prev.find((ev) => ev.id === event.id) ?? {};
         const filtered = prev.filter((ev) => ev.id !== event.id);
         return [...filtered, { ...existing, start, end }];
       });
     },
-    [setDnDEvents],
+    [setEvents],
   );
 
   return (
     <>
-      {/* <Calendar
+      <DraggableCalendar
         // misc
         culture="ko"
         defaultView={Views.DAY}
-        endAccessor="end"
-        events={myEvents}
+        endAccessor={(event) => event.end}
+        events={events}
         localizer={localizer}
         messages={messages}
-        startAccessor="start"
+        startAccessor={(event) => event.start}
+        // customizable resource
+        resources={resources}
+        resourceIdAccessor={(resource) => resource.trainerId}
+        resourceTitleAccessor={(resource) => resource.trainerName}
         // selectable
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
@@ -108,15 +111,7 @@ export function CalendarPage() {
         min={min}
         max={max}
         scrollToTime={scrollToTime}
-        // customizable resource
-        resources={resources}
-        resourceIdAccessor="trainerId"
-        resourceTitleAccessor="trainerName"
-      /> */}
-
-      <DnDCalendar
-        localizer={localizer}
-        events={dndEvents}
+        // draggable
         draggableAccessor={(event) => true}
         onEventDrop={moveEvent}
         onEventResize={resizeEvent}
