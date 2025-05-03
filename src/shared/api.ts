@@ -161,7 +161,6 @@ export async function fetchModules(
 
     if (errors && errors.length > 0) {
       awsLogger.error('GraphQL errors: ', errors);
-      throw new Error('fetchModules: ' + errors);
     }
 
     return data;
@@ -221,10 +220,12 @@ export const memberManagementSet = [
 ] as const;
 
 export const workforceSet = ['trainerIds.*'] as const;
+export const schedulerSet = ['trainerIds.*'] as const;
 
 const selectionSetMap = {
   memberManagement: memberManagementSet,
   workforce: workforceSet,
+  scheduler: schedulerSet,
 } as const;
 
 /**
