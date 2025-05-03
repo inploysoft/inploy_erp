@@ -23,10 +23,10 @@ import { cn } from '@/shared/lib/utils';
 import { Button } from '../../components/ui/button/button';
 import { SignUpOTP } from './components/SignUpOTP';
 
-const formSchema = z
+export const signUpFormSchema = z
   .object({
     name: z.string(),
-    username: z.string().email(),
+    email: z.string().email(),
     password: z
       .string()
       .regex(
@@ -34,9 +34,9 @@ const formSchema = z
         '비밀번호는 8자 이상이며, 대소문자, 숫자, 특수문자를 각각 하나 이상 포함해야해요',
       ),
     confirmPassword: z.string(),
-    'custom:company_name': z.string(),
-    'custom:is_admin': z.boolean(),
-    phone_number: z.string(),
+    companyName: z.string(),
+    isAdmin: z.boolean(),
+    phone: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: '비밀번호가 일치하지 않아요',
@@ -49,41 +49,40 @@ export function SignUpPage() {
 
   const [username, setUsername] = useState<string>('');
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       name: '',
-      username: '',
+      email: '',
       password: '',
       confirmPassword: '',
-      'custom:company_name': '',
-      'custom:is_admin': false,
-      phone_number: '',
+      companyName: '에이블짐',
+      isAdmin: false,
+      phone: '',
     },
   });
 
-  const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
-    const { isSignUpComplete, userId, nextStep } = await signUp({
-      username: values.username,
-      password: values.password,
-      options: {
-        userAttributes: {
-          name: values.name,
-          'custom:company_name': values['custom:company_name'],
-          'custom:is_admin': String(values['custom:is_admin']),
-          phone_number: formatKoreanPhoneToInternational(values.phone_number),
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof signUpFormSchema>) => {
+      const { isSignUpComplete, nextStep } = await signUp({
+        username: values.email,
+        password: values.password,
+        options: {
+          userAttributes: {
+            name: values.name,
+            'custom:company_id': 'd9244152-3bbd-4a02-938f-86e561ec9d8b',
+            'custom:is_admin': String(values['isAdmin']),
+            phone_number: formatKoreanPhoneToInternational(values.phone),
+          },
         },
-      },
-    });
+      });
 
-    console.log('isSignUpComplete', isSignUpComplete);
-    console.log('userId', userId);
-    console.log('nextStep', nextStep);
-
-    if (!isSignUpComplete && nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
-      setUsername(values.username);
-    }
-  }, []);
+      if (!isSignUpComplete && nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
+        setUsername(values.email);
+      }
+    },
+    [],
+  );
 
   return (
     <div
@@ -121,7 +120,7 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="username"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>이메일</FormLabel>
@@ -218,17 +217,13 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="custom:company_name"
+                name="companyName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>회사 이름</FormLabel>
 
                     <FormControl>
-                      <Input
-                        required
-                        placeholder="회사 이름을 입력해주세요"
-                        {...field}
-                      />
+                      <Input required disabled {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -238,7 +233,7 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="custom:is_admin"
+                name="isAdmin"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>관리자 인가요?</FormLabel>
@@ -259,7 +254,7 @@ export function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="phone_number"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>전화번호</FormLabel>
