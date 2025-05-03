@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { DateTime } from 'luxon';
-import { Calendar, luxonLocalizer, Views } from 'react-big-calendar';
+import { Calendar, Formats, luxonLocalizer, Views } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
+import { localeToKorea } from '@/shared/lib/format';
+import { SchedularToolbar } from './components/SchedularToolbar';
 import { eventMockData, messagesKo, resources } from './lib/constant';
 
 const localizer = luxonLocalizer(DateTime);
@@ -47,6 +49,24 @@ export function CalendarPage() {
     }),
     [],
   );
+
+  const formats: Formats = useMemo(() => {
+    return {
+      dayHeaderFormat: (date: Date) =>
+        localeToKorea(DateTime.fromJSDate(date)).toFormat('M월 d일 cccc'),
+
+      dayRangeHeaderFormat: ({ start, end }: { start: Date; end: Date }) => {
+        const startFormatted = DateTime.fromJSDate(start).toFormat('M월 d일');
+
+        const endFormatted = DateTime.fromJSDate(end).toFormat('M월 d일');
+
+        return `${startFormatted} - ${endFormatted}`;
+      },
+
+      monthHeaderFormat: (date: Date) =>
+        localeToKorea(DateTime.fromJSDate(date)).toFormat('yyyy년 M월'),
+    };
+  }, []);
 
   // Drag and Drop
   const moveEvent = useCallback(
@@ -94,8 +114,12 @@ export function CalendarPage() {
       <DraggableCalendar
         // misc
         culture="ko"
+        components={{
+          toolbar: SchedularToolbar,
+        }}
         defaultView={Views.DAY}
         endAccessor={(event) => event.end}
+        formats={formats}
         events={events}
         localizer={localizer}
         messages={messages}

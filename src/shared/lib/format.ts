@@ -1,6 +1,7 @@
 /* 화면 표시용 데이터 가공 함수 모음 */
 
 import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
+import { DateTime } from 'luxon';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -46,3 +47,5 @@ export function formatKoreanPhoneToInternational(phone: string): string {
     return phone;
   }
 }
+
+export const localeToKorea = (date: DateTime) => date.setLocale('ko');
