@@ -3,13 +3,14 @@ import { useCallback } from 'react';
 import { NavigateAction, ToolbarProps, View } from 'react-big-calendar';
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CalendarEvent, CalendarResource } from '../lib/types';
 
 export function SchedularToolbar({
   label,
   onNavigate,
   onView,
   view,
-}: ToolbarProps) {
+}: ToolbarProps<CalendarEvent, CalendarResource>) {
   const handleViewChange = useCallback(
     (val: string) => {
       onView(val as View);

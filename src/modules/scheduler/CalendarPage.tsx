@@ -1,22 +1,33 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { DateTime } from 'luxon';
-import { Calendar, Formats, luxonLocalizer, Views } from 'react-big-calendar';
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import {
+  Calendar,
+  Formats,
+  luxonLocalizer,
+  SlotInfo,
+  Views,
+} from 'react-big-calendar';
+import withDragAndDrop, {
+  EventInteractionArgs,
+} from 'react-big-calendar/lib/addons/dragAndDrop';
 
 import { localeToKorea } from '@/shared/lib/format';
 import { SchedularToolbar } from './components/SchedularToolbar';
-import { eventMockData, messagesKo, resources } from './lib/constant';
+import { eventMockData, koreanMessages, resources } from './lib/constant';
+import { CalendarEvent, CalendarResource } from './lib/types';
 
 const localizer = luxonLocalizer(DateTime);
 
-const DraggableCalendar = withDragAndDrop(Calendar);
+const DraggableCalendar = withDragAndDrop<CalendarEvent, CalendarResource>(
+  Calendar,
+);
 
 export function CalendarPage() {
-  const [events, setEvents] = useState(eventMockData);
+  const [events, setEvents] = useState<CalendarEvent[]>(eventMockData);
 
   const handleSelectSlot = useCallback(
-    ({ start, end }) => {
+    ({ start, end }: SlotInfo) => {
       const title = window.prompt('New Event name');
 
       if (title) {
@@ -36,14 +47,14 @@ export function CalendarPage() {
   );
 
   const handleSelectEvent = useCallback(
-    (event) => console.log(event.title),
+    (event: CalendarEvent) => console.log(event),
     [],
   );
 
   const { min, messages, max, scrollToTime } = useMemo(
     () => ({
       max: DateTime.local(1970, 1, 1, 23, 59, 59).toJSDate(),
-      messages: messagesKo,
+      messages: koreanMessages,
       min: DateTime.local(1970, 1, 1, 6, 0, 0).toJSDate(),
       scrollToTime: DateTime.local(1970, 1, 1, 6).toJSDate(),
     }),
@@ -70,17 +81,26 @@ export function CalendarPage() {
 
   // Drag and Drop
   const moveEvent = useCallback(
-    ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
-      const { allDay } = event;
-      if (!allDay && droppedOnAllDaySlot) {
-        event.allDay = true;
-      }
-      if (allDay && !droppedOnAllDaySlot) {
-        event.allDay = false;
-      }
+    ({
+      event,
+      start,
+      end,
+      // isAllDay: droppedOnAllDaySlot = false,
+    }: EventInteractionArgs<CalendarEvent>) => {
+      // const { allDay } = event;
+      // if (!allDay && droppedOnAllDaySlot) {
+      //   event.allDay = true;
+      // }
+      // if (allDay && !droppedOnAllDaySlot) {
+      //   event.allDay = false;
+      // }
 
       setEvents((prev) => {
-        const existing = prev.find((ev) => ev.id === event.id) ?? {};
+        const existing = prev.find((ev) => ev.id === event.id);
+
+        if (!existing) {
+          return prev;
+        }
 
         const filtered = prev.filter((ev) => ev.id !== event.id);
 
@@ -88,9 +108,8 @@ export function CalendarPage() {
           ...filtered,
           {
             ...existing,
-            start,
-            end,
-            allDay: event.allDay,
+            start: start as Date,
+            end: end as Date,
           },
         ];
       });
@@ -99,11 +118,24 @@ export function CalendarPage() {
   );
 
   const resizeEvent = useCallback(
-    ({ event, start, end }) => {
+    ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
       setEvents((prev) => {
-        const existing = prev.find((ev) => ev.id === event.id) ?? {};
+        const existing = prev.find((ev) => ev.id === event.id);
+
+        if (!existing) {
+          return prev;
+        }
+
         const filtered = prev.filter((ev) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end }];
+
+        return [
+          ...filtered,
+          {
+            ...existing,
+            start: start as Date,
+            end: end as Date,
+          },
+        ];
       });
     },
     [setEvents],
@@ -136,7 +168,7 @@ export function CalendarPage() {
         max={max}
         scrollToTime={scrollToTime}
         // draggable
-        draggableAccessor={(event) => true}
+        draggableAccessor={() => true}
         onEventDrop={moveEvent}
         onEventResize={resizeEvent}
         popup

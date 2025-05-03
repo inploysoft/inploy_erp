@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon';
+import { Messages } from 'react-big-calendar';
+import { CalendarEvent, CalendarResource } from './types';
 
 const now = DateTime.now();
 
-export const messagesKo = {
+export const koreanMessages: Messages<CalendarEvent> = {
   week: '주간',
   work_week: '근무 주',
   day: '일간',
@@ -14,12 +16,12 @@ export const messagesKo = {
   showMore: (total) => `+${total}개 더보기`,
 };
 
-export const resources = [
+export const resources: CalendarResource[] = [
   { trainerId: 1, trainerName: '조원준' },
   { trainerId: 2, trainerName: '김창현' },
 ];
 
-export const eventMockData = [
+export const eventMockData: CalendarEvent[] = [
   /* {
     id: 0,
     title: 'All Day Event very long title',
@@ -30,20 +32,22 @@ export const eventMockData = [
   // day view custom
   {
     id: 222,
+    resourceId: 1,
     title: '변요한 회원',
     start: DateTime.now().set({ hour: 15, minute: 0 }).toJSDate(),
     end: DateTime.now().set({ hour: 16, minute: 0 }).toJSDate(),
-    resourceId: 1,
   },
   {
     id: 223,
+    resourceId: 2,
     title: '강지혜 회원',
     start: DateTime.now().set({ hour: 9, minute: 0 }).toJSDate(),
     end: DateTime.now().set({ hour: 10, minute: 0 }).toJSDate(),
-    resourceId: 2,
+    desc: 'Big conference for important people',
   },
   {
     id: 1,
+    resourceId: 2,
     title: '긴 연휴',
     start: DateTime.local(2025, 5, 7).toJSDate(),
     end: DateTime.local(2025, 5, 10).toJSDate(),
@@ -54,7 +58,6 @@ export const eventMockData = [
     start: new Date(2016, 2, 13, 0, 0, 0),
     end: new Date(2016, 2, 20, 0, 0, 0),
   },
-
   {
     id: 3,
     title: 'DTS ENDS',
