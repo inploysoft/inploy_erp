@@ -48,7 +48,6 @@ export const memberManagementSideBarData: NavMenu[] = [
       {
         title: '회원 관리',
         url: '/member',
-        isActive: true,
       },
       {
         title: '이용권 관리',
@@ -66,11 +65,23 @@ export const workforceSideBarData: NavMenu[] = [
       {
         title: '직원 관리',
         url: '/workforce/employee',
-        isActive: true,
       },
       {
         title: '트레이너 관리',
         url: '/workforce/trainer',
+      },
+    ],
+  },
+];
+
+export const schedularSideBarData: NavMenu[] = [
+  {
+    title: '일정 모듈',
+    url: 'scheduler',
+    items: [
+      {
+        title: '수업 관리',
+        url: '/scheduler/calendar',
       },
     ],
   },

@@ -2,7 +2,6 @@
 export interface NavItem {
   title: string;
   url: string;
-  isActive?: boolean;
 }
 
 export interface NavMenu {

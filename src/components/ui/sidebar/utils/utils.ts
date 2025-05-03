@@ -1,6 +1,7 @@
 import {
   coreSideBarData,
   memberManagementSideBarData,
+  schedularSideBarData,
   workforceSideBarData,
 } from '@/components/ui/sidebar/utils/constants';
 import { NavMenu } from '@/components/ui/sidebar/utils/types';
@@ -24,6 +25,10 @@ export function createNavMenus(modules: Schema['Module']['type'][]): NavMenu[] {
 
     if (moduleType === 'workforce') {
       result.push(...workforceSideBarData);
+    }
+
+    if (moduleType === 'scheduler') {
+      result.push(...schedularSideBarData);
     }
   }
 

@@ -8,6 +8,7 @@ import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
 import { UserDashboard } from '@/modules/core/UserDashboard';
 import { MemberPage } from '@/modules/member-management/MemberPage';
 import { MembershipPage } from '@/modules/member-management/MembershipPage';
+import { CalendarPage } from '@/modules/scheduler/CalendarPage';
 import { EmployeePage } from '@/modules/workforce/EmployeePage';
 import { TrainerPage } from '@/modules/workforce/TrainerPage';
 import { WorkforceDashboardPage } from '@/modules/workforce/WorkforceDashboardPage';
@@ -94,6 +95,19 @@ const routes: RouteObject[] = [
             element: (
               <Suspense fallback={loading}>
                 <MembershipPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'scheduler',
+        children: [
+          {
+            path: 'calendar',
+            element: (
+              <Suspense fallback={loading}>
+                <CalendarPage />
               </Suspense>
             ),
           },
