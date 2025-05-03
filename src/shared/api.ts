@@ -220,6 +220,8 @@ export const memberManagementSet = [
 ] as const;
 
 export const workforceSet = ['trainerIds.*'] as const;
+
+// TODO: 20250504 scheduler 모듈 테이블 생성
 export const schedulerSet = ['trainerIds.*'] as const;
 
 const selectionSetMap = {
@@ -256,6 +258,11 @@ export async function fetchModuleInstance(
 
     const workforceResult = {} as Record<
       Extract<InployModule, 'workforce'>,
+      WorkforceEntity
+    >;
+
+    const schedulerResult = {} as Record<
+      Extract<InployModule, 'scheduler'>,
       WorkforceEntity
     >;
 
@@ -310,11 +317,16 @@ export async function fetchModuleInstance(
       if (moduleType === 'workforce') {
         workforceResult['workforce'] = result;
       }
+
+      if (moduleType === 'scheduler') {
+        schedulerResult['scheduler'] = result;
+      }
     }
 
     return {
       ...memberManagementResult,
       ...workforceResult,
+      ...schedulerResult,
     };
   } catch (error) {
     awsLogger.error('Exceptional errors: ', error);
