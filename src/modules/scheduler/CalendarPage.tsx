@@ -31,14 +31,16 @@ export function CalendarPage() {
   );
 
   const handleSelectEvent = useCallback(
-    (event) => window.alert(event.title),
+    (event) => console.log(event.title),
     [],
   );
 
-  const { scrollToTime, messages } = useMemo(
+  const { min, messages, max, scrollToTime } = useMemo(
     () => ({
-      scrollToTime: new Date(1970, 1, 1, 6),
+      max: DateTime.local(1970, 1, 1, 23, 59, 59).toJSDate(),
       messages: messagesKo,
+      min: DateTime.local(1970, 1, 1, 6, 0, 0).toJSDate(),
+      scrollToTime: DateTime.local(1970, 1, 1, 6).toJSDate(),
     }),
     [],
   );
@@ -46,22 +48,25 @@ export function CalendarPage() {
   return (
     <>
       <Calendar
+        // misc
         culture="ko"
-        defaultView={Views.WEEK}
+        defaultView={Views.DAY}
         endAccessor="end"
         events={myEvents}
-        //
-        onSelectEvent={handleSelectEvent}
-        onSelectSlot={handleSelectSlot}
-        selectable
-        scrollToTime={scrollToTime}
-        //
-        resources={resources}
-        resourceIdAccessor="trainerId"
-        resourceTitleAccessor="trainerName"
         localizer={localizer}
         messages={messages}
         startAccessor="start"
+        // selectable
+        onSelectEvent={handleSelectEvent}
+        onSelectSlot={handleSelectSlot}
+        selectable
+        min={min}
+        max={max}
+        scrollToTime={scrollToTime}
+        // customizable resource
+        resources={resources}
+        resourceIdAccessor="trainerId"
+        resourceTitleAccessor="trainerName"
       />
     </>
   );
