@@ -3,16 +3,21 @@ import { DateTime } from 'luxon';
 const now = DateTime.now();
 
 export const messagesKo = {
-  week: '주',
+  week: '주간',
   work_week: '근무 주',
-  day: '일',
-  month: '월',
+  day: '일간',
+  month: '월간',
   previous: '이전',
   next: '다음',
   today: '오늘',
   agenda: '일정',
   showMore: (total) => `+${total}개 더보기`,
 };
+
+export const resources = [
+  { trainerId: 1, trainerName: '조원준' },
+  { trainerId: 2, trainerName: '김창현' },
+];
 
 export const events = [
   /* {
@@ -22,6 +27,21 @@ export const events = [
     start: new Date(2015, 3, 0),
     end: new Date(2015, 3, 1),
   }, */
+  // day view custom
+  {
+    id: 222,
+    title: '변요한 회원',
+    start: DateTime.local(2025, 5, 3, 9, 0, 0).toJSDate(),
+    end: DateTime.local(2025, 5, 3).toJSDate(),
+    resourceId: 1,
+  },
+  {
+    id: 223,
+    title: '강지혜 회원',
+    start: DateTime.local(2025, 5, 3, 2, 0, 0).toJSDate(),
+    end: DateTime.local(2025, 5, 3).toJSDate(),
+    resourceId: 2,
+  },
   {
     id: 1,
     title: '긴 연휴',
@@ -48,13 +68,6 @@ export const events = [
     start: new Date(2015, 3, 9, 0, 0, 0),
     end: new Date(2015, 3, 9, 0, 0, 0),
     allDay: true,
-  },
-
-  {
-    id: 92,
-    title: 'Some Other Event',
-    start: new Date(2015, 3, 9, 8, 0, 0),
-    end: new Date(2015, 3, 10, 11, 30, 0),
   },
   {
     id: 5,
