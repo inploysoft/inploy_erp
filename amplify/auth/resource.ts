@@ -23,11 +23,9 @@ export const auth = defineAuth({
       required: true,
     },
 
-    'custom:company_name': {
+    'custom:company_id': {
       dataType: 'String',
       mutable: true,
-      maxLen: 16,
-      minLen: 1,
     },
 
     'custom:is_admin': {
