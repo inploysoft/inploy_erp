@@ -161,7 +161,6 @@ export async function fetchModules(
 
     if (errors && errors.length > 0) {
       awsLogger.error('GraphQL errors: ', errors);
-      throw new Error('fetchModules: ' + errors);
     }
 
     return data;
@@ -222,9 +221,13 @@ export const memberManagementSet = [
 
 export const workforceSet = ['trainerIds.*'] as const;
 
+// TODO: 20250504 scheduler 모듈 테이블 생성
+export const schedulerSet = ['trainerIds.*'] as const;
+
 const selectionSetMap = {
   memberManagement: memberManagementSet,
   workforce: workforceSet,
+  scheduler: schedulerSet,
 } as const;
 
 /**
@@ -255,6 +258,11 @@ export async function fetchModuleInstance(
 
     const workforceResult = {} as Record<
       Extract<InployModule, 'workforce'>,
+      WorkforceEntity
+    >;
+
+    const schedulerResult = {} as Record<
+      Extract<InployModule, 'scheduler'>,
       WorkforceEntity
     >;
 
@@ -309,11 +317,16 @@ export async function fetchModuleInstance(
       if (moduleType === 'workforce') {
         workforceResult['workforce'] = result;
       }
+
+      if (moduleType === 'scheduler') {
+        schedulerResult['scheduler'] = result;
+      }
     }
 
     return {
       ...memberManagementResult,
       ...workforceResult,
+      ...schedulerResult,
     };
   } catch (error) {
     awsLogger.error('Exceptional errors: ', error);

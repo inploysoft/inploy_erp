@@ -1,6 +1,11 @@
 import { a } from '@aws-amplify/backend';
 
-const moduleTypes = ['memberManagement', 'salesManagement', 'workforce'];
+const moduleTypes = [
+  'memberManagement',
+  'salesManagement',
+  'workforce',
+  'scheduler',
+];
 
 /* 인플로이 제공 모듈 */
 export const ModuleModel = a.model({
