@@ -47,7 +47,7 @@ export function SidebarLayout() {
   const onClickSignOut = async () => {
     await signOut();
 
-    navigate('/login');
+    navigate('/signin');
   };
 
   return (

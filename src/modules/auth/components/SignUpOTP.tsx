@@ -34,7 +34,7 @@ export function SignUpOTP({ username }: SignUpOTPProps) {
       if (isSignUpComplete && nextStep.signUpStep === 'DONE') {
         alert('회원가입에 성공했어요. 로그인 페이지로 돌아갈께요');
 
-        navigate('/login');
+        navigate('/signin');
       }
     } catch (error) {
       alert('인증코드를 다시 확인해주세요' + error);
