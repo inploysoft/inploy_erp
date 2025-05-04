@@ -13,10 +13,12 @@ import withDragAndDrop, {
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 
 import { localeToKorea } from '@/shared/lib/format';
+import { EventDialog } from './components/EventDialog';
 import { SchedularToolbar } from './components/SchedularToolbar';
 import { eventMockData, koreanMessages, resources } from './lib/constant';
-import { CalendarEvent, CalendarResource } from './lib/types';
+import { CalendarEvent, CalendarResource, EventAddDialog } from './lib/types';
 
+//
 const localizer = luxonLocalizer(DateTime);
 
 const DraggableCalendar = withDragAndDrop<CalendarEvent, CalendarResource>(
@@ -25,26 +27,18 @@ const DraggableCalendar = withDragAndDrop<CalendarEvent, CalendarResource>(
 
 export function CalendarPage() {
   const [events, setEvents] = useState<CalendarEvent[]>(eventMockData);
+  const [eventAddDialogState, setEventAddDialogState] =
+    useState<EventAddDialog>({
+      isDialogOpened: false,
+      slotInfo: null,
+    });
 
-  const handleSelectSlot = useCallback(
-    ({ start, end }: SlotInfo) => {
-      const title = window.prompt('New Event name');
-
-      if (title) {
-        setEvents((prev) => [
-          ...prev,
-          {
-            id: 224,
-            resourceId: 1,
-            title: title,
-            start: start,
-            end: end,
-          },
-        ]);
-      }
-    },
-    [setEvents],
-  );
+  const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
+    setEventAddDialogState({
+      isDialogOpened: true,
+      slotInfo: slotInfo,
+    });
+  }, []);
 
   const handleSelectEvent = useCallback(
     (event: CalendarEvent) => console.log(event),
@@ -143,6 +137,13 @@ export function CalendarPage() {
 
   return (
     <>
+      {eventAddDialogState && (
+        <EventDialog
+          eventAddDialogState={eventAddDialogState}
+          setEventAddDialogState={setEventAddDialogState}
+        />
+      )}
+
       <DraggableCalendar
         // misc
         culture="ko"
