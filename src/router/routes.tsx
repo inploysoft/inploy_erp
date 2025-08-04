@@ -1,0 +1,120 @@
+import { Suspense } from 'react';
+import { createBrowserRouter, RouteObject } from 'react-router';
+
+import { SidebarLayout } from '@/components/ui/sidebar/SidebarLayout';
+import { SignInPage } from '@/modules/auth/SignInPage';
+import { SignUpPage } from '@/modules/auth/SignUpPage';
+import { ModuleConfiguration } from '@/modules/core/ModuleConfiguration';
+import { UserDashboard } from '@/modules/core/UserDashboard';
+import { MemberPage } from '@/modules/member-management/MemberPage';
+import { MembershipPage } from '@/modules/member-management/MembershipPage';
+import { CalendarPage } from '@/modules/scheduler/CalendarPage';
+import { EmployeePage } from '@/modules/workforce/EmployeePage';
+import { TrainerPage } from '@/modules/workforce/TrainerPage';
+import { WorkforceDashboardPage } from '@/modules/workforce/WorkforceDashboardPage';
+
+// TODO: 20250322 Create loading component
+const loading = <div>Loading...</div>;
+
+const routes: RouteObject[] = [
+  {
+    path: '/signin',
+    element: <SignInPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignUpPage />,
+  },
+  {
+    path: '/',
+    element: <SidebarLayout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense fallback={loading}>
+            <UserDashboard />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'system',
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={loading}>
+                <ModuleConfiguration />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'workforce',
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={loading}>
+                <WorkforceDashboardPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'employee',
+            element: (
+              <Suspense fallback={loading}>
+                <EmployeePage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'trainer',
+            element: (
+              <Suspense fallback={loading}>
+                <TrainerPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'member',
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={loading}>
+                <MemberPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'membership',
+            element: (
+              <Suspense fallback={loading}>
+                <MembershipPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'scheduler',
+        children: [
+          {
+            path: 'calendar',
+            element: (
+              <Suspense fallback={loading}>
+                <CalendarPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+    ],
+  },
+];
+
+export const router = createBrowserRouter(routes);
