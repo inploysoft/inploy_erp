@@ -27,7 +27,7 @@ export function SchedularToolbar({
 
   return (
     <div className="border- flex flex-col items-center justify-between gap-4 p-4 md:flex-row">
-      <Tabs onValueChange={handleNavigateChange} value="today">
+      <Tabs defaultValue="today" onValueChange={handleNavigateChange}>
         <TabsList>
           <TabsTrigger onClick={() => onNavigate('PREV')} value="prev">
             이전
