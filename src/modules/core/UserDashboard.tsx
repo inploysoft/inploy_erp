@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   Card,
@@ -12,16 +12,13 @@ import {
 
 import { PurchaseModules } from './PurchaseModules';
 import { H2 } from '@/theme/Typography';
+import { Module } from '@/shared/models/Module';
 
 export function UserDashboard() {
   const [purchaseComponent, setPurchaseComponent] = useState(false);
-
-  useEffect(() => {
-    console.log(purchaseComponent);
-  }, [purchaseComponent]);
+  const [purchasedList, setpurchasedList] = useState<Module[]>([]);
 
   const onClickPurchase = useCallback(() => {
-    console.log('he');
     setPurchaseComponent(true);
   }, []);
 
@@ -30,7 +27,10 @@ export function UserDashboard() {
       <H2>대시보드</H2>
 
       {purchaseComponent ? (
-        <PurchaseModules />
+        <PurchaseModules
+          setPurchaseComponent={setPurchaseComponent}
+          setPurchasedList={setpurchasedList}
+        />
       ) : (
         <Card
           onClick={onClickPurchase}
