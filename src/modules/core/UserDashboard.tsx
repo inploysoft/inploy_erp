@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
+
 import {
   Card,
   CardAction,
@@ -12,11 +14,25 @@ import {
 
 import { PurchaseModules } from './PurchaseModules';
 import { H2 } from '@/theme/Typography';
-import { Module } from '@/shared/models/Module';
+import { Module } from '@/shared/models/module';
+import { createPurchasedModules } from './api';
+import { useUserBootstrap } from '@/shared/hooks/useUserBootstrap';
 
 export function UserDashboard() {
   const [purchaseComponent, setPurchaseComponent] = useState(false);
   const [purchasedList, setpurchasedList] = useState<Module[]>([]);
+
+  const { fetchLoginUserQuery } = useUserBootstrap();
+
+  const { data } = useQuery({
+    queryKey: [
+      'createPurchasedModules',
+      purchasedList,
+      fetchLoginUserQuery.data,
+    ],
+    queryFn: async () =>
+      await createPurchasedModules(purchasedList, fetchLoginUserQuery.data),
+  });
 
   const onClickPurchase = useCallback(() => {
     setPurchaseComponent(true);
