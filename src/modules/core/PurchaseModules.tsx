@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { H4 } from '@/theme/Typography';
 import { fetchModules } from './api';
-import { Module } from '@/shared/models/Module';
+import { Module } from '@/shared/models/module';
 import { Button } from '@/components/ui/button/button';
 
 interface PurchaseModules {

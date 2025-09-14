@@ -1,7 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { getCurrentUser } from 'aws-amplify/auth';
-import { useMemo } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+
 import {
   fetchLoginUser,
   fetchModuleInstance,
@@ -10,6 +12,7 @@ import {
 } from '../api';
 import { isMemberManagementEntity, isWorkforceEntity } from '../lib/utils';
 import { MemberManagementEntity, WorkforceEntity } from '../types/api';
+
 /**
  * 유저 부트스트랩
  * @returns 유저 정보, 구매한 모듈, 사이드바 메뉴 정보
